@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { lasts, simulate, successRate } from "../js/engine.js";
 import { gridView, mainView, percentile, spendingLastingIn, stressView, sustainable } from "../js/views.js";
-import { household } from "./helpers.js";
+import { annuityPlan, household } from "./helpers.js";
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 
@@ -82,4 +82,11 @@ test("the stress test without a forced crash is the plain result, and a crash at
   assert.equal(none.rates.guardrails, null);
   assert.equal(none.rates.vanguard, null);
   assert.equal(typeof none.rates.spenddown, "number");
+});
+
+test("the safe-spending search finds an annuity's payment", () => {
+  const { plan, most } = annuityPlan();
+  const [lo, hi] = [most / 2, most * 2];
+  const { caps } = sustainable(plan, 2026, 1, lo, hi);
+  assert.ok(caps[0] <= most && most - caps[0] <= (hi - lo) / 2 ** 13, `${caps[0]} vs ${most}`);
 });

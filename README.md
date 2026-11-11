@@ -318,13 +318,19 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
 - `tests/engine.test.js` covers the model's mechanics:
   - accounts unlocking, income lines and events;
   - taxes and the spending rules' limits;
-  - the statistics of the random draws.
+  - the statistics of the random draws;
+  - results that can be worked out by hand: the most a portfolio can pay as an annuity, and the
+    odds of a bad first year, from the normal distribution.
 - `tests/parity.test.js` checks the engine against the Python/numpy model it was ported from. The
   numbers in `tests/fixtures/python-model.json` come from that model, run on fictional plans:
   - without volatility, both are deterministic and agree year by year to within 1e-9;
   - with volatility, the success rates agree within sampling noise.
+
+  That model isn't published, so the fixture is frozen. Agreeing shows that the port is faithful,
+  not that the model is right: the hand-worked results in `tests/engine.test.js` are for that.
 - `tests/views.test.js` covers what the charts show:
-  - the percentiles (numpy's method) and the safe-spending search;
+  - the percentiles (numpy's method), and the safe-spending search, which finds an annuity's
+    payment;
   - every failing future counted, also those that fail before the FIRE start;
   - the grid and the stress test agreeing with direct runs on the same futures.
 - `tests/plan.test.js` covers:

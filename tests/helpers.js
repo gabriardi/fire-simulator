@@ -1,4 +1,5 @@
 // What several test files share. Not a test file itself: `node --test "tests/*.test.js"` skips it.
+import { real } from "../js/engine.js";
 import { blankPlan } from "../js/plan.js";
 
 /**
@@ -36,4 +37,16 @@ export function household(over = {}) {
   };
   base.rule = { ...p.rule, floor: 40_000, ceiling: 65_000, ...(over.rule || {}) };
   return base;
+}
+
+/**
+ * A plan that is nothing but a portfolio, spent from the start year on, without volatility: the
+ * most it can spend every year until the end is an annuity due, W (1 - 1/g) / (1 - g^-N), with W
+ * the portfolio, g the yearly real growth and N the number of years.
+ */
+export function annuityPlan() {
+  const plan = household({ portfolio: 1_000_000, cash: 0, contrib: 0, accounts: [], income: [], fire_year: 2026, start_month: 1 });
+  const g = 1 + real(plan.stock_return, plan.inflation);
+  const years = 2081 - 2026 + 1; // until Ana (born 1986) turns 95
+  return { plan, years, most: (plan.portfolio * (1 - 1 / g)) / (1 - g ** -years) };
 }

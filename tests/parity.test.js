@@ -5,6 +5,11 @@
 //
 // Without volatility both models are deterministic and must agree to the last cent, year by year.
 // With volatility the random numbers differ, so the results must agree within sampling noise.
+//
+// The fixture is frozen: the numpy model isn't published, and its numbers can't be made again.
+// Agreeing shows that the port is faithful, not that the model is right; for that, the last tests
+// in engine.test.js check results worked out by hand. A deliberate change to the model that breaks
+// a case here says so in its commit, and retires the case or takes the engine's new numbers for it.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";

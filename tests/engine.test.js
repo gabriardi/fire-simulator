@@ -14,7 +14,7 @@ import {
   successRate,
   yearOf,
 } from "../js/engine.js";
-import { household } from "./helpers.js";
+import { annuityPlan, household } from "./helpers.js";
 
 const row = (res, arr, year) => res[arr][res.years.indexOf(year)];
 
@@ -240,4 +240,30 @@ test("the mix's mean and volatility are those of the model's own draws", () => {
 test("every spending rule has a name and a short name", () => {
   assert.deepEqual(Object.keys(RULE_NAMES), RULE_KINDS);
   assert.deepEqual(Object.keys(RULE_SHORT), RULE_KINDS);
+});
+
+// ---- results that can be worked out by hand, without this code or the model it was ported from ----
+
+test("without volatility, the most a portfolio can spend each year is an annuity's payment", () => {
+  const { plan, years, most } = annuityPlan();
+  assert.equal(simulate(plan).years.length, years);
+  assert.equal(lasts(plan, { spending: most * (1 - 1e-9) }), 1);
+  assert.equal(lasts(plan, { spending: most * (1 + 1e-6) }), 0);
+});
+
+test("the odds of a bad first year are those of the log-normal distribution", () => {
+  // Two years: spend s from W, then s again. The money runs out exactly when the first year's
+  // growth g is below s / (W - s), whose probability the distribution gives.
+  const plan = household({ portfolio: 1_000_000, cash: 0, contrib: 0, accounts: [], income: [], fire_year: 2026, start_month: 1, end_age: 2027 - 1986, stock_vol: 0.17, seed: 11 });
+  const W = plan.portfolio;
+  const M = 1 + real(plan.stock_return, plan.inflation); // the median growth
+  // A log-normal with median M and standard deviation sd has sigma^2 = ln u, u = (1 + sqrt(1 + 4 (sd/M)^2)) / 2.
+  const sigma = Math.sqrt(Math.log((1 + Math.sqrt(1 + 4 * (plan.stock_vol / M) ** 2)) / 2));
+  const spendingFor = (threshold) => (threshold * W) / (1 + threshold); // s / (W - s) = threshold
+  const n = 200_000;
+  // Below the median: half the futures. Below the median times e^-sigma: Phi(-1) = 15.87% of them.
+  const half = lasts(plan, { n, spending: spendingFor(M) });
+  const oneSigma = lasts(plan, { n, spending: spendingFor(M * Math.exp(-sigma)) });
+  assert.ok(Math.abs(half - 0.5) < 0.005, `lasts in ${half}, not 50%`);
+  assert.ok(Math.abs(oneSigma - 0.841345) < 0.004, `lasts in ${oneSigma}, not 84.13%`);
 });
