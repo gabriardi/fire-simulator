@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "description": "A static, local-first Monte Carlo FIRE simulator.",
+  "description": "When can I stop? A static, local-first Monte Carlo FIRE simulator.",
   "homepage": "https://whencanistop.fyi",
   "repository": {
     "type": "git",

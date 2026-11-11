@@ -3,15 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FIRE Simulator</title>
-<meta name="description" content="When can you stop working? A Monte Carlo simulation of your FIRE plan that runs entirely in your browser: nothing you type leaves your device.">
+<title>When can I stop? · Monte Carlo FIRE simulator</title>
+<meta name="description" content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device.">
 <link rel="canonical" href="https://whencanistop.fyi/">
+<!-- Link previews (Open Graph, X) and search engines' description of the site. A copy of your own
+     changes the addresses here, and the operator in privacy.html. -->
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="When can I stop?">
 <meta property="og:url" content="https://whencanistop.fyi/">
-<meta property="og:title" content="FIRE Simulator: when can you stop working?">
-<meta property="og:description" content="A Monte Carlo simulation of your FIRE plan that runs entirely in your browser: nothing you type leaves your device.">
-<meta property="og:image" content="https://whencanistop.fyi/icons/icon-512.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:title" content="When can I stop? · Monte Carlo FIRE simulator">
+<meta property="og:description" content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device.">
+<meta property="og:image" content="https://whencanistop.fyi/images/social.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="When can I stop? A Monte Carlo FIRE simulator, next to a screenshot: the money lasts in 78% of 10,000 futures.">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "When can I stop?",
+  "alternateName": "When can I stop? Monte Carlo FIRE simulator",
+  "url": "https://whencanistop.fyi/",
+  "description": "When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any: runs in a web browser",
+  "browserRequirements": "Requires JavaScript",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "image": "https://whencanistop.fyi/images/social.png",
+  "author": { "@type": "Person", "name": "Gabriele Ardizzone" },
+  "license": "https://opensource.org/license/mit",
+  "sameAs": ["https://github.com/gabriardi/fire-simulator"]
+}
+</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1f5f9e" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#151d25" media="(prefers-color-scheme: dark)">
@@ -19,7 +44,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="FIRE">
+<meta name="apple-mobile-web-app-title" content="Can I stop?">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="app.css">
 </head>
@@ -80,9 +105,11 @@
   </aside>
 
   <main>
+    <noscript><p class="noscript"><b>When can I stop?</b> is a Monte Carlo FIRE simulator that runs
+      in your browser, so it needs JavaScript. Nothing you type is ever sent anywhere.</p></noscript>
     <header class="top">
       <div class="title">
-        <h1>FIRE Simulator</h1>
+        <h1>When can I stop?</h1>
         <button class="scenario-pill" id="plan-pill" type="button" title="The plan on screen"></button>
       </div>
       <div class="top-right">
@@ -94,10 +121,11 @@
 
     <section class="welcome hidden" id="welcome">
       <div>
-        <h2>This is a made-up household</h2>
-        <p>Alex and Sam, their savings and pensions are an example, to show what the simulator does.
-          Set up your own plan to see yours. Everything you enter stays in this browser: nothing is
-          sent anywhere.</p>
+        <h2>When can you stop working, and how much can you spend?</h2>
+        <p>The simulator plays your plan through thousands of possible futures for the markets, and
+          tells you how often the money lasts. The numbers below are for Alex and Sam, a made-up
+          household, to show how it works. Set up your own plan to see yours: everything you enter
+          stays in this browser, and nothing is sent anywhere.</p>
       </div>
       <div class="welcome-actions">
         <button class="btn primary" id="welcome-setup" type="button">Set up my plan</button>
@@ -220,7 +248,8 @@
     <footer class="site-foot">
       Open source (<a href="https://github.com/gabriardi/fire-simulator/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a>) ·
       <a href="https://github.com/gabriardi/fire-simulator" target="_blank" rel="noopener">Code and issues on GitHub</a> ·
-      <a href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener">Buy me a coffee</a>
+      <a href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener">Buy me a coffee</a> ·
+      <a href="privacy">Privacy</a>
     </footer>
   </main>
 </div>

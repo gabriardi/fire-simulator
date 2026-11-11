@@ -1,4 +1,4 @@
-# FIRE Simulator
+# When can I stop?
 
 [![Tests](https://github.com/gabriardi/fire-simulator/actions/workflows/test.yml/badge.svg)](https://github.com/gabriardi/fire-simulator/actions/workflows/test.yml)
 
@@ -119,7 +119,9 @@ Numbers can be typed in the format you're used to: `1,234,567`, `1.234.567`, `1'
 
 There is no account, no server-side code, no analytics and no request to anyone else. Even the
 chart library is served with the site, and a strict Content-Security-Policy (`_headers`) stops the
-page from loading anything from elsewhere.
+page from loading anything from elsewhere. The site's
+[privacy notice](https://whencanistop.fyi/privacy) (`privacy.html`) says the same for this
+project's copy, with who runs it and how to reach them.
 
 - **Saved plans** live in your browser's local storage, on this device only, and for this web
   address: the same site at another address keeps a list of its own. Browsers can clear that
@@ -173,9 +175,13 @@ don't send). Questions about this project's copy: [open an
 issue](https://github.com/gabriardi/fire-simulator/issues).
 
 If you publish your own copy, you're the one running that site: tell your visitors who you are,
-how to reach you, and which host you use. `index.html` points at this project in a few places:
-the footer's links (the code, Buy me a coffee) and the address in its `<head>` (the canonical
-link and the link-preview tags). Change them to yours.
+how to reach you, and which host you use. A few files point at this project, and need yours:
+
+- `privacy.html`: the operator, the contact, the host and the logs. It's this project's notice,
+  not a template that fits every copy.
+- `index.html`: the footer's links (the code, Buy me a coffee), and the address in its `<head>`
+  (the canonical link, the link-preview tags and the structured data).
+- `robots.txt`, `sitemap.xml`: the address.
 
 ## Run it locally
 
@@ -328,6 +334,8 @@ the tests run them under Node.
 | `scripts/serve.js` | The local server |
 | `wrangler.jsonc`, `.assetsignore`, `_headers` | Hosting on Cloudflare: what's served, and with which headers |
 | `vendor/` | Plotly's cartesian bundle (charts) |
+| `privacy.html` | The privacy notice of this project's copy |
+| `robots.txt`, `sitemap.xml`, `images/social.png` | For search engines and link previews (the image is made from `docs/social-card.html`) |
 
 ### Tests
 
@@ -381,6 +389,8 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
   page knows isn't opened or imported: the page asks for a reload, which fetches the new version.
 - **New modules**: a module the page or a worker imports has to be added to `SHELL` in `sw.js`,
   or the app won't work offline. `tests/site.test.js` fails until it is.
+- **The link-preview image** (`images/social.png`) is `docs/social-card.html` at 1200 × 630: the
+  command to make it again is at the top of that file. Make it again after a new screenshot.
 - **Upgrading Plotly**: the file name carries the version, so it can be cached forever. Update
   `index.html`, `sw.js`, this README and `vendor/PLOTLY-LICENSE` together (the test checks all but
   the license).

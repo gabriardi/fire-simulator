@@ -1,7 +1,7 @@
 {
-  "name": "FIRE Simulator",
-  "short_name": "FIRE",
-  "description": "When can you stop working? A Monte Carlo simulation of your FIRE plan, in today's money, entirely in your browser.",
+  "name": "When can I stop?",
+  "short_name": "Can I stop?",
+  "description": "When could you retire early, and how much could you spend? A Monte Carlo FIRE simulator, in today's money, entirely in your browser.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

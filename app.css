@@ -1,4 +1,4 @@
-/* FIRE Simulator.
+/* When can I stop? A Monte Carlo FIRE simulator.
    Layout: a parameter rail on the left (a bottom sheet on phones), results stacked on the right.
    Palette: cool paper neutrals, one blue accent; green / amber / red only for outcomes. */
 :root {
@@ -287,6 +287,21 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 2px 0; }
 /* The page's last line: where the code lives, and where to report a problem. */
 .site-foot { color: var(--muted); font-size: 0.82rem; text-align: center; line-height: 1.6; }
 .site-foot a { color: var(--accent); }
+.noscript { margin: 0 0 16px; padding: 12px 14px; border-radius: var(--radius); background: var(--warn-soft); }
+
+/* ---- a page of plain text: the privacy notice ---- */
+.doc { max-width: 44rem; margin: 0 auto; padding: 28px 16px 56px; }
+.doc .back { display: inline-block; margin-bottom: 20px; color: var(--accent); text-decoration: none; font-weight: 600; }
+.doc h1 { margin: 0 0 4px; font-size: 1.7rem; letter-spacing: -0.01em; }
+.doc .updated { margin: 0 0 24px; color: var(--muted); }
+.doc h2 { margin: 28px 0 6px; font-size: 1.12rem; line-height: 1.3; }
+.doc p, .doc li { line-height: 1.6; }
+.doc p { margin: 0 0 12px; }
+.doc ul { padding-left: 1.3em; }
+.doc li { margin: 0 0 6px; }
+.doc a { color: var(--accent); }
+.doc .summary { padding: 14px 16px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.doc .site-foot { margin-top: 40px; }
 .hidden { display: none !important; }
 
 /* ---- phone ---- */

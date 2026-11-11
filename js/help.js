@@ -46,7 +46,9 @@ export const HELP = {
           never send that part to the site. Whoever gets the link can see the numbers.</li>
         <li>You don't have to take this on trust: the code is public, so anyone can check that
           nothing is sent, <a href="https://github.com/gabriardi/fire-simulator" target="_blank" rel="noopener">on GitHub</a>.</li>
-      </ul>`,
+      </ul>
+      <p>The <a href="privacy" target="_blank" rel="noopener">privacy notice</a> says who runs this
+      site, what its host receives, and how to reach them.</p>`,
   },
 
   // ---- plans ---------------------------------------------------------------------------------------

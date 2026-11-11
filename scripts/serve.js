@@ -22,6 +22,7 @@ const TYPES = {
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
   ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
 };
 
 // _headers: a path pattern on its own line, then indented "Name: value" lines.
@@ -48,7 +49,12 @@ createServer(async (req, res) => {
   if (file !== ROOT && !file.startsWith(ROOT + sep)) return send(res, 403, "Forbidden");
   if (path.split("/").some((part) => part.startsWith("."))) return send(res, 404, "Not found");
   try {
-    if ((await stat(file)).isDirectory()) file = join(file, "index.html");
+    let info = await stat(file).catch(() => null);
+    if (!info && !extname(file)) {
+      file += ".html"; // as Cloudflare serves it: /privacy is privacy.html
+      info = await stat(file);
+    }
+    if (info?.isDirectory()) file = join(file, "index.html");
     const body = await readFile(file);
     const headers = { "Content-Type": TYPES[extname(file)] ?? "application/octet-stream", "Cache-Control": "no-cache" };
     for (const r of RULES) if (r.pattern.test(path)) Object.assign(headers, r.headers);
@@ -58,7 +64,7 @@ createServer(async (req, res) => {
     send(res, 404, "Not found");
   }
 }).listen(PORT, LAN ? "0.0.0.0" : "127.0.0.1", () => {
-  console.log(`FIRE simulator: http://127.0.0.1:${PORT}`);
+  console.log(`When can I stop? http://127.0.0.1:${PORT}`);
   if (LAN) {
     for (const nets of Object.values(networkInterfaces())) {
       for (const n of nets ?? []) if (n.family === "IPv4" && !n.internal) console.log(`On your network: http://${n.address}:${PORT}`);

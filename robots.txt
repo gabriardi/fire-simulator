@@ -1,0 +1,5 @@
+# Every page may be crawled. The site has two: the simulator and its privacy notice.
+User-agent: *
+Allow: /
+
+Sitemap: https://whencanistop.fyi/sitemap.xml
