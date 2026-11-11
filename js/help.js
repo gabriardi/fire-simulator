@@ -190,7 +190,10 @@ export const HELP = {
   "rule.ceiling": {
     title: "Ceiling",
     html: `<p>The most you'd want to spend in good times. Without it, a flexible rule could keep
-      raising spending in very good futures.</p>`,
+      raising spending in very good futures.</p>
+      <p>Guardrails and Vanguard start at your spending, so it has to sit between the floor and
+      the ceiling. Until you set them yourself they are a band around the spending (−20%, +25%)
+      and move with it. Once you set them, they stay, and the spending slider keeps within them.</p>`,
   },
   "rule.band": {
     title: "Guardrail band",

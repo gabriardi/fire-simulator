@@ -176,8 +176,12 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
   const bad = (v) => Number.isNaN(v) || (min != null && v < min) || (max != null && v > max);
   let range = null;
   const scale = kind === "pct" ? 100 : 1;
+  // A slider whose ends follow its own value (the spending's) must not rescale while a finger or the
+  // mouse holds it: each move would stretch the scale, and the next move would run further on it.
+  // Focus can't tell: touch screens and Safari don't focus a slider being dragged.
+  let holding = false;
   const setRange = () => {
-    if (!range || document.activeElement === range) return; // never under a dragging thumb
+    if (!range || holding) return;
     const s = typeof slider === "function" ? slider() : slider;
     range.min = s.min;
     range.max = s.max;
@@ -185,25 +189,39 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
   };
   if (slider) {
     range = el("input", { type: "range", "aria-label": `${label} slider` });
+    range.addEventListener("pointerdown", () => {
+      holding = true;
+      const end = () => {
+        window.removeEventListener("pointerup", end, true);
+        window.removeEventListener("pointercancel", end, true);
+        holding = false;
+        setRange();
+        range.value = getPath(target(), path) * scale;
+      };
+      window.addEventListener("pointerup", end, true);
+      window.addEventListener("pointercancel", end, true);
+    });
     range.addEventListener("input", () => {
       const v = Number(range.value) / scale;
+      const prev = getPath(target(), path);
       setPath(target(), path, v);
       input.value = toShow(v);
       box.classList.remove("invalid");
       invalid.delete(path);
-      onchange?.(v);
+      onchange?.(v, prev);
       changed();
     });
-    range.addEventListener("change", setRange);
+    range.addEventListener("change", setRange); // keys; after a drag, `end` does it
   }
   input.addEventListener("input", () => {
     const v = fromShow(input.value);
     box.classList.toggle("invalid", bad(v));
     if (bad(v)) { invalid.add(path); return; }
     invalid.delete(path);
+    const prev = getPath(target(), path);
     setPath(target(), path, v);
     if (range) range.value = v * scale;
-    onchange?.(v);
+    onchange?.(v, prev);
     changed();
   });
   input.addEventListener("blur", () => {
@@ -533,6 +551,28 @@ const moneySlider = (get) => () => {
   return { min: 0, max, step: niceStep(max / 400) };
 };
 
+// Guardrails and Vanguard need the spending between the rule's floor and ceiling. A band nobody set
+// by hand, the one around the spending, moves with it (not for the spend-down, whose floor is its
+// main input and which doesn't use the spending). A band set by hand stays: the slider then keeps
+// within it, while the box can still go outside, with the error and its fix.
+const bandIsAuto = (spending) => {
+  const b = bandAround(spending);
+  return same(state.rule.floor, b.floor) && same(state.rule.ceiling, b.ceiling);
+};
+const bandHolds = () => ["guardrails", "vanguard"].includes(state.rule.kind);
+const bandByHand = () => bandHolds() && !bandIsAuto(state.spending) && state.rule.floor < state.rule.ceiling;
+function followBand(v, prev) {
+  if (state.rule.kind !== "spenddown" && bandIsAuto(prev)) Object.assign(state.rule, bandAround(v));
+}
+const spendingSlider = () => {
+  if (!bandByHand()) return moneySlider(() => state.spending)();
+  const { floor, ceiling } = state.rule;
+  const step = niceStep((ceiling - floor) / 200);
+  const min = Math.ceil(floor / step) * step;
+  const max = Math.floor(ceiling / step) * step;
+  return max > min ? { min, max, step } : { min: floor, max: ceiling, step: (ceiling - floor) / 200 };
+};
+
 function peopleGroup() {
   const cards = state.people.map((x, i) => itemCard(
     {
@@ -640,10 +680,11 @@ function buildForm() {
       hint: (v) => `Ages then: ${ages(v)}`,
     }),
     numberField({
-      path: "spending", label: "Spending per year", min: 0, slider: moneySlider(() => state.spending),
+      path: "spending", label: "Spending per year", min: 0, slider: spendingSlider, onchange: followBand,
       hint: (v) => (state.rule.kind === "spenddown"
         ? "Not used by the spend-down, which works out its own. Still the unit of “years of spending” and of the cash cushion."
-        : `${fmt.money(v / 12)} a month, today's money, taxes of the FIRE years included`),
+        : `${fmt.money(v / 12)} a month, today's money, taxes of the FIRE years included${bandByHand()
+          ? `. The slider stays within the rule's floor and ceiling, ${fmt.short(state.rule.floor)}–${fmt.short(state.rule.ceiling)}.` : ""}`),
     }),
     row2(
       selectField({ path: "end_person", label: "Must last until", options: () => state.people.map((x) => [x.id, x.name]),
@@ -1932,7 +1973,10 @@ function wireGridClicks() {
     if (!pt || pt.z == null || !explore.grid) return; // an empty cell isn't a valid plan
     const v = explore.grid.values[pt.pointIndex[1]];
     if (explore.grid.axis === "floor") state.rule.floor = v;
-    else state.spending = v;
+    else {
+      followBand(v, state.spending);
+      state.spending = v;
+    }
     state.fire_year = explore.grid.fire_years[pt.pointIndex[0]];
     changed();
   });

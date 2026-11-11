@@ -258,8 +258,10 @@ You can choose 1,000 to 50,000. The grid and the stress test use fewer futures, 
 | **Spend-down** (die with zero) | Each year, aims at the amount that could be spent every year until the end, counting locked accounts and future income as money today. It moves towards that amount gradually. | When even the floor can't be paid |
 
 The flexible rules stay between a **floor** (the costs you can't cut) and a **ceiling**. They
-start at your spending, so that has to sit between the two; the page offers to set a band around
-it.
+start at your spending, so that has to sit between the two. Until you set them yourself, they
+are a band around the spending (−20%, +25%, rounded) that moves with it. Once you set them, they
+stay, and the spending slider keeps within them; a spending typed outside them gets an error that
+offers to set a band around it.
 
 ## Assumptions and limits
 
