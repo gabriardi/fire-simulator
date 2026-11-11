@@ -159,16 +159,18 @@ so you see exactly what the deployed site does, Content-Security-Policy included
 
 The repository *is* the site: publish its root folder. There is no build command.
 
-**Cloudflare Pages** (free, no bandwidth limit for static files, and it applies `_headers`):
-1. In the Cloudflare dashboard: *Workers & Pages → Create → Pages → Import an existing Git
-   repository*, then pick the repository. Private repositories work.
-2. Framework preset *None*, no build command, build output directory `/`.
-3. Every push to the main branch deploys, and every other branch gets its own preview address.
+**Cloudflare Workers** (free, no limit on requests for static files, and it applies `_headers`):
+1. In the Cloudflare dashboard: *Workers & Pages → Create → Import a repository*, then pick the
+   repository. Private repositories work.
+2. No build command. The deploy command is the default, `npx wrangler deploy`, which reads
+   `wrangler.jsonc`: the folder's files are served as they are, minus what `.assetsignore` lists
+   (the README, tests, scripts).
+3. Every push to the main branch deploys. The site gets a `<name>.<account>.workers.dev` address,
+   and a custom domain can be added under the Worker's *Settings → Domains & Routes*.
 
-Create the project from Git like this, not by uploading files with `wrangler pages deploy`: a
-project made by direct upload can't be connected to a repository later. Leave Cloudflare's Web
-Analytics off, since its script would break the no-third-party promise (and the
-Content-Security-Policy blocks it anyway).
+Without Git, `npx wrangler deploy` from the folder does the same. Leave Cloudflare's Web
+Analytics off: its script would break the no-third-party promise (and the Content-Security-Policy
+blocks it anyway).
 
 **GitHub Pages**: *Settings → Pages → Deploy from a branch*, then pick the main branch and `/`
 (root). Every path in the site is relative, so a project URL like `user.github.io/fire-simulator/`
@@ -267,6 +269,7 @@ The code is plain ES modules, with no framework, no bundler and no dependencies.
 | `js/help.js` | Every "?" text and the guide |
 | `sw.js`, `manifest.webmanifest` | Offline use and installing as an app |
 | `scripts/serve.js` | The local server |
+| `wrangler.jsonc`, `.assetsignore`, `_headers` | Hosting on Cloudflare: what's served, and with which headers |
 | `vendor/` | Plotly's cartesian bundle (charts) |
 
 ### Tests

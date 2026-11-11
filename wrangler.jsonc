@@ -1,0 +1,12 @@
+// Cloudflare Workers: the site is this folder's files, served as static assets (no Worker code).
+// Every push to main deploys (`npx wrangler deploy`); .assetsignore lists what isn't uploaded,
+// _headers sets the response headers.
+{
+  "name": "fire-simulator",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": ".",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+}

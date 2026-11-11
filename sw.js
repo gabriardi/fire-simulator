@@ -5,8 +5,7 @@
 // It stores nothing else: plans live in the page's own storage, never here.
 const CACHE = "fire-shell-v1";
 const SHELL = [
-  "./",
-  "index.html",
+  "./", // the page itself (hosts redirect index.html here, and a stored redirect can't answer a page load)
   "app.css",
   "js/app.js",
   "js/engine.js",
