@@ -8,6 +8,8 @@
  */
 
 export const SCHEMA = 1;
+/** New plans and the example start in this currency; anyone can pick another. */
+export const DEFAULT_CURRENCY = "CHF";
 export const LIMITS = { people: 4, accounts: 12, income: 12, events: 20, years: 120 };
 
 export const RULE_DEFAULTS = {
@@ -39,7 +41,7 @@ export function roundish(x) {
 /** A floor and ceiling for the flexible rules, around a spending. */
 export const bandAround = (spending) => ({ floor: roundish(spending * 0.8), ceiling: roundish(spending * 1.25) });
 
-export function blankPlan({ currency = "USD", today = new Date() } = {}) {
+export function blankPlan({ currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
   const y = today.getFullYear();
   return {
     schema: SCHEMA,
@@ -78,7 +80,7 @@ export function blankPlan({ currency = "USD", today = new Date() } = {}) {
 }
 
 /** A made-up household, to show what the simulator does before anyone types in their own. */
-export function examplePlan({ currency = "USD", today = new Date() } = {}) {
+export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
   const y = today.getFullYear();
   const p = blankPlan({ currency, today });
   const alex = { id: "alex", name: "Alex", birth_year: y - 38 };
@@ -132,7 +134,7 @@ const list = (v, max) => (Array.isArray(v) ? v.filter((x) => x && typeof x === "
  * sane bounds, references pointing at people who exist. Unknown fields are dropped. It does not
  * judge whether the plan makes sense: that's `problems()`.
  */
-export function normalize(raw, { currency = "USD", today = new Date() } = {}) {
+export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
   const r = raw && typeof raw === "object" ? raw : {};
   const d = blankPlan({ currency, today });
   const ids = new Set();

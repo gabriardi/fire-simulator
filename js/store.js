@@ -8,8 +8,10 @@ const KEYS = {
   session: "fire-sim.session.v1", // { current, working }: the plan on screen, unsaved changes included
   settings: "fire-sim.settings.v1", // { seed, n_sims, locale }: the viewer's, not part of any plan
   groups: "fire-sim.groups.v1", // which form sections are open
+  backup: "fire-sim.backup.v1", // { exported }: when the plans were last exported to a file
 };
 export const PLANS_KEY = KEYS.plans;
+export const BACKUP_KEY = KEYS.backup;
 
 function read(key, fallback) {
   try {
@@ -50,6 +52,26 @@ export const loadSettings = () => ({ seed: 42, n_sims: 10_000, locale: "", ...re
 export const saveSettings = (s) => write(KEYS.settings, s);
 export const loadGroups = () => read(KEYS.groups, {});
 export const saveGroups = (g) => write(KEYS.groups, g);
+/** When the plans were last exported (ms since 1970), 0 if never. */
+export const loadExported = () => {
+  const t = read(KEYS.backup, {})?.exported;
+  return Number.isFinite(t) && t > 0 ? t : 0;
+};
+export const saveExported = (t) => write(KEYS.backup, { exported: t });
+
+/**
+ * Ask the browser to keep this site's storage for good, instead of clearing it when space runs low.
+ * The browser decides (Chrome and Edge from how the site is used, Firefox by asking); nothing breaks
+ * if it says no, and only an exported file survives a lost device or cleared browser data.
+ */
+export async function keepStorage() {
+  try {
+    if (!navigator.storage?.persist) return false;
+    return (await navigator.storage.persisted()) || (await navigator.storage.persist());
+  } catch {
+    return false;
+  }
+}
 
 // ---- files ---------------------------------------------------------------------------------------
 

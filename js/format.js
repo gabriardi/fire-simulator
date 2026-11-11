@@ -20,22 +20,6 @@ export const LOCALES = [
   }),
 ];
 
-// A currency for someone's region, for the example plan only (its amounts suit these currencies).
-const REGION_CURRENCY = {
-  US: "USD", GB: "GBP", CH: "CHF", LI: "CHF", CA: "CAD", AU: "AUD", NZ: "NZD", SG: "SGD", IE: "EUR",
-  DE: "EUR", AT: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", PT: "EUR", NL: "EUR", BE: "EUR", LU: "EUR",
-  FI: "EUR", GR: "EUR", SK: "EUR", SI: "EUR", EE: "EUR", LV: "EUR", LT: "EUR", HR: "EUR", MT: "EUR", CY: "EUR",
-};
-export function guessCurrency(languages = globalThis.navigator?.languages ?? []) {
-  for (const tag of languages) {
-    try {
-      const region = new Intl.Locale(tag).maximize().region;
-      if (REGION_CURRENCY[region]) return REGION_CURRENCY[region];
-    } catch { /* not a locale tag */ }
-  }
-  return "USD";
-}
-
 export function currencyName(code, locale) {
   try {
     return new Intl.DisplayNames(locale || undefined, { type: "currency" }).of(code);

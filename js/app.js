@@ -1,9 +1,10 @@
 // The page: the parameter form, the plans kept in this browser, and the charts. The numbers come
 // from workers running the model (engine.js, views.js); nothing here talks to a server.
 import { RULE_NAMES, endYear, personById, real, yearOf } from "./engine.js";
-import { CURRENCIES, LOCALES, currencyName, guessCurrency, makeFormat } from "./format.js";
+import { CURRENCIES, LOCALES, currencyName, makeFormat } from "./format.js";
 import { GUIDE, HELP } from "./help.js";
 import {
+  DEFAULT_CURRENCY,
   LIMITS,
   RULE_DEFAULTS,
   bandAround,
@@ -69,7 +70,9 @@ let settings = store.loadSettings(); // the viewer's: seed, number of futures, n
 settings.seed = Number.isInteger(settings.seed) && settings.seed >= 0 ? settings.seed % 2 ** 31 : 42;
 settings.n_sims = Number.isInteger(settings.n_sims) ? Math.min(Math.max(settings.n_sims, 500), 50_000) : 10_000;
 if (typeof settings.locale !== "string") settings.locale = "";
-let fmt = makeFormat(settings.locale, "USD");
+let fmt = makeFormat(settings.locale, DEFAULT_CURRENCY);
+let exported = store.loadExported(); // when the plans were last exported to a file, 0 if never
+let keepAsked = false;
 let plans = []; // the saved plans: [{ id, name, plan, updated, example }]
 let base = null; // { id, name, values }: the saved plan the values on screen started from
 let state = null; // the plan on screen, unsaved changes included
@@ -99,7 +102,7 @@ function helpBtn(key) {
 function openDialog(title, body, wide = false) {
   $("#help-title").textContent = title;
   const b = $("#help-body");
-  b.replaceChildren(...body);
+  b.replaceChildren(...body.filter((x) => x != null && x !== false));
   b.scrollTop = 0;
   const d = $("#help-dialog");
   d.classList.toggle("wide", wide);
@@ -788,7 +791,12 @@ const MOD_S = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) 
 const edits = () => differences(base.values, state);
 
 function persistPlans() {
-  if (!store.savePlans(plans) && canStore) storageProblem();
+  const ok = store.savePlans(plans);
+  if (!ok && canStore) storageProblem();
+  if (ok && !keepAsked && plans.some((p) => !p.example)) {
+    keepAsked = true; // once per visit: Firefox asks the viewer, the others decide on their own
+    store.keepStorage();
+  }
 }
 function persistSession() {
   store.saveSession({ current: base.id, working: state });
@@ -969,7 +977,7 @@ function openSetup() {
   const now = today();
   const y = now.getFullYear();
   const people = [{ name: "Me", born: y - 35, pension: "", age: 67 }];
-  const money = { currency: state?.currency ?? guessCurrency(), portfolio: "", cash: "", contrib: "", spending: "", fire: String(y + 15), name: uniqueName("My plan") };
+  const money = { currency: state?.currency ?? DEFAULT_CURRENCY, portfolio: "", cash: "", contrib: "", spending: "", fire: String(y + 15), name: uniqueName("My plan") };
   const wrap = $("#setup-fields");
   const f = () => makeFormat(settings.locale, money.currency);
   const field = (label, input, hint) => el("label", { class: "setup-field" }, el("span", { text: label }), input, hint ? el("small", { text: hint }) : null);
@@ -994,7 +1002,7 @@ function openSetup() {
         field("Currency", cur)),
       el("h3", { text: "Who's in the household" }),
       ...rows,
-      people.length < LIMITS.people ? el("button", { type: "button", class: "btn small", onclick: () => { people.push({ name: `Person ${people.length + 1}`, born: String(y - 35), pension: "", age: 67 }); render(); } }, "Add person") : null,
+      el("button", { type: "button", class: "btn small", disabled: people.length >= LIMITS.people, title: people.length >= LIMITS.people ? `A plan holds up to ${LIMITS.people} people.` : null, onclick: () => { people.push({ name: `Person ${people.length + 1}`, born: String(y - 35), pension: "", age: 67 }); render(); } }, "Add person"),
       el("h3", { text: "Money" }),
       el("div", { class: "setup-grid" },
         field(`Invested today (${money.currency})`, text(money, "portfolio", { inputmode: "decimal", placeholder: "0" }), "funds, shares: what you could sell"),
@@ -1112,6 +1120,9 @@ function download(name, text) {
 function exportPlans() {
   const f = store.exportFile(plans);
   download(f.name, f.text);
+  exported = Date.now();
+  store.saveExported(exported);
+  renderPlanBar();
   toast(`Exported ${plans.length} plan${plans.length > 1 ? "s" : ""}.${edits().length ? " Unsaved changes aren't in the file: save them first." : ""}`);
 }
 async function importPlans(file) {
@@ -1199,6 +1210,22 @@ function renderPlanBar() {
   if (edited.length) pill.append(el("span", { class: "pill-edited", text: "edited" }));
   pill.setAttribute("aria-label", `Plan: ${base.name}${edited.length ? ", edited" : ""}`);
   $("#welcome").classList.toggle("hidden", !(saved?.example && !settings.welcomeClosed));
+  renderBackup();
+}
+
+// Saved plans live in this browser only, and browsers can clear them. Until an exported file holds
+// the latest saves, a reminder sits under the plan bar (not when storage doesn't work at all: the
+// notice about that says more).
+function renderBackup() {
+  const own = plans.filter((p) => !p.example);
+  const newer = own.filter((p) => (p.updated ?? Infinity) > exported);
+  const box = $("#backup");
+  box.hidden = !canStore || !newer.length;
+  if (box.hidden) return;
+  const day = (t) => new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium" }).format(new Date(t));
+  $("#backup-text").textContent = exported
+    ? `Saved changes since your last backup (${day(exported)}).`
+    : "Your plans are only in this browser. Keep a backup file.";
 }
 
 function wireMenu() {
@@ -1736,6 +1763,7 @@ function wire() {
   $("#plan-select").addEventListener("change", (e) => switchTo(e.target.value));
   $("#plan-save").addEventListener("click", saveCurrent);
   $("#plan-revert").addEventListener("click", revert);
+  $("#backup-export").addEventListener("click", exportPlans);
   wireMenu();
   $("#plan-pill").addEventListener("click", () => {
     if (isPhone()) $("#rail").classList.add("open");
@@ -1784,6 +1812,11 @@ function wire() {
   // Another tab saved, renamed or deleted plans: pick up the list, and the plan on screen if it has
   // no unsaved changes here.
   window.addEventListener("storage", (e) => {
+    if (e.key === store.BACKUP_KEY) {
+      exported = store.loadExported();
+      if (base) renderBackup();
+      return;
+    }
     if (e.key !== store.PLANS_KEY || !base) return;
     const hadEdits = edits().length > 0;
     plans = loadPlans();
@@ -1819,7 +1852,7 @@ function start() {
   canStore = store.storageWorks();
   plans = loadPlans();
   if (!plans.length) {
-    addPlan("Example", examplePlan({ currency: guessCurrency() }), { example: true });
+    addPlan("Example", examplePlan(), { example: true });
   }
   const session = store.loadSession();
   const current = planById(session?.current) ?? [...plans].sort((a, b) => (b.updated ?? 0) - (a.updated ?? 0))[0];

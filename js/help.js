@@ -39,7 +39,8 @@ export const HELP = {
       type is sent anywhere, there are no accounts and no tracking.</p>
       <ul>
         <li>Plans are kept in <b>this browser</b> (its local storage). Clearing the site's data,
-          or a private window, loses them: use <b>Export plans</b> to keep a copy.</li>
+          a private window, or Safari's clean-up of sites you haven't visited lately loses them: use
+          <b>Export plans</b> to keep a copy.</li>
         <li>To move plans to another device, export them there and import the file.</li>
         <li>A <b>share link</b> carries one plan inside the link itself, after the "#": browsers
           never send that part to the site. Whoever gets the link can see the numbers.</li>
@@ -63,6 +64,23 @@ export const HELP = {
       </ul>
       <p>The random seed and the number of futures aren't part of a plan: switching keeps the same
       futures, so the comparison is fair.</p>`,
+  },
+  backup: {
+    title: "Backups",
+    html: `<p>Saved plans live in this browser's storage, on this device only. Browsers can clear it:</p>
+      <ul>
+        <li>clearing the browsing data or the site's data;</li>
+        <li>a private window, when it closes;</li>
+        <li><b>Safari</b> (on a Mac, iPhone or iPad) deletes a site's data once you've used it for
+          7 days without visiting the site, unless you added the site to the Home Screen;</li>
+        <li>some browsers free space when the device runs low.</li>
+      </ul>
+      <p>When you first save, the page asks the browser to keep its storage for good (Firefox asks
+      you; Chrome and Edge decide on their own). That protects against the last case, not the
+      others.</p>
+      <p><b>Export plans</b> writes every plan to a file: the only backup that survives a cleared
+      browser or a lost device. A note under the plan reminds you when saved changes aren't in an
+      exported file yet. To restore, use <b>Import plans</b>.</p>`,
   },
   share: {
     title: "Share link",
@@ -525,7 +543,7 @@ export const HELP = {
 
 export const GUIDE = [
   ["Basics", ["concept.todays-money", "concept.monte-carlo", "concept.sequence", "concept.swr", "concept.privacy"]],
-  ["Plans", ["plans", "share", "files"]],
+  ["Plans", ["plans", "backup", "share", "files"]],
   ["Plan", ["fire_year", "spending", "end_person"]],
   ["Spending rules", ["rule.fixed", "rule.guardrails", "rule.vanguard", "rule.spenddown", "rule.floor",
     "rule.ceiling", "rule.band", "rule.adjust", "rule.up", "rule.down", "rule.assumed_return",

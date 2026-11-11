@@ -1,6 +1,10 @@
 # FIRE Simulator
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/6ca755ce-1990-4b56-9f06-9c9f27a4ae04/deploy-status)](https://app.netlify.com/projects/fire-simulator-324/deploys)
+
 **When can you stop working, and how much can you spend once you do?**
+
+**Try it: [fire-simulator-324.netlify.app](https://fire-simulator-324.netlify.app)**
 
 A Monte Carlo simulator for FIRE plans (financial independence, retire early). It plays out
 thousands of possible futures for your savings, retirement accounts and pensions, then tells you
@@ -43,7 +47,8 @@ device.
 
 ## What you can model
 
-- **Household**: one to four people with their birth years. The plan runs until one of them
+- **Household**: one to four people with their birth years, and the currency (CHF unless you pick
+  another). The plan runs until one of them
   reaches an age you choose (95 by default). Charts label the years with everyone's age.
 - **Money**: investments, cash, and what you save each year until you stop. Savings can grow
   faster than inflation, for example with raises. You can also keep a few years of spending in cash
@@ -113,11 +118,19 @@ Numbers can be typed in the format you're used to: `1,234,567`, `1.234.567`, `1'
 
 There is no account, no server-side code, no analytics and no request to anyone else. Even the
 chart library is served with the site, and a strict Content-Security-Policy (`_headers`) stops the
-page from loading anything from elsewhere.
+page from loading anything from elsewhere. (On Netlify's free plan, Netlify adds its own badge to
+the page. It's drawn from a script on the same site and makes no requests either.)
 
-- **Saved plans** live in your browser's local storage, on this device only. A private window,
-  or clearing the site's data, loses them. The page warns you when the browser isn't keeping what
-  it saves.
+- **Saved plans** live in your browser's local storage, on this device only. Browsers can clear
+  that storage:
+  - when you clear the browsing data, or close a private window;
+  - in Safari, after 7 days of use without a visit to the site, unless you added it to the Home
+    Screen;
+  - in some browsers, when the device runs low on space.
+
+  On the first save, the page asks the browser to keep its storage for good. That covers the
+  low-space case. Until an exported file holds your latest saves, a note under the plan reminds
+  you to export. The page also warns you when the browser isn't keeping what it saves at all.
 - **Export plans** downloads every plan as a JSON file. That file is your backup, and also the way
   to move plans to another device or browser.
 - **Import plans** adds a file's plans to the ones already there, and never replaces anything.
@@ -155,6 +168,9 @@ The repository *is* the site: publish its root folder. There is no build command
 - *From Git*: *Add new site → Import an existing project*, then pick the repository (private ones
   work on the free plan). `netlify.toml` already says to publish the root with no build, so leave
   the build settings empty. Every push to the main branch deploys.
+- *The badge*: on the free plan, Netlify adds a "hosted on Netlify" badge to every page. Its one
+  inline script is allowed in `_headers` by its hash. If Netlify changes that script, the badge
+  stops showing, and the browser console names the new hash to put in `_headers`.
 - *Without Git*: drag the folder onto [Netlify Drop](https://app.netlify.com/drop). Or install
   the CLI (`npm install -g netlify-cli`) and run `netlify deploy --prod --dir .`.
 
@@ -283,6 +299,7 @@ node --test tests/             # Node 20 or newer; no packages to install
 
 ### Notes for changes
 
+- **The default currency** is `DEFAULT_CURRENCY` in `js/plan.js`.
 - **Plans are versioned** (`schema` in `js/plan.js`). Anything loaded from storage, a file or a
   link goes through `normalize()`, which fills in missing fields, clamps values and repairs
   references. A new field needs a default there.
