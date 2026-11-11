@@ -1,4 +1,4 @@
-# Response headers, applied by Cloudflare Pages (and by scripts/serve.js locally; GitHub Pages
+# Response headers, applied by Cloudflare (and by scripts/serve.js locally; GitHub Pages
 # ignores this file). The page only ever loads its own files: no CDN, no analytics, no calls anywhere.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'

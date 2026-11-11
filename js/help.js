@@ -448,7 +448,8 @@ export const HELP = {
   n_sims: {
     title: "Simulated futures",
     html: `<p>How many futures to simulate. More = more precise, but slower.</p>
-      <p class="ex">10,000 → about ±0.4 points on "money lasts"; 50,000 → about ±0.2.</p>`,
+      <p class="ex">10,000 → "money lasts" is within about ±1 point, 19 times in 20; 50,000 → about
+      ±0.4.</p>`,
   },
   seed: {
     title: "Random seed",

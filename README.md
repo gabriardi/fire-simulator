@@ -245,8 +245,10 @@ future's number. The same seed always gives the same futures. Every comparison (
 spending levels, plans) is therefore made on the same markets, so a difference between two
 options comes from the options themselves, not from luck. *New seed* draws a fresh set of futures.
 
-**Precision.** At 10,000 futures, the default, the success rate is precise to about ±0.4 points.
-You can choose 1,000 to 50,000. The grid and the stress test use fewer futures, to stay fast.
+**Precision.** At 10,000 futures, the default, the success rate is within about ±1 point of the
+exact answer for these assumptions, 19 times in 20 (±0.6 near 90%). You can choose 1,000 to
+50,000. To stay fast, the grid and safe spending use at most 4,000 futures, and the stress test
+and the comparison of rules at most 20,000.
 
 ### Spending rules
 
@@ -278,6 +280,7 @@ advice.
 - **Not modelled**:
   - changes to pension rules;
   - costs that rise faster than prices, such as health care late in life;
+  - inflation that varies: it's the rate you set, in every year, and only the returns are random;
   - how long each person actually lives: the plan simply runs to the age you set;
   - currency risk, and fees beyond what you subtract from the returns.
 
@@ -318,13 +321,22 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
   numbers in `tests/fixtures/python-model.json` come from that model, run on fictional plans:
   - without volatility, both are deterministic and agree year by year to within 1e-9;
   - with volatility, the success rates agree within sampling noise.
+- `tests/views.test.js` covers what the charts show:
+  - the percentiles (numpy's method) and the safe-spending search;
+  - every failing future counted, also those that fail before the FIRE start;
+  - the grid and the stress test agreeing with direct runs on the same futures.
 - `tests/plan.test.js` covers:
   - cleaning untrusted plans;
   - comparing plans, for the "unsaved changes" marks;
   - share links (with and without a password, with the run they were shared with) and export
     files round-tripping;
   - migrating plans from an older schema;
-  - number parsing in several locales.
+  - number and list parsing in several locales.
+- `tests/site.test.js` checks what the notes below would otherwise leave to memory:
+  - every file the page and its workers load is in the service worker's list, and every file
+    in that list exists;
+  - the Plotly file name is the same everywhere;
+  - every "?" has an explanation, and the guide shows all of them.
 
 ### Notes for changes
 
@@ -336,10 +348,11 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
   higher. Otherwise `normalize()` drops the old field and uses the default, and plans in storage,
   files and links already sent silently lose that value. A plan from a newer schema than the
   page knows isn't opened or imported: the page asks for a reload, which fetches the new version.
-- **Workers**: a new module that a worker imports has to be added to `SHELL` in `sw.js`, or the
-  app won't work offline.
+- **New modules**: a module the page or a worker imports has to be added to `SHELL` in `sw.js`,
+  or the app won't work offline. `tests/site.test.js` fails until it is.
 - **Upgrading Plotly**: the file name carries the version, so it can be cached forever. Update
-  `index.html`, `sw.js` and `vendor/PLOTLY-LICENSE` together.
+  `index.html`, `sw.js`, this README and `vendor/PLOTLY-LICENSE` together (the test checks all but
+  the license).
 - **Browser support**: any current browser. The page needs module workers and CSS subgrid
   (Chrome and Edge 117+, Safari 16+, Firefox 114+). It has been tested in Chrome. Share links use `CompressionStream` where
   available, and fall back to uncompressed links elsewhere. Password-locked links need Web Crypto,

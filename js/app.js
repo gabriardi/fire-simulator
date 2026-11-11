@@ -764,7 +764,7 @@ function buildForm() {
         if (!opts.includes(settings.n_sims)) opts.push(settings.n_sims);
         return opts.sort((a, b) => a - b).map((n) => [String(n), fmt.num(n)]);
       },
-      hint: "10,000 is precise to about ±0.4 points. The grid and stress test use fewer for speed.",
+      hint: "10,000: within about ±1 point, 19 times in 20. The grid and safe spending use at most 4,000, for speed.",
       onchange: (v) => { settings.n_sims = Number(v); store.saveSettings(settings); },
     }),
     row2(
