@@ -44,6 +44,8 @@ export const HELP = {
         <li>To move plans to another device, export them there and import the file.</li>
         <li>A <b>share link</b> carries one plan inside the link itself, after the "#": browsers
           never send that part to the site. Whoever gets the link can see the numbers.</li>
+        <li>You don't have to take this on trust: the code is public, so anyone can check that
+          nothing is sent, <a href="https://github.com/gabriardi/fire-simulator" target="_blank" rel="noopener">on GitHub</a>.</li>
       </ul>`,
   },
 
