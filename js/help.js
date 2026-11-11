@@ -90,7 +90,14 @@ export const HELP = {
       device). The plan is packed into the link itself, after the "#", which browsers never send
       to the site: nothing is uploaded. The person opening it gets their own copy; changes on
       either side don't reach the other.</p>
-      <p>Anyone with the link sees every number in the plan.</p>`,
+      <p>Anyone with the link sees every number in the plan, unless you give it a <b>password</b>:
+      the plan and its name are then encrypted in your browser, and the link opens only with that
+      password. The password isn't in the link, so send it another way, not in the same message.</p>
+      <p>Whoever holds a locked link can try passwords on their own computer, as many as they
+      like, so pick a long one: a few unrelated words beat a short word with symbols. A forgotten
+      password can't be recovered: share the plan again with a new one.</p>
+      <p class="ex"><code>maple tunnel violet seven</code> → good. <code>Fire2026!</code> → guessed
+      quickly.</p>`,
   },
   files: {
     title: "Export and import",

@@ -1062,16 +1062,57 @@ function openSetup() {
 }
 
 // ---- share links, files ------------------------------------------------------------------------------
+// A password protects the link only as well as it resists guessing: whoever holds a locked link
+// can try passwords offline, as fast as their hardware allows. PBKDF2 slows each try; length does
+// the rest.
+const MIN_PASSWORD = 8;
+let shareTurn = 0; // the latest link being made: an older one finishing late is dropped
+
 async function openShare() {
   if (!canSave()) return;
-  const code = await store.packPlan(base.name, state);
-  const url = `${location.origin}${location.pathname}#plan=${code}`;
+  const name = base.name;
+  const plan = clone(state);
   const input = $("#share-url");
-  input.value = url;
+  const pw = $("#share-password");
+  const note = $("#share-lock-note");
+  const copyBtn = $("#share-copy");
   const nativeBtn = $("#share-native");
+  let url = "";
+  let locked = false;
+  let timer = 0;
+  const show = (u, placeholder = "") => {
+    url = u;
+    input.value = u;
+    input.placeholder = placeholder;
+    copyBtn.disabled = !u;
+    nativeBtn.disabled = !u;
+  };
+  const make = () => {
+    const turn = ++shareTurn;
+    const password = pw.value;
+    const short = password !== "" && [...password].length < MIN_PASSWORD;
+    clearTimeout(timer);
+    note.classList.toggle("warn", short);
+    note.textContent = !password ? "Without one, anyone with the link can open it."
+      : short ? `At least ${MIN_PASSWORD} characters. A few unrelated words are best.`
+        : "The link opens only with this password, which isn't in the link: send it separately, not in the same message.";
+    // Never a link without the lock while a password is being typed: it could be sent by mistake.
+    show("", short ? "Finish the password first" : password ? "Locking…" : "");
+    if (short) return;
+    timer = setTimeout(async () => {
+      const code = await store.packPlan(name, plan, password);
+      if (turn !== shareTurn) return;
+      locked = Boolean(password);
+      show(`${location.origin}${location.pathname}#plan=${code}`);
+    }, password ? 300 : 0);
+  };
+  $("#share-lock").hidden = !store.canLock();
+  pw.oninput = make;
+  pw.onkeydown = (e) => { if (e.key === "Enter") e.preventDefault(); };
   nativeBtn.hidden = typeof navigator.share !== "function";
-  nativeBtn.onclick = () => navigator.share({ title: `FIRE plan: ${base.name}`, url }).catch(() => {});
-  $("#share-copy").onclick = async () => {
+  // A share sheet often puts the title in the message: a locked plan's name stays out of it.
+  nativeBtn.onclick = () => navigator.share({ title: locked ? "FIRE plan" : `FIRE plan: ${name}`, url }).catch(() => {});
+  copyBtn.onclick = async () => {
     try {
       await navigator.clipboard.writeText(url);
       toast("Link copied.");
@@ -1081,24 +1122,81 @@ async function openShare() {
       toast("Link selected: copy it from the box.");
     }
   };
+  pw.value = "";
+  make();
+  clearTimeout(timer); // the first link, without a password, is made right here
+  const turn = shareTurn;
+  const code = await store.packPlan(name, plan);
+  if (turn === shareTurn) show(`${location.origin}${location.pathname}#plan=${code}`);
   $("#share-dialog").showModal();
   input.select();
+}
+
+/** Asks for the password of a locked link: { name, plan }, or null if closed without one. */
+function unlockShared(code) {
+  return new Promise((resolve, reject) => {
+    if (!store.canLock()) {
+      reject(new Error("This share link is locked with a password, which this browser can only unlock over https."));
+      return;
+    }
+    const d = $("#unlock-dialog");
+    const input = $("#unlock-input");
+    const ok = $("#unlock-ok");
+    let settled = false;
+    const done = (fn, v) => {
+      if (settled) return;
+      settled = true;
+      d.onclose = null;
+      d.close();
+      fn(v);
+    };
+    const problem = (msg) => {
+      $("#unlock-error").textContent = msg;
+      input.parentElement.classList.toggle("invalid", Boolean(msg));
+    };
+    input.value = "";
+    problem("");
+    input.oninput = () => problem("");
+    $("#unlock-cancel").onclick = () => done(resolve, null);
+    d.onclose = () => done(resolve, null); // Escape, or a click outside
+    $("#unlock-form").onsubmit = async (e) => {
+      e.preventDefault();
+      if (ok.disabled) return;
+      if (!input.value) { problem("Type the password you were given."); input.focus(); return; }
+      ok.disabled = true;
+      ok.textContent = "Unlocking…";
+      try {
+        done(resolve, await store.unpackPlan(code, input.value));
+      } catch (err) {
+        if (err.code !== "password") done(reject, err);
+        else if (!settled) { problem(err.message); input.focus(); input.select(); }
+      } finally {
+        ok.disabled = false;
+        ok.textContent = "Open it";
+      }
+    };
+    d.showModal();
+    input.focus();
+  });
 }
 
 async function openSharedLink() {
   const m = /^#plan=([\w-]+)$/.exec(location.hash);
   if (!m) return;
   history.replaceState(null, "", location.pathname + location.search);
+  const locked = store.isLocked(m[1]);
   let shared;
   try {
-    shared = await store.unpackPlan(m[1]);
+    shared = locked ? await unlockShared(m[1]) : await store.unpackPlan(m[1]);
   } catch (err) {
     toast(err.message, { error: true });
     return;
   }
+  if (!shared) return;
   const plan = normalize(shared.plan, { currency: state.currency });
   const name = (typeof shared.name === "string" && shared.name.trim().slice(0, 50)) || "Shared plan";
-  const yes = await confirmBox({
+  // Typing the password already said yes.
+  const yes = locked || await confirmBox({
     title: "Open a shared plan?",
     text: `Someone shared “${name}” with you. It opens as a new plan in this browser; your own plans stay as they are.`,
     ok: "Open it",

@@ -111,8 +111,24 @@ export function readFile(text) {
 
 // ---- share links ---------------------------------------------------------------------------------
 // "#plan=z…": the plan as deflated JSON in base64url ("j…": not compressed, where the browser
-// can't compress). After the "#", so browsers never send it to the site's server.
+// can't compress). "#plan=e…": locked with a password: [version][salt][iv][AES-GCM of "z…" or
+// "j…" as bytes], with the key from PBKDF2. The password is never in the link, and neither is the
+// plan's name. All of it after the "#", so browsers never send it to the site's server.
 
+const LOCK = { version: 1, iterations: 600_000, salt: 16, iv: 12 }; // a new version may change these
+const DAMAGED = "This share link is damaged or incomplete: ask for it again.";
+const fail = (code, message) => Object.assign(new Error(message), { code });
+const encoder = new TextEncoder();
+
+const concat = (...parts) => {
+  const out = new Uint8Array(parts.reduce((s, p) => s + p.length, 0));
+  let at = 0;
+  for (const p of parts) {
+    out.set(p, at);
+    at += p.length;
+  }
+  return out;
+};
 const toB64 = (bytes) => {
   let s = "";
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
@@ -126,20 +142,72 @@ async function through(bytes, stream) {
   return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer());
 }
 
-export async function packPlan(name, plan) {
-  const json = new TextEncoder().encode(JSON.stringify({ n: name, p: plan }));
-  if (typeof CompressionStream === "function") return `z${toB64(await through(json, new CompressionStream("deflate-raw")))}`;
-  return `j${toB64(json)}`;
+/** Whether this browser can lock and unlock links: Web Crypto exists over https and on localhost only. */
+export const canLock = () => Boolean(globalThis.crypto?.subtle);
+/** Whether a share code needs a password to open. */
+export const isLocked = (code) => code[0] === "e";
+
+// The same password typed on two devices can come out as different Unicode ("é" as one character
+// or two): NFC makes them the same bytes.
+async function lockKey(password, salt, usage) {
+  const raw = await crypto.subtle.importKey("raw", encoder.encode(password.normalize("NFC")), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", hash: "SHA-256", salt, iterations: LOCK.iterations },
+    raw, { name: "AES-GCM", length: 256 }, false, [usage]);
 }
 
-export async function unpackPlan(code) {
+/** The code after "#plan=": the plan and its name, locked when a password is given. */
+export async function packPlan(name, plan, password = "") {
+  const json = encoder.encode(JSON.stringify({ n: name, p: plan }));
+  const zip = typeof CompressionStream === "function";
+  const body = zip ? await through(json, new CompressionStream("deflate-raw")) : json;
+  const kind = zip ? "z" : "j";
+  if (!password) return kind + toB64(body);
+  const head = new Uint8Array([LOCK.version]);
+  const salt = crypto.getRandomValues(new Uint8Array(LOCK.salt));
+  const iv = crypto.getRandomValues(new Uint8Array(LOCK.iv));
+  const key = await lockKey(password, salt, "encrypt");
+  const sealed = await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: head }, key, concat(encoder.encode(kind), body));
+  return `e${toB64(concat(head, salt, iv, new Uint8Array(sealed)))}`;
+}
+
+/**
+ * { name, plan } from a share code. Errors carry a `code`: "locked" (a password is needed),
+ * "password" (not the right one), "newer" (made by a later version), "damaged".
+ */
+export async function unpackPlan(code, password = "") {
+  let kind = code[0];
+  let bytes;
   try {
-    const bytes = fromB64(code.slice(1));
-    const json = code[0] === "z" ? await through(bytes, new DecompressionStream("deflate-raw")) : bytes;
+    bytes = fromB64(code.slice(1));
+  } catch {
+    throw fail("damaged", DAMAGED);
+  }
+  if (kind === "e") {
+    if (!password) throw fail("locked", "This share link is locked with a password.");
+    if (!canLock()) throw fail("locked", "This share link is locked with a password, which this browser can only unlock over https.");
+    if (bytes[0] > LOCK.version) throw fail("newer", "This share link was made by a newer version of the simulator: reload the page, then open it again.");
+    const top = 1 + LOCK.salt + LOCK.iv;
+    if (bytes[0] !== LOCK.version || bytes.length <= top + 16) throw fail("damaged", DAMAGED);
+    let inner;
+    try {
+      const key = await lockKey(password, bytes.subarray(1, 1 + LOCK.salt), "decrypt");
+      const iv = bytes.subarray(1 + LOCK.salt, top);
+      inner = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv, additionalData: bytes.subarray(0, 1) }, key, bytes.subarray(top)));
+    } catch {
+      // AES-GCM can't tell a wrong password from a changed link; a wrong password is far likelier.
+      throw fail("password", "That password doesn't open this link.");
+    }
+    kind = String.fromCharCode(inner[0]);
+    bytes = inner.subarray(1);
+  }
+  try {
+    if (kind !== "z" && kind !== "j") throw new Error();
+    const json = kind === "z" ? await through(bytes, new DecompressionStream("deflate-raw")) : bytes;
     const d = JSON.parse(new TextDecoder().decode(json));
     if (!d || typeof d.p !== "object") throw new Error();
     return { name: typeof d.n === "string" ? d.n : "Shared plan", plan: d.p };
   } catch {
-    throw new Error("This share link is damaged or incomplete: ask for it again.");
+    throw fail("damaged", DAMAGED);
   }
 }

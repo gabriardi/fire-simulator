@@ -251,14 +251,36 @@
 <dialog class="panel" id="share-dialog" aria-labelledby="share-title">
   <div class="panel-body">
     <h2 id="share-title">Share this plan</h2>
-    <p class="panel-text">A link that opens a copy of the plan on screen, unsaved changes included. The plan is packed into the link itself, after the “#”, which browsers never send to the site: nothing is uploaded. <strong>Anyone with the link sees every number in it.</strong></p>
-    <div class="input"><input id="share-url" type="text" readonly aria-label="Share link"></div>
+    <p class="panel-text">A link that opens a copy of the plan on screen, unsaved changes included. The plan is packed into the link itself, after the “#”, which browsers never send to the site: nothing is uploaded. <strong>Anyone with the link sees every number in it</strong>, unless you lock it with a password.</p>
+    <div class="share-field" id="share-lock">
+      <label for="share-password">Password (optional)</label>
+      <div class="input"><input id="share-password" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-describedby="share-lock-note"></div>
+      <div class="hint" id="share-lock-note" aria-live="polite"></div>
+    </div>
+    <div class="share-field">
+      <label for="share-url">Link</label>
+      <div class="input"><input id="share-url" type="text" readonly></div>
+    </div>
     <div class="dialog-actions">
       <button class="btn" id="share-close" type="button">Close</button>
       <button class="btn" id="share-native" type="button" hidden>Share…</button>
       <button class="btn primary" id="share-copy" type="button">Copy link</button>
     </div>
   </div>
+</dialog>
+
+<dialog class="panel" id="unlock-dialog" aria-labelledby="unlock-title">
+  <form id="unlock-form" method="dialog" novalidate>
+    <h2 id="unlock-title">Open a shared plan?</h2>
+    <p class="panel-text">Someone shared a plan locked with a password: ask them for it. It opens as a new plan in this browser; your own plans stay as they are.</p>
+    <label for="unlock-input">Password</label>
+    <div class="input"><input id="unlock-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-describedby="unlock-error"></div>
+    <div class="field-error" id="unlock-error" role="alert"></div>
+    <div class="dialog-actions">
+      <button class="btn" id="unlock-cancel" type="button">Not now</button>
+      <button class="btn primary" id="unlock-ok" type="submit">Open it</button>
+    </div>
+  </form>
 </dialog>
 
 <dialog class="panel" id="confirm-dialog" aria-labelledby="confirm-title">

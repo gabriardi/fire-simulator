@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { endYear, simulate } from "../js/engine.js";
 import { makeFormat } from "../js/format.js";
 import { bandAround, blankPlan, differences, examplePlan, normalize, problems, roundish } from "../js/plan.js";
-import { exportFile, packPlan, readFile, unpackPlan } from "../js/store.js";
+import { exportFile, isLocked, packPlan, readFile, unpackPlan } from "../js/store.js";
 
 const today = new Date(2026, 10, 11);
 
@@ -102,6 +102,33 @@ test("share links round-trip a plan, and refuse a damaged one", async () => {
   assert.deepEqual(back.plan, plan);
   await assert.rejects(unpackPlan(`${code.slice(0, -12)}AAAA`), /damaged/);
   await assert.rejects(unpackPlan("zNotBase64!!"), /damaged/);
+});
+
+test("a locked share link opens with its password only, and hides the plan's name", async () => {
+  const plan = examplePlan({ today, currency: "CHF" });
+  const password = "correct horse battery";
+  const code = await packPlan("Secret “plan” ü", plan, password);
+  assert.match(code, /^e[\w-]+$/);
+  assert.ok(isLocked(code));
+  assert.ok(!isLocked(await packPlan("Open", plan)));
+  assert.notEqual(await packPlan("Secret “plan” ü", plan, password), code); // a fresh salt and iv each time
+  assert.doesNotMatch(Buffer.from(code.slice(1), "base64url").toString("latin1"), /Secret|pillar|balance/);
+
+  const back = await unpackPlan(code, password);
+  assert.equal(back.name, "Secret “plan” ü");
+  assert.deepEqual(back.plan, plan);
+
+  const code_of = (e) => e.code;
+  await assert.rejects(unpackPlan(code), (e) => code_of(e) === "locked");
+  await assert.rejects(unpackPlan(code, "correct horse batterY"), (e) => code_of(e) === "password");
+  await assert.rejects(unpackPlan(code.slice(0, 30), password), (e) => code_of(e) === "damaged");
+  const newer = Buffer.from(code.slice(1), "base64url");
+  newer[0] = 9;
+  await assert.rejects(unpackPlan(`e${newer.toString("base64url")}`, password), (e) => code_of(e) === "newer");
+
+  // "é" typed as one character or as e + accent is the same password.
+  const accented = await packPlan("x", plan, "café au lait");
+  assert.equal((await unpackPlan(accented, "café au lait")).name, "x");
 });
 
 test("exported files read back; a bare plan and junk are handled", () => {

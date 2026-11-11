@@ -612,7 +612,10 @@ dialog.panel form, .panel-body { display: flex; flex-direction: column; gap: 8px
 dialog.panel h2 { margin: 0 0 2px; font-size: 1.1rem; font-weight: 650; }
 dialog.panel h3 { margin: 10px 0 0; font-size: 0.82rem; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
 dialog.panel form > label { font-size: 0.85rem; font-weight: 550; }
-#name-input, #share-url { font-size: 16px; } /* 16px: iOS doesn't zoom in on it */
+#name-input, #share-url, #share-password, #unlock-input { font-size: 16px; } /* 16px: iOS doesn't zoom in on it */
+.share-field { display: flex; flex-direction: column; gap: 4px; }
+.share-field[hidden] { display: none; }
+.share-field > label { font-size: 0.85rem; font-weight: 550; }
 .panel-text { margin: 0; color: var(--muted); font-size: 0.85rem; }
 .panel-text:empty { display: none; }
 .field-error { min-height: 1.2em; color: var(--bad); font-size: 0.8rem; }

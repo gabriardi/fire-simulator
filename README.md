@@ -136,6 +136,12 @@ page from loading anything from elsewhere.
   isn't uploaded anywhere. Anyone with the link can see the plan's numbers, though, so share it
   like you'd share the numbers themselves. Opening a share link asks first, then adds the plan
   next to yours. Your own plans stay as they are.
+- **Password** (optional, in the share dialog): the link is encrypted in the browser
+  (AES-256-GCM, with the key from the password by PBKDF2-SHA256 at 600,000 rounds), and opens only
+  with that password. The plan's name is encrypted too. The password is never part of the link,
+  so send it separately. A locked link can be attacked offline by trying passwords, so a few
+  random words are better than a short password. There's no recovery: a forgotten password means
+  sharing again.
 - **Offline**: once the site has loaded over https, you can install it as an app, and it keeps
   working without a connection.
 
@@ -309,7 +315,7 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
 - `tests/plan.test.js` covers:
   - cleaning untrusted plans;
   - comparing plans, for the "unsaved changes" marks;
-  - share links and export files round-tripping;
+  - share links (with and without a password) and export files round-tripping;
   - number parsing in several locales.
 
 ### Notes for changes
@@ -324,7 +330,12 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
   `index.html`, `sw.js` and `vendor/PLOTLY-LICENSE` together.
 - **Browser support**: any current browser. The page needs module workers and CSS subgrid
   (Chrome and Edge 117+, Safari 16+, Firefox 114+). It has been tested in Chrome. Share links use `CompressionStream` where
-  available, and fall back to uncompressed links elsewhere.
+  available, and fall back to uncompressed links elsewhere. Password-locked links need Web Crypto,
+  which browsers offer only over https and on `localhost`: elsewhere the password field is hidden.
+- **Locked link format**: `#plan=e` + base64url of `[version][salt 16][iv 12][AES-GCM]`. The
+  version byte comes first. A later change of rounds or cipher needs a new version (`LOCK` in
+  `js/store.js`), and `unpackPlan` has to keep reading the old one, or links already sent stop
+  opening.
 
 ## License
 
