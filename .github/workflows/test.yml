@@ -18,7 +18,7 @@ jobs:
       matrix:
         node: [22, 24]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: site/vendor/plotly-cartesian-<version>.min.js is plotly.js-cartesian-dist-min@<version>
         run: |
           file=$(ls site/vendor/plotly-cartesian-*.min.js)
