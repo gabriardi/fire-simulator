@@ -2,9 +2,10 @@
  * Where plans live: this browser's localStorage, and nowhere else. A file export is the backup and
  * the way to move plans to another device; a share link carries one plan inside the link itself.
  */
+import { normalize, uid } from "./plan.js";
 
 const KEYS = {
-  plans: "fire-sim.plans.v1", // [{ id, name, plan, updated, example }]: the saved plans
+  plans: "fire-sim.plans.v1", // [{ id, name, plan, updated, example, shared }]: the saved plans
   session: "fire-sim.session.v1", // { current, working }: the plan on screen, unsaved changes included
   settings: "fire-sim.settings.v1", // { seed, n_sims, locale }: the viewer's, not part of any plan
   groups: "fire-sim.groups.v1", // which form sections are open
@@ -12,6 +13,12 @@ const KEYS = {
 };
 export const PLANS_KEY = KEYS.plans;
 export const BACKUP_KEY = KEYS.backup;
+
+// A run: which futures (the seed) and how many. The viewer's choice, kept in the settings; a share
+// link only tells the person opening it which run the sharer used.
+export const SEEDS = 2 ** 31; // a seed is 0 to 2^31 - 1
+export const SIMS = { min: 500, max: 50_000 };
+const DEFAULT_SETTINGS = { seed: 42, n_sims: 10_000, locale: "" };
 
 function read(key, fallback) {
   try {
@@ -41,14 +48,41 @@ export function storageWorks() {
   }
 }
 
-export const loadPlans = () => {
-  const d = read(KEYS.plans, null);
-  return Array.isArray(d?.plans) ? d.plans : null;
-};
+/**
+ * The saved plans as found in storage, each complete and well-formed. What isn't a plan is dropped.
+ * Storage is only written by this page, but by older versions of it too, and can be edited by hand.
+ */
+export function cleanSaved(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter((p) => p && typeof p === "object" && p.plan)
+    .map((p) => {
+      const shared = cleanRun(p.shared);
+      return {
+        id: typeof p.id === "string" ? p.id : uid(),
+        name: typeof p.name === "string" && p.name.trim() ? p.name.trim().slice(0, 60) : "Plan",
+        plan: normalize(p.plan), // its own currency if it's a currency code, else the default
+        updated: Number.isFinite(p.updated) ? p.updated : null,
+        example: p.example === true,
+        ...(shared ? { shared } : {}),
+      };
+    });
+}
+
+/** The viewer's settings as found in storage, with anything odd put right. */
+export function cleanSettings(raw) {
+  const s = { ...DEFAULT_SETTINGS, ...(raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {}) };
+  s.seed = Number.isInteger(s.seed) && s.seed >= 0 ? s.seed % SEEDS : DEFAULT_SETTINGS.seed;
+  s.n_sims = Number.isInteger(s.n_sims) ? Math.min(Math.max(s.n_sims, SIMS.min), SIMS.max) : DEFAULT_SETTINGS.n_sims;
+  if (typeof s.locale !== "string") s.locale = DEFAULT_SETTINGS.locale;
+  return s;
+}
+
+export const loadPlans = () => cleanSaved(read(KEYS.plans, null)?.plans);
 export const savePlans = (plans) => write(KEYS.plans, { schema: 1, plans });
 export const loadSession = () => read(KEYS.session, null);
 export const saveSession = (s) => write(KEYS.session, s);
-export const loadSettings = () => ({ seed: 42, n_sims: 10_000, locale: "", ...read(KEYS.settings, {}) });
+export const loadSettings = () => cleanSettings(read(KEYS.settings, {}));
 export const saveSettings = (s) => write(KEYS.settings, s);
 export const loadGroups = () => read(KEYS.groups, {});
 export const saveGroups = (g) => write(KEYS.groups, g);
@@ -163,7 +197,7 @@ async function lockKey(password, salt, usage) {
 export function cleanRun(r) {
   if (!r || typeof r !== "object") return null;
   const { seed, n_sims } = r;
-  const ok = Number.isInteger(seed) && seed >= 0 && seed < 2 ** 31 && Number.isInteger(n_sims) && n_sims >= 500 && n_sims <= 50_000;
+  const ok = Number.isInteger(seed) && seed >= 0 && seed < SEEDS && Number.isInteger(n_sims) && n_sims >= SIMS.min && n_sims <= SIMS.max;
   return ok ? { seed, n_sims } : null;
 }
 

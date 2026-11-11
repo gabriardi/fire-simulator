@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { endYear, simulate } from "../js/engine.js";
 import { makeFormat } from "../js/format.js";
-import { SCHEMA, bandAround, blankPlan, differences, examplePlan, fromNewer, migrate, normalize, problems, roundish } from "../js/plan.js";
-import { cleanRun, exportFile, isLocked, packPlan, readFile, unpackPlan } from "../js/store.js";
+import { DEFAULT_CURRENCY, SCHEMA, bandAround, blankPlan, differences, examplePlan, fromNewer, migrate, normalize, problems, roundish } from "../js/plan.js";
+import { cleanRun, cleanSaved, cleanSettings, exportFile, isLocked, packPlan, readFile, unpackPlan } from "../js/store.js";
 
 const today = new Date(2026, 10, 11);
 
@@ -212,4 +212,29 @@ test("typed lists of numbers: where the decimal mark is a comma, it isn't a sepa
     const shown = values.map((x) => String(x).replace(".", f.decimal)).join(", ");
     assert.deepEqual(f.parseList(shown, "pct"), values, `${f.locale}: ${shown}`);
   }
+});
+
+test("settings from storage: odd values put right, the rest kept", () => {
+  assert.deepEqual(cleanSettings(null), { seed: 42, n_sims: 10_000, locale: "" });
+  assert.deepEqual(cleanSettings([1, 2]), { seed: 42, n_sims: 10_000, locale: "" });
+  assert.deepEqual(cleanSettings({ seed: -5, n_sims: 123_456, locale: 5 }), { seed: 42, n_sims: 50_000, locale: "" });
+  assert.deepEqual(cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH" }), { seed: 7, n_sims: 500, locale: "de-CH" });
+  assert.deepEqual(cleanSettings({ seed: 1.5, n_sims: "many", welcomeClosed: true }), { seed: 42, n_sims: 10_000, locale: "", welcomeClosed: true });
+});
+
+test("saved plans from storage: junk dropped, each entry complete, a bad currency replaced", () => {
+  const saved = cleanSaved([
+    { id: "a", name: "  Stop early  ", plan: { spending: 50_000, currency: "EUR" }, updated: 3, shared: { seed: 7, n_sims: 20_000 } },
+    null, "junk", { name: "No plan here" },
+    { id: 5, name: "", plan: { spending: 30_000, currency: "xx" }, updated: NaN, example: "yes", shared: { seed: 1, n_sims: 10 } },
+  ]);
+  assert.equal(saved.length, 2);
+  const [a, b] = saved;
+  assert.deepEqual([a.id, a.name, a.updated, a.example, a.shared, a.plan.currency], ["a", "Stop early", 3, false, { seed: 7, n_sims: 20_000 }, "EUR"]);
+  assert.equal(typeof b.id, "string");
+  assert.deepEqual([b.name, b.updated, b.example, "shared" in b], ["Plan", null, false, false]);
+  // "xx" isn't a currency: kept, it would stop the page (Intl throws on it).
+  assert.equal(b.plan.currency, DEFAULT_CURRENCY);
+  assert.deepEqual(normalize(b.plan), b.plan);
+  assert.deepEqual(cleanSaved(undefined), []);
 });

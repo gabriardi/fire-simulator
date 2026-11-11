@@ -63,9 +63,6 @@ function eq(a, b) {
 
 // ---- state -----------------------------------------------------------------------------------------
 let settings = store.loadSettings(); // the viewer's: seed, number of futures, number format
-settings.seed = Number.isInteger(settings.seed) && settings.seed >= 0 ? settings.seed % 2 ** 31 : 42;
-settings.n_sims = Number.isInteger(settings.n_sims) ? Math.min(Math.max(settings.n_sims, 500), 50_000) : 10_000;
-if (typeof settings.locale !== "string") settings.locale = "";
 let fmt = makeFormat(settings.locale, DEFAULT_CURRENCY);
 let exported = store.loadExported(); // when the plans were last exported to a file, 0 if never
 let keepAsked = false;
@@ -768,7 +765,7 @@ function buildForm() {
       onchange: (v) => { settings.n_sims = Number(v); store.saveSettings(settings); },
     }),
     row2(
-      numberField({ path: "seed", label: "Random seed", kind: "int", unit: "", setting: true, min: 0, max: 2 ** 31, onchange: () => store.saveSettings(settings) }),
+      numberField({ path: "seed", label: "Random seed", kind: "int", unit: "", setting: true, min: 0, max: store.SEEDS - 1, onchange: () => store.saveSettings(settings) }),
       selectField({
         path: "locale", label: "Number format", setting: true, options: () => LOCALES,
         onchange: (v) => {
@@ -2086,7 +2083,7 @@ function wire() {
     }
     if (e.key !== store.PLANS_KEY || !base) return;
     const hadEdits = edits().length > 0;
-    plans = loadPlans();
+    plans = store.loadPlans();
     const p = planById(base.id);
     if (p && !eq(p.plan, base.values)) {
       if (hadEdits) {
@@ -2101,24 +2098,10 @@ function wire() {
   });
 }
 
-function loadPlans() {
-  const raw = store.loadPlans() ?? [];
-  return raw
-    .filter((p) => p && typeof p === "object" && p.plan)
-    .map((p) => ({
-      id: typeof p.id === "string" ? p.id : uid(),
-      name: typeof p.name === "string" && p.name.trim() ? p.name.trim().slice(0, 60) : "Plan",
-      plan: normalize(p.plan, { currency: p.plan.currency }),
-      updated: typeof p.updated === "number" ? p.updated : null,
-      example: p.example === true,
-      ...(store.cleanRun(p.shared) ? { shared: store.cleanRun(p.shared) } : {}),
-    }));
-}
-
 function start() {
   wire();
   canStore = store.storageWorks();
-  plans = loadPlans();
+  plans = store.loadPlans();
   if (!plans.length) {
     addPlan("Example", examplePlan(), { example: true });
   }
