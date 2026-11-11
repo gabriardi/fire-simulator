@@ -1,4 +1,5 @@
-// A static server for working on the site locally, with the same headers as production (_headers).
+// A static server for working on the site (site/) locally, with the same headers as production
+// (site/_headers).
 //   node scripts/serve.js            # http://127.0.0.1:8000
 //   node scripts/serve.js --lan      # also from a phone on the same network
 //   PORT=9000 node scripts/serve.js
@@ -9,7 +10,7 @@ import { networkInterfaces } from "node:os";
 import { extname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
+const ROOT = resolve(fileURLToPath(new URL("../site", import.meta.url))); // the site, as deployed
 const PORT = Number(process.env.PORT) || 8000;
 const LAN = process.argv.includes("--lan");
 const TYPES = {

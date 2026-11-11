@@ -1,0 +1,3 @@
+# Not uploaded by `wrangler deploy`: macOS folder settings, which a deploy from a Mac could pick up.
+# (Same syntax as .gitignore. Wrangler leaves out this file and _headers by itself.)
+.DS_Store

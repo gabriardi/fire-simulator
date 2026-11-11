@@ -2,8 +2,8 @@
 // agreeing with direct runs of the engine on the same futures.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { lasts, simulate, successRate } from "../js/engine.js";
-import { gridView, mainView, percentile, spendingLastingIn, stressView, sustainable } from "../js/views.js";
+import { lasts, simulate, successRate } from "../site/js/engine.js";
+import { gridView, mainView, percentile, spendingLastingIn, stressView, sustainable } from "../site/js/views.js";
 import { annuityPlan, household } from "./helpers.js";
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);

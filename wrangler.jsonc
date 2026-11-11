@@ -1,6 +1,6 @@
-// Cloudflare Workers: the site is this folder's files, served as static assets (no Worker code).
-// Every push to main deploys (`npx wrangler deploy`); .assetsignore lists what isn't uploaded,
-// _headers sets the response headers.
+// Cloudflare Workers: the site is the files in site/, served as static assets (no Worker code), and
+// nothing else in the repository is uploaded. Every push to main deploys (`npx wrangler deploy`);
+// site/_headers sets the response headers.
 //
 // No routes here: custom domains are added in the dashboard (Settings → Domains & Routes), and
 // deploys leave them there. This project's copy is at whencanistop.fyi; a copy of your own deploys
@@ -9,7 +9,7 @@
   "name": "fire-simulator",
   "compatibility_date": "2026-11-01",
   "assets": {
-    "directory": ".",
+    "directory": "./site",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "none"
   },

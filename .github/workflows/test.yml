@@ -23,3 +23,21 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --test "tests/*.test.js"
+
+  # The chart library is checked in, minified: nobody reads 1.5 MB of it. This checks that it is,
+  # byte for byte, the file published on npm for the version in its name.
+  vendored:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: site/vendor/plotly-cartesian-<version>.min.js is plotly.js-cartesian-dist-min@<version>
+        run: |
+          file=$(ls site/vendor/plotly-cartesian-*.min.js)
+          version=${file##*-}
+          version=${version%.min.js}
+          npm pack "plotly.js-cartesian-dist-min@$version" --silent
+          tar -xzf "plotly.js-cartesian-dist-min-$version.tgz" package/plotly-cartesian.min.js package/LICENSE
+          cmp package/plotly-cartesian.min.js "$file"
+          cmp package/LICENSE site/vendor/PLOTLY-LICENSE
+          echo "$file and its license are the published ones, unchanged."

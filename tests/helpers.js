@@ -1,6 +1,6 @@
 // What several test files share. Not a test file itself: `node --test "tests/*.test.js"` skips it.
-import { real } from "../js/engine.js";
-import { blankPlan } from "../js/plan.js";
+import { real } from "../site/js/engine.js";
+import { blankPlan } from "../site/js/plan.js";
 
 /**
  * A small household without randomness unless a test adds it: two people, one retirement account

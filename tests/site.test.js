@@ -4,10 +4,11 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { test } from "node:test";
-import { RULE_KINDS } from "../js/engine.js";
-import { GUIDE, HELP } from "../js/help.js";
+import { RULE_KINDS } from "../site/js/engine.js";
+import { GUIDE, HELP } from "../site/js/help.js";
 
-const ROOT = new URL("../", import.meta.url);
+const ROOT = new URL("../site/", import.meta.url); // what is deployed
+const REPO = new URL("../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), "utf8");
 const exists = (path) => existsSync(new URL(path, ROOT));
 const html = read("index.html");
@@ -64,7 +65,7 @@ test("the chart library is the same version everywhere", () => {
   assert.match(file, /-\d+\.\d+\.\d+\.min\.js$/);
   assert.ok(html.includes(`<script src="${file}">`), `index.html loads ${file}`);
   assert.ok(SHELL.includes(file), `sw.js keeps ${file}`);
-  assert.ok(read("README.md").includes(file), `README.md names ${file}`);
+  assert.ok(readFileSync(new URL("README.md", REPO), "utf8").includes(file), `README.md names ${file}`);
 });
 
 const entry = (key) => (HELP[key]?.alias ? HELP[HELP[key].alias] : HELP[key]);
@@ -114,4 +115,9 @@ test("every ? has an explanation, and the guide shows all of them", () => {
   if (new Set(inGuide).size !== inGuide.length) problems.push("the guide lists an entry twice");
   for (const key of Object.keys(HELP)) if (!HELP[key].alias && !inGuide.includes(key)) problems.push(`"${key}" isn't in the guide`);
   assert.deepEqual(problems, []);
+});
+
+test("the site serves the repository's license as it is", () => {
+  // MIT asks for the notice in every copy, and the site is one: site/LICENSE is a copy of LICENSE.
+  assert.equal(read("LICENSE"), readFileSync(new URL("LICENSE", REPO), "utf8"));
 });

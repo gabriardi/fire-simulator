@@ -118,9 +118,9 @@ Numbers can be typed in the format you're used to: `1,234,567`, `1.234.567`, `1'
 ## Your data stays with you
 
 There is no account, no server-side code, no analytics and no request to anyone else. Even the
-chart library is served with the site, and a strict Content-Security-Policy (`_headers`) stops the
+chart library is served with the site, and a strict Content-Security-Policy (`site/_headers`) stops the
 page from loading anything from elsewhere. The site's
-[privacy notice](https://whencanistop.fyi/privacy) (`privacy.html`) says the same for this
+[privacy notice](https://whencanistop.fyi/privacy) (`site/privacy.html`) says the same for this
 project's copy, with who runs it and how to reach them.
 
 - **Saved plans** live in your browser's local storage, on this device only, and for this web
@@ -177,15 +177,15 @@ issue](https://github.com/gabriardi/fire-simulator/issues).
 If you publish your own copy, you're the one running that site: tell your visitors who you are,
 how to reach you, and which host you use. A few files point at this project, and need yours:
 
-- `privacy.html`: the operator, the contact, the host and the logs. It's this project's notice,
+- `site/privacy.html`: the operator, the contact, the host and the logs. It's this project's notice,
   not a template that fits every copy.
-- `index.html`: the footer's links (the code, Buy me a coffee), and the address in its `<head>`
+- `site/index.html`: the footer's links (the code, Buy me a coffee), and the address in its `<head>`
   (the canonical link, the link-preview tags and the structured data).
-- `robots.txt`, `sitemap.xml`: the address.
+- `site/robots.txt`, `site/sitemap.xml`: the address.
 
 ## Run it locally
 
-You need any static file server. Opening `index.html` straight from disk won't work: browsers
+You need any static file server. Opening `site/index.html` straight from disk won't work: browsers
 don't load ES modules or Web Workers from `file://`.
 
 ```bash
@@ -198,19 +198,20 @@ node scripts/serve.js          # http://127.0.0.1:8000
 - `PORT=9000 node scripts/serve.js` uses another port.
 - `python3 -m http.server` works too.
 
-`scripts/serve.js` has no dependencies. It applies the same headers as production (`_headers`),
+`scripts/serve.js` has no dependencies. It applies the same headers as production (`site/_headers`),
 so you see exactly what the deployed site does, Content-Security-Policy included.
 
 ## Deploy your own copy
 
-The repository *is* the site: publish its root folder. There is no build command.
+The site is the `site/` folder, as it is: there is no build command. Nothing else in the
+repository (the README, the tests, the scripts) is part of it.
 
-**Cloudflare Workers** (free, no limit on requests for static files, and it applies `_headers`):
+**Cloudflare Workers** (free, no limit on requests for static files, and it applies
+`site/_headers`):
 1. In the Cloudflare dashboard: *Workers & Pages → Create → Import a repository*, then pick the
    repository. Private repositories work.
 2. No build command. The deploy command is the default, `npx wrangler deploy`, which reads
-   `wrangler.jsonc`: the folder's files are served as they are, minus what `.assetsignore` lists
-   (the README, tests, scripts).
+   `wrangler.jsonc`: the files in `site/` are served as they are, and nothing else is uploaded.
 3. Every push to the main branch deploys. The site gets a `<name>.<account>.workers.dev` address,
    and a custom domain can be added under the Worker's *Settings → Domains & Routes*.
    `wrangler.jsonc` lists no routes, so deploys leave those domains to the dashboard: this
@@ -218,17 +219,18 @@ The repository *is* the site: publish its root folder. There is no build command
 4. `wrangler.jsonc` turns on Workers Logs (`observability`). Remove that block to have none, or
    tell your visitors, as *What the host sees* does.
 
-Without Git, `npx wrangler deploy` from the folder does the same. Leave Cloudflare's Web
+Without Git, `npx wrangler deploy` from the repository's folder does the same. Leave Cloudflare's Web
 Analytics off: its script would break the no-third-party promise (and the Content-Security-Policy
 blocks it anyway).
 
-**GitHub Pages**: *Settings → Pages → Deploy from a branch*, then pick the main branch and `/`
-(root). Every path in the site is relative, so a project URL like `user.github.io/fire-simulator/`
-works. GitHub Pages ignores `_headers`, so the site runs without the Content-Security-Policy.
-GitHub Pages on a private repository needs a paid GitHub plan.
+**GitHub Pages**: *Settings → Pages → Source: GitHub Actions*, then pick the workflow GitHub
+suggests for static HTML, and set its `path` to `site`. Every path in the site is relative, so a
+project URL like `user.github.io/fire-simulator/` works. GitHub Pages ignores `site/_headers`, so
+the site runs without the Content-Security-Policy. GitHub Pages on a private repository needs a
+paid GitHub plan.
 
-**Anywhere else**: copy the files to any static host. To match production, serve the headers in
-`_headers`.
+**Anywhere else**: copy `site/` to any static host. To match production, serve the headers in
+`site/_headers`.
 
 After a new deploy, visitors get the new version the next time they open the page. The service
 worker always asks the network first, and uses its stored copy only when offline.
@@ -309,9 +311,12 @@ advice.
 
 ## Development
 
-The code is plain ES modules, with no framework, no bundler and no dependencies. Only `js/app.js`
-and `js/ui/` touch the page. The model, the plan format and the storage formats need no page, so
-the tests run them under Node.
+The code is plain ES modules, with no framework, no bundler and no dependencies. Everything the
+site serves is in `site/`; the rest of the repository is for working on it. Only `site/js/app.js` and
+`site/js/ui/` touch the page. The model, the plan format and the storage formats need no page, so the
+tests run them under Node.
+
+In `site/`:
 
 | File | What it does |
 | --- | --- |
@@ -331,11 +336,21 @@ the tests run them under Node.
 | `js/format.js` | Currencies, number formats, and parsing typed numbers |
 | `js/help.js` | Every "?" text and the guide |
 | `sw.js`, `manifest.webmanifest` | Offline use and installing as an app |
-| `scripts/serve.js` | The local server |
-| `wrangler.jsonc`, `.assetsignore`, `_headers` | Hosting on Cloudflare: what's served, and with which headers |
 | `vendor/` | Plotly's cartesian bundle (charts) |
 | `privacy.html` | The privacy notice of this project's copy |
-| `robots.txt`, `sitemap.xml`, `images/social.png` | For search engines and link previews (the image is made from `docs/social-card.html`) |
+| `robots.txt`, `sitemap.xml`, `images/social.png` | For search engines and link previews |
+| `_headers` | The response headers: the Content-Security-Policy, caching |
+| `LICENSE` | A copy of the repository's license, served with the code |
+
+Around it:
+
+| File | What it does |
+| --- | --- |
+| `scripts/serve.js` | The local server, with the production headers |
+| `wrangler.jsonc` | Hosting on Cloudflare: `site/` as static files, and the logs |
+| `tests/` | The tests, below |
+| `docs/` | The README's screenshots, and `social-card.html`, from which `site/images/social.png` is made |
+| `.github/` | The tests on GitHub Actions, and the sponsor button |
 
 ### Tests
 
@@ -344,7 +359,8 @@ node --test "tests/*.test.js"   # Node 22 or newer; no packages to install
 ```
 
 GitHub Actions runs them on every push to `main` and every pull request, on Node 22 and 24
-(`.github/workflows/test.yml`).
+(`.github/workflows/test.yml`). It also checks that the bundled Plotly is, byte for byte, the
+file published on npm for its version.
 
 - `tests/engine.test.js` covers the model's mechanics:
   - accounts unlocking, income lines and events;
@@ -379,28 +395,30 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
 
 ### Notes for changes
 
-- **The default currency** is `DEFAULT_CURRENCY` in `js/plan.js`.
-- **Plans are versioned** (`schema` in `js/plan.js`). Anything loaded from storage, a file or a
+- **The default currency** is `DEFAULT_CURRENCY` in `site/js/plan.js`.
+- **Plans are versioned** (`schema` in `site/js/plan.js`). Anything loaded from storage, a file or a
   link goes through `normalize()`, which fills in missing fields, clamps values and repairs
   references. A new field needs a default there.
-- **Renaming or reshaping a field** needs a step in `MIGRATIONS` (`js/plan.js`) and `SCHEMA` one
+- **Renaming or reshaping a field** needs a step in `MIGRATIONS` (`site/js/plan.js`) and `SCHEMA` one
   higher. Otherwise `normalize()` drops the old field and uses the default, and plans in storage,
   files and links already sent silently lose that value. A plan from a newer schema than the
   page knows isn't opened or imported: the page asks for a reload, which fetches the new version.
-- **New modules**: a module the page or a worker imports has to be added to `SHELL` in `sw.js`,
+- **New modules**: a module the page or a worker imports has to be added to `SHELL` in `site/sw.js`,
   or the app won't work offline. `tests/site.test.js` fails until it is.
-- **The link-preview image** (`images/social.png`) is `docs/social-card.html` at 1200 × 630: the
+- **The link-preview image** (`site/images/social.png`) is `docs/social-card.html` at 1200 × 630: the
   command to make it again is at the top of that file. Make it again after a new screenshot.
-- **Upgrading Plotly**: the file name carries the version, so it can be cached forever. Update
-  `index.html`, `sw.js`, this README and `vendor/PLOTLY-LICENSE` together (the test checks all but
-  the license).
+- **Upgrading Plotly**: take `plotly-cartesian.min.js` and `LICENSE` from the npm package
+  `plotly.js-cartesian-dist-min` at the new version (`npm pack plotly.js-cartesian-dist-min@<version>`),
+  unchanged. The file name carries the version, so it can be cached forever: update
+  `site/index.html`, `site/sw.js` and this README with it. The tests check the name; CI checks
+  the file against the package.
 - **Browser support**: any current browser. The page needs module workers and CSS subgrid
   (Chrome and Edge 117+, Safari 16+, Firefox 114+). It has been tested in Chrome. Share links use `CompressionStream` where
   available, and fall back to uncompressed links elsewhere. Password-locked links need Web Crypto,
   which browsers offer only over https and on `localhost`: elsewhere the password field is hidden.
 - **Locked link format**: `#plan=e` + base64url of `[version][salt 16][iv 12][AES-GCM]`. The
   version byte comes first. A later change of rounds or cipher needs a new version (`LOCK` in
-  `js/store.js`), and `unpackPlan` has to keep reading the old one, or links already sent stop
+  `site/js/store.js`), and `unpackPlan` has to keep reading the old one, or links already sent stop
   opening.
 
 ## Support
@@ -412,5 +430,6 @@ The simulator is free. If it helped you think through your plan, you can
 
 [MIT](LICENSE).
 
-The bundled `vendor/plotly-cartesian-4.1.1.min.js` is
-[plotly.js](https://github.com/plotly/plotly.js), also MIT licensed (`vendor/PLOTLY-LICENSE`).
+The bundled `site/vendor/plotly-cartesian-4.1.1.min.js` is
+[plotly.js](https://github.com/plotly/plotly.js), from the npm package
+`plotly.js-cartesian-dist-min` unchanged, and also MIT licensed (`site/vendor/PLOTLY-LICENSE`).

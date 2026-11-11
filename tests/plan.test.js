@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { simulate } from "../js/engine.js";
-import { makeFormat } from "../js/format.js";
-import { DEFAULT_CURRENCY, SCHEMA, bandAround, blankPlan, differences, examplePlan, fromNewer, migrate, normalize, problems, roundish } from "../js/plan.js";
-import { cleanRun, cleanSaved, cleanSettings, exportFile, isLocked, packPlan, readFile, unpackPlan } from "../js/store.js";
+import { simulate } from "../site/js/engine.js";
+import { makeFormat } from "../site/js/format.js";
+import { DEFAULT_CURRENCY, SCHEMA, bandAround, blankPlan, differences, examplePlan, fromNewer, migrate, normalize, problems, roundish } from "../site/js/plan.js";
+import { cleanRun, cleanSaved, cleanSettings, exportFile, isLocked, packPlan, readFile, unpackPlan } from "../site/js/store.js";
 
 const today = new Date(2026, 10, 11);
 

@@ -13,7 +13,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { simulate, successRate } from "../js/engine.js";
+import { simulate, successRate } from "../site/js/engine.js";
 
 const golden = JSON.parse(readFileSync(new URL("./fixtures/python-model.json", import.meta.url)));
 

@@ -13,7 +13,7 @@ import {
   stockShares,
   successRate,
   yearOf,
-} from "../js/engine.js";
+} from "../site/js/engine.js";
 import { annuityPlan, household } from "./helpers.js";
 
 const row = (res, arr, year) => res[arr][res.years.indexOf(year)];
