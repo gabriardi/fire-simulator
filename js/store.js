@@ -156,9 +156,23 @@ async function lockKey(password, salt, usage) {
     raw, { name: "AES-GCM", length: 256 }, false, [usage]);
 }
 
-/** The code after "#plan=": the plan and its name, locked when a password is given. */
-export async function packPlan(name, plan, password = "") {
-  const json = encoder.encode(JSON.stringify({ n: name, p: plan }));
+/**
+ * The seed and number of futures a plan was shared with, if well-formed: { seed, n_sims }, or null.
+ * They're the sharer's settings, not part of the plan: the person opening it is told, not switched.
+ */
+export function cleanRun(r) {
+  if (!r || typeof r !== "object") return null;
+  const { seed, n_sims } = r;
+  const ok = Number.isInteger(seed) && seed >= 0 && seed < 2 ** 31 && Number.isInteger(n_sims) && n_sims >= 500 && n_sims <= 50_000;
+  return ok ? { seed, n_sims } : null;
+}
+
+/**
+ * The code after "#plan=": the plan, its name and the run it was shared with ({ seed, n_sims }),
+ * locked when a password is given.
+ */
+export async function packPlan(name, plan, { password = "", run = null } = {}) {
+  const json = encoder.encode(JSON.stringify({ n: name, p: plan, ...(run ? { r: run } : {}) }));
   const zip = typeof CompressionStream === "function";
   const body = zip ? await through(json, new CompressionStream("deflate-raw")) : json;
   const kind = zip ? "z" : "j";
@@ -172,8 +186,9 @@ export async function packPlan(name, plan, password = "") {
 }
 
 /**
- * { name, plan } from a share code. Errors carry a `code`: "locked" (a password is needed),
- * "password" (not the right one), "newer" (made by a later version), "damaged".
+ * { name, plan, run } from a share code (`run` is null in links made before it was added). Errors
+ * carry a `code`: "locked" (a password is needed), "password" (not the right one), "newer" (made
+ * by a later version), "damaged".
  */
 export async function unpackPlan(code, password = "") {
   let kind = code[0];
@@ -206,7 +221,7 @@ export async function unpackPlan(code, password = "") {
     const json = kind === "z" ? await through(bytes, new DecompressionStream("deflate-raw")) : bytes;
     const d = JSON.parse(new TextDecoder().decode(json));
     if (!d || typeof d.p !== "object") throw new Error();
-    return { name: typeof d.n === "string" ? d.n : "Shared plan", plan: d.p };
+    return { name: typeof d.n === "string" ? d.n : "Shared plan", plan: d.p, run: cleanRun(d.r) };
   } catch {
     throw fail("damaged", DAMAGED);
   }

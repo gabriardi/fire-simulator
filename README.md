@@ -135,7 +135,11 @@ page from loading anything from elsewhere.
   and placed after the `#`. Browsers don't send that part of a link to the server, so the plan
   isn't uploaded anywhere. Anyone with the link can see the plan's numbers, though, so share it
   like you'd share the numbers themselves. Opening a share link asks first, then adds the plan
-  next to yours. Your own plans stay as they are.
+  next to yours. Your own plans stay as they are. Opening a link whose plan is already saved
+  (a bookmark, or your own link) goes to that plan instead of adding a copy.
+- The link also carries the sharer's **seed and number of futures**, as information. If the
+  person opening it uses others, a note under the plan says the numbers can differ a little and
+  offers *Use the same*. The note goes away when they do, dismiss it, or save changes to the plan.
 - **Password** (optional, in the share dialog): the link is encrypted in the browser
   (AES-256-GCM, with the key from the password by PBKDF2-SHA256 at 600,000 rounds), and opens only
   with that password. The plan's name is encrypted too. The password is never part of the link,
@@ -315,7 +319,9 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
 - `tests/plan.test.js` covers:
   - cleaning untrusted plans;
   - comparing plans, for the "unsaved changes" marks;
-  - share links (with and without a password) and export files round-tripping;
+  - share links (with and without a password, with the run they were shared with) and export
+    files round-tripping;
+  - migrating plans from an older schema;
   - number parsing in several locales.
 
 ### Notes for changes
@@ -324,6 +330,10 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
 - **Plans are versioned** (`schema` in `js/plan.js`). Anything loaded from storage, a file or a
   link goes through `normalize()`, which fills in missing fields, clamps values and repairs
   references. A new field needs a default there.
+- **Renaming or reshaping a field** needs a step in `MIGRATIONS` (`js/plan.js`) and `SCHEMA` one
+  higher. Otherwise `normalize()` drops the old field and uses the default, and plans in storage,
+  files and links already sent silently lose that value. A plan from a newer schema than the
+  page knows isn't opened or imported: the page asks for a reload, which fetches the new version.
 - **Workers**: a new module that a worker imports has to be added to `SHELL` in `sw.js`, or the
   app won't work offline.
 - **Upgrading Plotly**: the file name carries the version, so it can be cached forever. Update

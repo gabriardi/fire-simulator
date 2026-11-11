@@ -8,6 +8,31 @@
  */
 
 export const SCHEMA = 1;
+
+/**
+ * MIGRATIONS[n] turns a schema-n plan into a schema-(n + 1) one, returning a new object. A field
+ * that is renamed or reshaped gets a step here, and SCHEMA goes up by one: plans already in
+ * storage, files and share links then keep their values, instead of `normalize` dropping the old
+ * field and putting the default in place of the new one. A field that is only added needs no
+ * step, just a default in `normalize`.
+ */
+const MIGRATIONS = {
+  // 1: (r) => { const { old_name, ...rest } = r; return { ...rest, new_name: old_name }; },
+};
+
+/** A plan raised to the current schema, step by step; not cleaned yet. */
+export function migrate(raw, { to = SCHEMA, steps = MIGRATIONS } = {}) {
+  if (!raw || typeof raw !== "object") return raw;
+  let r = raw;
+  for (let v = Number.isInteger(r.schema) && r.schema >= 1 ? r.schema : 1; v < to; v++) {
+    if (steps[v]) r = steps[v](r);
+  }
+  return r;
+}
+
+/** A plan made by a later version of the simulator: this one would drop what it doesn't know. */
+export const fromNewer = (raw) => Number.isInteger(raw?.schema) && raw.schema > SCHEMA;
+
 /** New plans and the example start in this currency; anyone can pick another. */
 export const DEFAULT_CURRENCY = "CHF";
 export const LIMITS = { people: 4, accounts: 12, income: 12, events: 20, years: 120 };
@@ -135,7 +160,8 @@ const list = (v, max) => (Array.isArray(v) ? v.filter((x) => x && typeof x === "
  * judge whether the plan makes sense: that's `problems()`.
  */
 export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
-  const r = raw && typeof raw === "object" ? raw : {};
+  const up = migrate(raw);
+  const r = up && typeof up === "object" ? up : {};
   const d = blankPlan({ currency, today });
   const ids = new Set();
   const idOf = (v) => {

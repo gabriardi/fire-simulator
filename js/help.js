@@ -89,7 +89,11 @@ export const HELP = {
     html: `<p>A link that opens a copy of this plan in someone else's browser (or yours, on another
       device). The plan is packed into the link itself, after the "#", which browsers never send
       to the site: nothing is uploaded. The person opening it gets their own copy; changes on
-      either side don't reach the other.</p>
+      either side don't reach the other. Opening the same link again goes to that copy instead
+      of adding another.</p>
+      <p>The link also says which seed and how many futures you used. If theirs are different,
+      a note under their plan says so, since the numbers can then differ a little, and offers to
+      use the same.</p>
       <p>Anyone with the link sees every number in the plan, unless you give it a <b>password</b>:
       the plan and its name are then encrypted in your browser, and the link opens only with that
       password. The password isn't in the link, so send it another way, not in the same message.</p>

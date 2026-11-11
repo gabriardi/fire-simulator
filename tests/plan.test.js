@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { endYear, simulate } from "../js/engine.js";
 import { makeFormat } from "../js/format.js";
-import { bandAround, blankPlan, differences, examplePlan, normalize, problems, roundish } from "../js/plan.js";
-import { exportFile, isLocked, packPlan, readFile, unpackPlan } from "../js/store.js";
+import { SCHEMA, bandAround, blankPlan, differences, examplePlan, fromNewer, migrate, normalize, problems, roundish } from "../js/plan.js";
+import { cleanRun, exportFile, isLocked, packPlan, readFile, unpackPlan } from "../js/store.js";
 
 const today = new Date(2026, 10, 11);
 
@@ -104,14 +104,46 @@ test("share links round-trip a plan, and refuse a damaged one", async () => {
   await assert.rejects(unpackPlan("zNotBase64!!"), /damaged/);
 });
 
+test("a share link carries the run it was shared with, as information", async () => {
+  const plan = examplePlan({ today });
+  const run = { seed: 7, n_sims: 50_000 };
+  assert.deepEqual((await unpackPlan(await packPlan("A", plan, { run }))).run, run);
+  assert.deepEqual((await unpackPlan(await packPlan("A", plan, { run, password: "long enough pw" }), "long enough pw")).run, run);
+  assert.equal((await unpackPlan(await packPlan("A", plan))).run, null); // links made before
+  for (const bad of [null, "7", { seed: -1, n_sims: 10_000 }, { seed: 1.5, n_sims: 10_000 }, { seed: 1, n_sims: 100 }, { seed: 1, n_sims: 1e6 }]) {
+    assert.equal(cleanRun(bad), null);
+  }
+});
+
+test("old plans are migrated step by step before they're cleaned", () => {
+  const steps = {
+    1: (r) => { const { yearly_spend, ...rest } = r; return { ...rest, spending: yearly_spend }; },
+    2: (r) => ({ ...r, extra: (r.extra ?? 0) + 1 }),
+  };
+  const old = { schema: 1, yearly_spend: 40_000 };
+  assert.deepEqual(migrate(old, { to: 3, steps }), { schema: 1, spending: 40_000, extra: 1 });
+  assert.deepEqual(old, { schema: 1, yearly_spend: 40_000 }); // the input isn't changed
+  assert.deepEqual(migrate({ yearly_spend: 1 }, { to: 2, steps }), { spending: 1 }); // no schema: 1
+  assert.deepEqual(migrate({ schema: 2, extra: 5 }, { to: 3, steps }), { schema: 2, extra: 6 }); // from where it is
+  assert.deepEqual(migrate({ schema: 3 }, { to: 3, steps }), { schema: 3 }); // current: untouched
+  assert.equal(migrate(null), null);
+
+  // Today: nothing to migrate, and a plan from a later version is recognised.
+  const plan = examplePlan({ today });
+  assert.deepEqual(normalize(plan, { today }), plan);
+  assert.ok(!fromNewer(plan));
+  assert.ok(fromNewer({ ...plan, schema: SCHEMA + 1 }));
+  assert.ok(!fromNewer(null));
+});
+
 test("a locked share link opens with its password only, and hides the plan's name", async () => {
   const plan = examplePlan({ today, currency: "CHF" });
   const password = "correct horse battery";
-  const code = await packPlan("Secret “plan” ü", plan, password);
+  const code = await packPlan("Secret “plan” ü", plan, { password });
   assert.match(code, /^e[\w-]+$/);
   assert.ok(isLocked(code));
   assert.ok(!isLocked(await packPlan("Open", plan)));
-  assert.notEqual(await packPlan("Secret “plan” ü", plan, password), code); // a fresh salt and iv each time
+  assert.notEqual(await packPlan("Secret “plan” ü", plan, { password }), code); // a fresh salt and iv each time
   assert.doesNotMatch(Buffer.from(code.slice(1), "base64url").toString("latin1"), /Secret|pillar|balance/);
 
   const back = await unpackPlan(code, password);
@@ -127,7 +159,7 @@ test("a locked share link opens with its password only, and hides the plan's nam
   await assert.rejects(unpackPlan(`e${newer.toString("base64url")}`, password), (e) => code_of(e) === "newer");
 
   // "é" typed as one character or as e + accent is the same password.
-  const accented = await packPlan("x", plan, "café au lait");
+  const accented = await packPlan("x", plan, { password: "café au lait" });
   assert.equal((await unpackPlan(accented, "café au lait")).name, "x");
 });
 

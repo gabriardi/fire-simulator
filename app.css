@@ -529,6 +529,8 @@ h3 .help { margin-left: 4px; position: relative; top: -1px; }
   line-height: 1.35;
 }
 .backup[hidden] { display: none; }
+/* A shared plan's seed or number of futures differs from the viewer's: information, not a warning. */
+.shared-note { background: var(--accent-soft); }
 .backup-text { flex: 1; min-width: 0; }
 .scenario-state.error { color: var(--bad); }
 /* One mark for "changed, not saved": a dot on the status, the edited fields and their sections. */

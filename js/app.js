@@ -11,6 +11,7 @@ import {
   blankPlan,
   differences,
   examplePlan,
+  fromNewer,
   newAccount,
   newEvent,
   newIncome,
@@ -863,6 +864,7 @@ function saveCurrent() {
   p.plan = clone(state);
   p.updated = Date.now();
   p.example = false;
+  delete p.shared; // changed since it was shared: the sharer's numbers no longer compare
   persistPlans();
   base.values = clone(state);
   persistSession();
@@ -1072,6 +1074,7 @@ async function openShare() {
   if (!canSave()) return;
   const name = base.name;
   const plan = clone(state);
+  const run = { seed: settings.seed, n_sims: settings.n_sims }; // so they can see the same numbers
   const input = $("#share-url");
   const pw = $("#share-password");
   const note = $("#share-lock-note");
@@ -1100,7 +1103,7 @@ async function openShare() {
     show("", short ? "Finish the password first" : password ? "Locking…" : "");
     if (short) return;
     timer = setTimeout(async () => {
-      const code = await store.packPlan(name, plan, password);
+      const code = await store.packPlan(name, plan, { password, run });
       if (turn !== shareTurn) return;
       locked = Boolean(password);
       show(`${location.origin}${location.pathname}#plan=${code}`);
@@ -1126,7 +1129,7 @@ async function openShare() {
   make();
   clearTimeout(timer); // the first link, without a password, is made right here
   const turn = shareTurn;
-  const code = await store.packPlan(name, plan);
+  const code = await store.packPlan(name, plan, { run });
   if (turn === shareTurn) show(`${location.origin}${location.pathname}#plan=${code}`);
   $("#share-dialog").showModal();
   input.select();
@@ -1180,6 +1183,11 @@ function unlockShared(code) {
   });
 }
 
+// A link opened while an older copy of the page is still open (a tab left from last week, an
+// installed app offline) can't read a newer plan without losing what it doesn't know: reloading
+// fetches the new version.
+const NEWER = "This plan was made by a newer version of the simulator: reload the page to update it";
+
 async function openSharedLink() {
   const m = /^#plan=([\w-]+)$/.exec(location.hash);
   if (!m) return;
@@ -1193,8 +1201,22 @@ async function openSharedLink() {
     return;
   }
   if (!shared) return;
+  if (fromNewer(shared.plan)) {
+    history.replaceState(null, "", `${location.pathname}${location.search}#plan=${m[1]}`); // a reload opens it
+    toast(`${NEWER}, and the link opens.`, { error: true });
+    return;
+  }
   const plan = normalize(shared.plan, { currency: state.currency });
   const name = (typeof shared.name === "string" && shared.name.trim().slice(0, 50)) || "Shared plan";
+  // Opened before (a bookmarked link, or the sharer's own browser): go to that copy, no new one.
+  const twin = plans.find((x) => eq(x.plan, plan));
+  if (twin) {
+    const unsaved = edits().length > 0;
+    noteRun(twin, shared.run);
+    switchTo(twin.id);
+    if (!unsaved) toast(`Already saved here as “${twin.name}”: opened it.`);
+    return;
+  }
   // Typing the password already said yes.
   const yes = locked || await confirmBox({
     title: "Open a shared plan?",
@@ -1204,7 +1226,47 @@ async function openSharedLink() {
   });
   if (!yes) return;
   const p = addPlan(uniqueName(name), plan);
+  noteRun(p, shared.run);
   switchTo(p.id);
+}
+
+// ---- the run a plan was shared with ------------------------------------------------------------------
+// A share link says which seed and how many futures the sharer used. Different ones here give
+// slightly different numbers, so the plan keeps them and a note says so until the person opening
+// it uses the same, dismisses the note, or saves changes to the plan.
+const sameRun = (r) => r.seed === settings.seed && r.n_sims === settings.n_sims;
+function noteRun(p, run) {
+  if (!run || sameRun(run)) return;
+  p.shared = run;
+  persistPlans();
+}
+function renderShared() {
+  const box = $("#shared-note");
+  const run = planById(base.id)?.shared;
+  box.hidden = !run || sameRun(run);
+  if (box.hidden) return;
+  const seed = run.seed !== settings.seed;
+  const n = run.n_sims !== settings.n_sims;
+  const theirs = [seed && `seed ${run.seed}`, n && `${fmt.num(run.n_sims)} futures`].filter(Boolean).join(" and ");
+  const yours = [seed && `seed ${settings.seed}`, n && `${fmt.num(settings.n_sims)} futures`].filter(Boolean).join(" and ");
+  $("#shared-text").textContent = `Shared with ${theirs}. With your ${yours}, the numbers can differ a little.`;
+}
+function forgetRun() {
+  const p = planById(base.id);
+  if (!p?.shared) return;
+  delete p.shared;
+  persistPlans();
+  renderShared();
+}
+function useSharedRun() {
+  const run = planById(base.id)?.shared;
+  if (!run) return;
+  settings.seed = run.seed;
+  settings.n_sims = run.n_sims;
+  store.saveSettings(settings);
+  forgetRun();
+  changed();
+  toast(`Now on seed ${run.seed} and ${fmt.num(run.n_sims)} futures, as shared. Change them under Simulation.`);
 }
 
 function download(name, text) {
@@ -1229,6 +1291,10 @@ async function importPlans(file) {
     items = store.readFile(await file.text());
   } catch (err) {
     toast(err.message, { error: true });
+    return;
+  }
+  if (items.some((x) => fromNewer(x.plan))) {
+    toast(`${NEWER}, then import the file again.`, { error: true });
     return;
   }
   const added = items.map((x) => addPlan(uniqueName(str(x.name) || "Imported plan"), normalize(x.plan, { currency: state.currency })));
@@ -1309,6 +1375,7 @@ function renderPlanBar() {
   pill.setAttribute("aria-label", `Plan: ${base.name}${edited.length ? ", edited" : ""}`);
   $("#welcome").classList.toggle("hidden", !(saved?.example && !settings.welcomeClosed));
   renderBackup();
+  renderShared();
 }
 
 // Saved plans live in this browser only, and browsers can clear them. Until an exported file holds
@@ -1892,6 +1959,8 @@ function wire() {
   $("#plan-save").addEventListener("click", saveCurrent);
   $("#plan-revert").addEventListener("click", revert);
   $("#backup-export").addEventListener("click", exportPlans);
+  $("#shared-use").addEventListener("click", useSharedRun);
+  $("#shared-close").addEventListener("click", forgetRun);
   wireMenu();
   $("#plan-pill").addEventListener("click", () => {
     if (isPhone()) $("#rail").classList.add("open");
@@ -1975,6 +2044,7 @@ function loadPlans() {
       plan: normalize(p.plan, { currency: p.plan.currency }),
       updated: typeof p.updated === "number" ? p.updated : null,
       example: p.example === true,
+      ...(store.cleanRun(p.shared) ? { shared: store.cleanRun(p.shared) } : {}),
     }));
 }
 
