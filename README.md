@@ -9,6 +9,8 @@ thousands of possible futures for your savings, retirement accounts and pensions
 how often the money lasts. Everything runs in your browser, and nothing you type leaves your
 device.
 
+Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own copy](#run-it-locally).
+
 ![The simulator with its made-up example household: the money lasts in 78% of 10,000 futures, above a chart of wealth over time](docs/screenshot.png)
 
 - **Static and free to host.** Plain HTML, CSS and JavaScript, with no build step, no server and
@@ -119,8 +121,9 @@ There is no account, no server-side code, no analytics and no request to anyone 
 chart library is served with the site, and a strict Content-Security-Policy (`_headers`) stops the
 page from loading anything from elsewhere.
 
-- **Saved plans** live in your browser's local storage, on this device only. Browsers can clear
-  that storage:
+- **Saved plans** live in your browser's local storage, on this device only, and for this web
+  address: the same site at another address keeps a list of its own. Browsers can clear that
+  storage:
   - when you clear the browsing data, or close a private window;
   - in Safari, after 7 days of use without a visit to the site, unless you added it to the Home
     Screen;
@@ -152,10 +155,17 @@ page from loading anything from elsewhere.
 
 ### What the host sees
 
-The page is served by a web host: Cloudflare, for this project's own copy. As with any website,
-the host receives what every browser sends with each request: your IP address, which file was
-asked for, and browser details (the User-Agent). Cloudflare keeps these in its logs and traffic
-statistics, under its own [privacy policy](https://www.cloudflare.com/privacypolicy/).
+The page is served by a web host: Cloudflare, for this project's own copy at whencanistop.fyi.
+As with any website, the host receives what every browser sends with each request: your IP
+address, which file was asked for, and browser details (the User-Agent). Cloudflare keeps these
+in its logs and traffic statistics, under its own
+[privacy policy](https://www.cloudflare.com/privacypolicy/).
+
+This copy also has Cloudflare's Workers Logs turned on, to find problems. Whatever they record
+about a request is kept for 3 days (7 on Cloudflare's paid plan), and can be read only in the
+Cloudflare account that runs this copy. The site is files only, with no code running on
+Cloudflare, and Cloudflare doesn't document whether requests for plain files are logged at all.
+Either way, a log holds a request, and your plans are never in one.
 
 Nothing else reaches it. The page loads no analytics or tracking scripts and sets no cookies, and
 your plans are never part of a request (a share link keeps the plan after the `#`, which browsers
@@ -163,8 +173,9 @@ don't send). Questions about this project's copy: [open an
 issue](https://github.com/gabriardi/fire-simulator/issues).
 
 If you publish your own copy, you're the one running that site: tell your visitors who you are,
-how to reach you, and which host you use. The page's footer links to this project's code and to
-its Buy me a coffee page: change them in `index.html`.
+how to reach you, and which host you use. `index.html` points at this project in a few places:
+the footer's links (the code, Buy me a coffee) and the address in its `<head>` (the canonical
+link and the link-preview tags). Change them to yours.
 
 ## Run it locally
 
@@ -196,6 +207,10 @@ The repository *is* the site: publish its root folder. There is no build command
    (the README, tests, scripts).
 3. Every push to the main branch deploys. The site gets a `<name>.<account>.workers.dev` address,
    and a custom domain can be added under the Worker's *Settings → Domains & Routes*.
+   `wrangler.jsonc` lists no routes, so deploys leave those domains to the dashboard: this
+   project's copy has whencanistop.fyi that way. The `workers.dev` address stays on as well.
+4. `wrangler.jsonc` turns on Workers Logs (`observability`). Remove that block to have none, or
+   tell your visitors, as *What the host sees* does.
 
 Without Git, `npx wrangler deploy` from the folder does the same. Leave Cloudflare's Web
 Analytics off: its script would break the no-third-party promise (and the Content-Security-Policy
