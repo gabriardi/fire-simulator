@@ -288,12 +288,20 @@ advice.
 
 ## Development
 
-The code is plain ES modules, with no framework, no bundler and no dependencies.
+The code is plain ES modules, with no framework, no bundler and no dependencies. Only `js/app.js`
+and `js/ui/` touch the page. The model, the plan format and the storage formats need no page, so
+the tests run them under Node.
 
 | File | What it does |
 | --- | --- |
 | `index.html`, `app.css` | The page and its styles, in light and dark mode, down to phone width |
-| `js/app.js` | The page: the form, plans, dialogs and charts |
+| `js/app.js` | The page's entry point: wires buttons, menus and dialogs to `js/ui/`, then starts |
+| `js/ui/state.js` | What the page's modules share: settings, saved plans, the plan on screen, its results |
+| `js/ui/fields.js`, `js/ui/form.js` | The form's fields, and the form built from them, section by section |
+| `js/ui/plans.js` | Saving, switching, renaming, deleting, undo, and the plan bar |
+| `js/ui/setup.js`, `js/ui/share.js`, `js/ui/files.js` | Setting up a plan; share links; export and import files |
+| `js/ui/run.js`, `js/ui/charts.js` | Running the model in workers, and drawing what they return |
+| `js/ui/messages.js`, `js/ui/dom.js` | Help and the guide, toasts and errors; small page helpers |
 | `js/engine.js` | The model: random draws, accounts, income, spending rules, one future at a time |
 | `js/views.js` | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |
 | `js/worker.js` | Runs the views in Web Workers, so the page never freezes |

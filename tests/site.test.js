@@ -11,7 +11,8 @@ const ROOT = new URL("../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), "utf8");
 const exists = (path) => existsSync(new URL(path, ROOT));
 const html = read("index.html");
-const app = read("js/app.js");
+// The page's code: js/app.js and the modules in js/ui/.
+const app = ["js/app.js", ...readdirSync(new URL("js/ui/", ROOT)).filter((f) => f.endsWith(".js")).map((f) => `js/ui/${f}`)].map(read).join("\n");
 
 /** The paths in sw.js's SHELL list. */
 const SHELL = (() => {
