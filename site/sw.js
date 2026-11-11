@@ -64,9 +64,9 @@ async function networkFirst(req, url) {
   const cache = await caches.open(CACHE);
   try {
     const res = await fetch(req);
-    // The page is stored under its address without the query (?utm=… from a link), so the copy
-    // used offline is always the latest one.
-    if (res.ok) cache.put(req.mode === "navigate" ? url.origin + url.pathname : req, res.clone());
+    // Stored under its address without the query: the page (?utm=… from a link) and the workers
+    // (worker.js?3, see js/ui/run.js). So there's one copy of each, and it's the latest.
+    if (res.ok) cache.put(url.origin + url.pathname, res.clone());
     return res;
   } catch (err) {
     const hit = (await cache.match(req, { ignoreSearch: true })) || (req.mode === "navigate" ? await cache.match("./") : null);

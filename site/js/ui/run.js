@@ -10,6 +10,11 @@ import { persistSession, renderPlanBar } from "./plans.js";
 import { explore, runPlan, setSim, state } from "./state.js";
 
 const WORKER = new URL("../worker.js", import.meta.url);
+// Each worker gets an address of its own (worker.js?1, ?2…). WebKit (Safari) otherwise reuses a
+// worker script it already has in memory, and that worker then fetches its imports past the
+// service worker: offline, they fail. The service worker stores worker.js once, without the "?".
+let spawned = 0;
+const spawn = () => new Worker(`${WORKER}?${++spawned}`, { type: "module" });
 let reqId = 0;
 const main = { worker: null, busy: false, queued: null, latest: 0 };
 const heavy = { grid: { worker: null, id: 0 }, safe: { worker: null, id: 0 }, stress: { worker: null, id: 0 } };
@@ -17,7 +22,7 @@ const CARDS = { grid: "c-grid", safe: "c-safe", stress: "c-stress" };
 const MAIN_CARDS = ["c-paths", "c-spending", "c-dist"];
 
 export function spawnMain() {
-  main.worker = new Worker(WORKER, { type: "module" });
+  main.worker = spawn();
   main.worker.onmessage = (e) => {
     main.busy = false;
     const q = main.queued;
@@ -51,7 +56,7 @@ function runHeavy(name, plan) {
   const h = heavy[name];
   if (h.id && h.worker) { h.worker.terminate(); h.worker = null; } // still busy with an older plan
   if (!h.worker) {
-    h.worker = new Worker(WORKER, { type: "module" });
+    h.worker = spawn();
     h.worker.onmessage = (e) => {
       if (e.data.id !== h.id) return;
       h.id = 0;

@@ -163,8 +163,10 @@ file published on npm for its version.
   version, so it can be cached forever: update `site/index.html`, `site/sw.js` and the README with
   it. The tests check the name; CI checks the file against the package.
 - **Browser support**: any current browser. The page needs module workers and CSS subgrid
-  (Chrome and Edge 117+, Safari 16+, Firefox 114+). It has been tested in Chrome. Share links use
-  `CompressionStream` where available, and fall back to uncompressed links elsewhere.
+  (Chrome and Edge 117+, Safari 16+, Firefox 114+). It has been tested in Chrome, and with
+  Playwright in WebKit (Safari's engine) and Firefox, at desktop and phone sizes, online and
+  offline. Share links use `CompressionStream` where available, and fall back to uncompressed
+  links elsewhere.
   Password-locked links need Web Crypto, which browsers offer only over https and on
   `localhost`: elsewhere the password field is hidden.
 - **The share links' format** is in [SECURITY.md](SECURITY.md#share-links-the-format). A change
