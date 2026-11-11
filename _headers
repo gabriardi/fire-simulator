@@ -1,11 +1,7 @@
-# Response headers for Netlify and Cloudflare Pages (GitHub Pages ignores this file).
-# The page only ever loads its own files: no CDN, no analytics, no calls anywhere.
-# The one hash in script-src is the inline script of the badge Netlify's free plan adds to every
-# page (/.netlify/scripts/hud, drawn in an iframe; it makes no requests). When Netlify changes that
-# script, the badge stops showing and the console names the new hash to put here. Other hosts
-# don't add anything, so the hash does nothing there.
+# Response headers, applied by Cloudflare Pages (and by scripts/serve.js locally; GitHub Pages
+# ignores this file). The page only ever loads its own files: no CDN, no analytics, no calls anywhere.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-BkKP2XO6WOEc3kXOiLr2ZoY83hamalKjPY9xBcbXVuw='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()

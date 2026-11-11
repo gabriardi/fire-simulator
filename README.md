@@ -1,10 +1,6 @@
 # FIRE Simulator
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/6ca755ce-1990-4b56-9f06-9c9f27a4ae04/deploy-status)](https://app.netlify.com/projects/fire-simulator-324/deploys)
-
 **When can you stop working, and how much can you spend once you do?**
-
-**Try it: [fire-simulator-324.netlify.app](https://fire-simulator-324.netlify.app)**
 
 A Monte Carlo simulator for FIRE plans (financial independence, retire early). It plays out
 thousands of possible futures for your savings, retirement accounts and pensions, then tells you
@@ -118,8 +114,7 @@ Numbers can be typed in the format you're used to: `1,234,567`, `1.234.567`, `1'
 
 There is no account, no server-side code, no analytics and no request to anyone else. Even the
 chart library is served with the site, and a strict Content-Security-Policy (`_headers`) stops the
-page from loading anything from elsewhere. (On Netlify's free plan, Netlify adds its own badge to
-the page. It's drawn from a script on the same site and makes no requests either.)
+page from loading anything from elsewhere.
 
 - **Saved plans** live in your browser's local storage, on this device only. Browsers can clear
   that storage:
@@ -164,19 +159,16 @@ so you see exactly what the deployed site does, Content-Security-Policy included
 
 The repository *is* the site: publish its root folder. There is no build command.
 
-**Netlify**
-- *From Git*: *Add new site → Import an existing project*, then pick the repository (private ones
-  work on the free plan). `netlify.toml` already says to publish the root with no build, so leave
-  the build settings empty. Every push to the main branch deploys.
-- *The badge*: on the free plan, Netlify adds a "hosted on Netlify" badge to every page. Its one
-  inline script is allowed in `_headers` by its hash. If Netlify changes that script, the badge
-  stops showing, and the browser console names the new hash to put in `_headers`.
-- *Without Git*: drag the folder onto [Netlify Drop](https://app.netlify.com/drop). Or install
-  the CLI (`npm install -g netlify-cli`) and run `netlify deploy --prod --dir .`.
+**Cloudflare Pages** (free, no bandwidth limit for static files, and it applies `_headers`):
+1. In the Cloudflare dashboard: *Workers & Pages → Create → Pages → Import an existing Git
+   repository*, then pick the repository. Private repositories work.
+2. Framework preset *None*, no build command, build output directory `/`.
+3. Every push to the main branch deploys, and every other branch gets its own preview address.
 
-**Cloudflare Pages**: create a Pages project in the Cloudflare dashboard and connect the
-repository. Leave the build command empty and set the output directory to `/`. Cloudflare reads
-`_headers` too.
+Create the project from Git like this, not by uploading files with `wrangler pages deploy`: a
+project made by direct upload can't be connected to a repository later. Leave Cloudflare's Web
+Analytics off, since its script would break the no-third-party promise (and the
+Content-Security-Policy blocks it anyway).
 
 **GitHub Pages**: *Settings → Pages → Deploy from a branch*, then pick the main branch and `/`
 (root). Every path in the site is relative, so a project URL like `user.github.io/fire-simulator/`
