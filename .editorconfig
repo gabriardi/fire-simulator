@@ -1,0 +1,23 @@
+root = true
+
+# Plain text everywhere: UTF-8, LF line endings, two spaces.
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+# Markdown: two trailing spaces can be a line break.
+[*.md]
+trim_trailing_whitespace = false
+
+# Files from elsewhere stay as they came: the vendored library, the numpy model's fixture.
+[{site/vendor/**,tests/fixtures/**}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+indent_style = unset
+indent_size = unset
+trim_trailing_whitespace = unset
