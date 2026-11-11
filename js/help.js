@@ -438,7 +438,8 @@ export const HELP = {
   },
   "stress-custom": {
     title: "Custom crash",
-    html: `<p>Real returns in %, one per year from the FIRE start, separated by commas.</p>
+    html: `<p>Real returns in %, one per year from the FIRE start, separated by commas. Where the
+      decimal mark is a comma, put a space after the commas between years: <code>-12,5, -20</code>.</p>
       <p class="ex"><code>-30, 10, -15</code> → −30% in the first year, +10% in the second, −15%
       in the third.</p>`,
   },

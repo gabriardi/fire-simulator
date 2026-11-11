@@ -494,7 +494,7 @@ function stressGroup() {
   const keyOf = (arr) => arr.map((x) => Math.round(x * 1000)).join(",");
   let wantCustom = false;
   custom.addEventListener("input", () => {
-    const parts = custom.value.split(/[;\s]+|,(?=\s|-|\d)/).filter(Boolean).map((s) => fmt.parse(s, "pct"));
+    const parts = fmt.parseList(custom.value, "pct");
     const bad = parts.some((x) => Number.isNaN(x) || x < -100);
     custom.parentElement.classList.toggle("invalid", bad);
     if (bad) { invalid.add("stress"); return; }
@@ -1547,7 +1547,12 @@ function spawnMain() {
     sim = { ...e.data.result, ms: e.data.ms };
     renderSim();
   };
-  main.worker.onerror = (e) => { main.busy = false; showError(`The simulation couldn't run: ${e.message || "worker error"}`); };
+  main.worker.onerror = (e) => {
+    main.busy = false;
+    main.queued = null;
+    busy(MAIN_CARDS, false);
+    showError(`The simulation couldn't run: ${e.message || "worker error"}`);
+  };
 }
 function postMain(msg) {
   main.busy = true;

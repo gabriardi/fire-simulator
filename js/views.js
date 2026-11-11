@@ -153,8 +153,11 @@ export function mainView(plan, nPaths = 120) {
 
   const failYears = Array.from(res.fail).filter((f) => !Number.isNaN(f));
   const lastYear = years[Y - 1];
-  const failCounts = new Array(lastYear - plan.fire_year + 1).fill(0);
-  for (const f of failYears) failCounts[f - plan.fire_year]++;
+  // From the FIRE start, or from earlier if a one-off cost broke some futures before it.
+  let firstFail = plan.fire_year;
+  for (const f of failYears) if (f < firstFail) firstFail = f;
+  const failCounts = new Array(lastYear - firstFail + 1).fill(0);
+  for (const f of failYears) failCounts[f - firstFail]++;
   const ends = sorted(Array.from({ length: n }, (_, i) => end(i)));
   const atFire = sorted(res.atFire);
   const firstSpending = Array.from({ length: n }, (_, i) => res.spending[i * Y + i0]);
@@ -170,7 +173,7 @@ export function mainView(plan, nPaths = 120) {
     percentiles,
     paths,
     start_hist: histogram(res.atFire, 40),
-    fail_hist: { years: failCounts.map((_, k) => plan.fire_year + k), counts: failCounts },
+    fail_hist: { years: failCounts.map((_, k) => firstFail + k), counts: failCounts },
     summary: {
       success: successRate(res),
       start_median: percentile(atFire, 50),

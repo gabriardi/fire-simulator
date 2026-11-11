@@ -48,6 +48,29 @@ export function makeFormat(locale, currency) {
   const dash = "–";
   const ok = (v) => v != null && Number.isFinite(v);
 
+  /** A typed number, or NaN. `kind` "pct" also accepts either decimal mark; money takes k/M. */
+  function parse(s, kind = "num") {
+    let t = String(s).trim().replace(/[\s\u00a0\u202f'’]/g, "").replace(/[−–]/g, "-");
+    if (!t || t === "-") return NaN;
+    let mult = 1;
+    const m = /^(.*?)([kKmM])$/.exec(t);
+    if (m && kind === "money") {
+      t = m[1];
+      mult = /[kK]/.test(m[2]) ? 1e3 : 1e6;
+    }
+    if (kind === "pct") t = t.replace(",", ".");
+    else {
+      if (group === "." || group === ",") t = t.split(group).join("");
+      if (decimal !== ".") t = t.replace(decimal, ".");
+    }
+    if (!/^-?(\d+\.?\d*|\.\d+)$/.test(t)) return NaN;
+    return Number(t) * mult;
+  }
+
+  // Commas, semicolons or spaces separate a list. Where the decimal mark is a comma, a comma right
+  // before a digit is that mark: "-12,5, -20" is two numbers.
+  const listSep = decimal === "," ? /[;\s]+|,(?=[\s\-−–])/ : /[;\s]+|,(?=[\s\-−–\d])/;
+
   return {
     locale: loc,
     currency,
@@ -61,23 +84,8 @@ export function makeFormat(locale, currency) {
     /** 1.23M-style, three digits, for tiles and chart labels. */
     short: (v) => (!ok(v) ? dash : Math.abs(v) < 1e6 && !thousands ? money.format(Math.round(v)) : compact.format(v)),
     pct: (v, d = 0) => (ok(v) ? `${(v * 100).toFixed(d).replace(".", decimal)}%` : dash),
-    /** A typed number, or NaN. `kind` "pct" also accepts either decimal mark; money takes k/M. */
-    parse(s, kind = "num") {
-      let t = String(s).trim().replace(/[\s  '’]/g, "").replace(/[−–]/g, "-");
-      if (!t || t === "-") return NaN;
-      let mult = 1;
-      const m = /^(.*?)([kKmM])$/.exec(t);
-      if (m && kind === "money") {
-        t = m[1];
-        mult = /[kK]/.test(m[2]) ? 1e3 : 1e6;
-      }
-      if (kind === "pct") t = t.replace(",", ".");
-      else {
-        if (group === "." || group === ",") t = t.split(group).join("");
-        if (decimal !== ".") t = t.replace(decimal, ".");
-      }
-      if (!/^-?(\d+\.?\d*|\.\d+)$/.test(t)) return NaN;
-      return Number(t) * mult;
-    },
+    parse,
+    /** A typed list of numbers ("-15, -20, -25"), each read by `parse`: NaN where one isn't. */
+    parseList: (s, kind = "num") => String(s).split(listSep).filter(Boolean).map((x) => parse(x, kind)),
   };
 }

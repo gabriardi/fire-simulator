@@ -196,3 +196,20 @@ test("typed numbers in several number formats", () => {
   assert.equal(fr.parse("1 234 567", "money"), 1_234_567);
   assert.equal(fr.parse("1 234,5", "money"), 1234.5);
 });
+
+test("typed lists of numbers: where the decimal mark is a comma, it isn't a separator", () => {
+  const de = makeFormat("de-DE", "EUR");
+  assert.deepEqual(de.parseList("-12,5, -20", "pct"), [-12.5, -20]);
+  assert.deepEqual(de.parseList("-12,5,-20; 3", "pct"), [-12.5, -20, 3]);
+  const en = makeFormat("en-US", "USD");
+  assert.deepEqual(en.parseList("-15,-20, -25", "pct"), [-15, -20, -25]);
+  assert.deepEqual(en.parseList("−15,−20 -12.5", "pct"), [-15, -20, -12.5]); // typographic minus
+  assert.ok(Number.isNaN(en.parseList("-15, abc", "pct")[1]));
+  assert.deepEqual(en.parseList("  ", "pct"), []);
+  // The custom crash field shows the list like this, and has to read it back the same.
+  for (const f of [de, en, makeFormat("fr-CH", "CHF"), makeFormat("de-CH", "CHF")]) {
+    const values = [-12.5, -20, 0, 3.5];
+    const shown = values.map((x) => String(x).replace(".", f.decimal)).join(", ");
+    assert.deepEqual(f.parseList(shown, "pct"), values, `${f.locale}: ${shown}`);
+  }
+});
