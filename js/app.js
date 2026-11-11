@@ -60,11 +60,6 @@ function eq(a, b) {
   if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((x, i) => eq(x, b[i]));
   return same(a, b);
 }
-const niceCeil = (x) => {
-  if (!(x > 0)) return 1;
-  const s = 10 ** Math.floor(Math.log10(x));
-  return Math.ceil(x / s) * s;
-};
 
 // ---- state -----------------------------------------------------------------------------------------
 let settings = store.loadSettings(); // the viewer's: seed, number of futures, number format
@@ -176,12 +171,13 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
   const bad = (v) => Number.isNaN(v) || (min != null && v < min) || (max != null && v > max);
   let range = null;
   const scale = kind === "pct" ? 100 : 1;
-  // A slider scaled on a value (the spending's: 0 to 2.5 times it) is scaled on `anchor`, not on its
-  // own current value: rescaling as it moves would shift the scale under the finger, and after
-  // every release the thumb would jump away from where it was let go. The anchor moves only when
-  // the slider is let go at its top end (more room above), when a value is typed, or when the
-  // value, set from elsewhere, is off the scale. And never while a finger or the mouse holds the
-  // slider: focus can't tell, as touch screens and Safari don't focus a slider being dragged.
+  // A slider scaled on a value (the spending's: 2.5 times less to 2.5 times more) is scaled on
+  // `anchor`, not on its own current value: rescaling as it moves would shift the scale under the
+  // finger, and after every release the thumb would jump away from where it was let go. The anchor
+  // moves only when the slider is let go at either end (more room that way), when a value is
+  // typed, or when the value, set from elsewhere, is off the scale. And never while a finger or
+  // the mouse holds the slider: focus can't tell, as touch screens and Safari don't focus a slider
+  // being dragged.
   let holding = false;
   let anchor = getPath(target(), path);
   const setRange = () => {
@@ -194,7 +190,7 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
   const settle = () => {
     if (!range || holding) return;
     const v = getPath(target(), path);
-    if (v * scale >= Number(range.max)) anchor = v;
+    if (v * scale >= Number(range.max) || v * scale <= Number(range.min)) anchor = v;
     setRange();
     range.value = v * scale;
   };
@@ -562,10 +558,15 @@ const mixHint = (w) => {
 };
 
 const ages = (year) => state.people.map((x) => `${x.name} ${year - x.birth_year}`).join(" · ");
-/** An amount's slider: from 0 to 2.5 times the amount it's anchored on, in round steps. */
+/**
+ * An amount's slider: from 2.5 times less to 2.5 times more than the amount it's anchored on, in
+ * round steps. Never 0, which isn't a spending, and the same both ways: let go at either end, it
+ * centres on that end, for more room above or below.
+ */
 const moneySlider = (anchor) => {
-  const max = niceCeil(Math.max(anchor * 2.5, 1000));
-  return { min: 0, max, step: niceStep(max / 400) };
+  const a = anchor > 0 ? anchor : 1000;
+  const step = niceStep((a * 2.5 - a / 2.5) / 250);
+  return { min: Math.max(step, Math.floor(a / 2.5 / step) * step), max: Math.ceil((a * 2.5) / step) * step, step };
 };
 
 // Guardrails and Vanguard need the spending between the rule's floor and ceiling. A band nobody set
