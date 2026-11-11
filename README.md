@@ -292,7 +292,7 @@ The code is plain ES modules, with no framework, no bundler and no dependencies.
 ### Tests
 
 ```bash
-node --test tests/             # Node 22 or newer; no packages to install
+node --test "tests/*.test.js"   # Node 22 or newer; no packages to install
 ```
 
 GitHub Actions runs them on every push to `main` and every pull request, on Node 22 and 24

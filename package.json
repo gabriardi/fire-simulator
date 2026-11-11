@@ -6,7 +6,7 @@
   "description": "A static, local-first Monte Carlo FIRE simulator.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test \"tests/*.test.js\"",
     "serve": "node scripts/serve.js"
   },
   "engines": {
