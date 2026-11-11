@@ -284,9 +284,18 @@ input[type="range"] { width: 100%; accent-color: var(--accent); margin: 2px 0; }
 .how h4 { color: var(--ink); margin: 14px 0 4px; font-size: 0.92rem; }
 .how p, .how ul { margin: 0 0 8px; max-width: 75ch; }
 .how summary { cursor: pointer; color: var(--ink); font-weight: 650; }
-/* The page's last line: where the code lives, and where to report a problem. */
+/* The page's last lines: support, where the code lives, and where to report a problem. */
 .site-foot { color: var(--muted); font-size: 0.82rem; text-align: center; line-height: 1.6; }
+.site-foot p { margin: 0 0 6px; }
 .site-foot a { color: var(--accent); }
+/* Buy me a coffee (the footer, the guide): a little more visible than a link, in the yellow it's
+   known by, the same in both themes. */
+:is(.site-foot, .help-entry) a.coffee {
+  display: inline-block; margin-left: 2px; padding: 2px 11px; border-radius: 999px;
+  background: #ffdd00; color: #17212b; font-weight: 650; text-decoration: none; white-space: nowrap;
+}
+:is(.site-foot, .help-entry) a.coffee:hover { background: #ffe433; }
+:is(.site-foot, .help-entry) a.coffee:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .noscript { margin: 0 0 16px; padding: 12px 14px; border-radius: var(--radius); background: var(--warn-soft); }
 
 /* ---- a page of plain text: the privacy notice ---- */

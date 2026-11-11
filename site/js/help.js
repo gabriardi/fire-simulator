@@ -50,6 +50,19 @@ export const HELP = {
       <p>The <a href="privacy" target="_blank" rel="noopener">privacy notice</a> says who runs this
       site, what its host receives, and how to reach them.</p>`,
   },
+  "concept.about": {
+    title: "Free and open source",
+    html: `<p>No ads, no accounts, no tracking. The code is public,
+      <a href="https://github.com/gabriardi/fire-simulator" target="_blank" rel="noopener">on GitHub</a>,
+      under the MIT license.</p>
+      <ul>
+        <li>Something broken, or a number that looks wrong?
+          <a href="https://github.com/gabriardi/fire-simulator/issues/new/choose" target="_blank" rel="noopener">Open an issue</a>,
+          with made-up numbers: issues are public.</li>
+        <li>If it's useful to you, you can support it:
+          <a class="coffee" href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener"><span aria-hidden="true">☕</span> Buy me a coffee</a></li>
+      </ul>`,
+  },
 
   // ---- plans ---------------------------------------------------------------------------------------
   plans: {
@@ -579,4 +592,5 @@ export const GUIDE = [
   ["Results", ["result.success", "result.start", "result.first", "result.rate", "result.fail",
     "result.end", "result.flex", "result.compare"]],
   ["Charts", ["chart.paths", "chart.spending", "chart.grid", "chart.safe", "chart.stress", "chart.dist"]],
+  ["About", ["concept.about"]],
 ];

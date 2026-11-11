@@ -264,6 +264,7 @@ how to reach you, and which host you use. A few files point at this project, and
   not a template that fits every copy.
 - `site/index.html`: the footer's links (the code, Buy me a coffee), and the address in its `<head>`
   (the canonical link, the link-preview tags and the structured data).
+- `site/js/help.js`: the guide's last card, "Free and open source", with the same links.
 - `site/robots.txt`, `site/sitemap.xml`: the address.
 
 ## Contributing
