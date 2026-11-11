@@ -14,7 +14,7 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
 ![The simulator with its made-up example household: the money lasts in 78% of 10,000 futures, above a chart of wealth over time](docs/screenshot.png)
 
 - **Static and free to host.** Plain HTML, CSS and JavaScript, with no build step, no server and
-  no dependencies. Put the folder on any static host.
+  no dependencies. Put `site/` on any static host.
 - **Local first.** Plans are saved in your browser. You can export them to a file, or send one to
   someone as a link.
 - **Made for any household.** One to four people, any currency, any pension system.
@@ -25,11 +25,10 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
 - [What you can model](#what-you-can-model)
 - [Using it](#using-it)
 - [Your data stays with you](#your-data-stays-with-you)
+- [How it works](#how-it-works)
 - [Run it locally](#run-it-locally)
 - [Deploy your own copy](#deploy-your-own-copy)
-- [How the simulation works](#how-the-simulation-works)
-- [Assumptions and limits](#assumptions-and-limits)
-- [Development](#development)
+- [Contributing](#contributing)
 - [Support](#support)
 - [License](#license)
 
@@ -74,7 +73,8 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
   - **Vanguard dynamic spending**;
   - **spend-down**, or "die with zero".
 
-  The flexible rules have a floor and a ceiling, and are explained [below](#spending-rules).
+  The flexible rules have a floor and a ceiling, and are explained in
+  [How the simulation works](docs/methodology.md#spending-rules).
 - **Markets**:
   - a stock/bond mix, with an optional **bond tent** that holds more bonds around the FIRE start;
   - stock and bond returns, volatilities and their correlation;
@@ -118,8 +118,8 @@ Numbers can be typed in the format you're used to: `1,234,567`, `1.234.567`, `1'
 ## Your data stays with you
 
 There is no account, no server-side code, no analytics and no request to anyone else. Even the
-chart library is served with the site, and a strict Content-Security-Policy (`site/_headers`) stops the
-page from loading anything from elsewhere. The site's
+chart library is served with the site, and a strict Content-Security-Policy (`site/_headers`)
+stops the page from loading anything from elsewhere. The site's
 [privacy notice](https://whencanistop.fyi/privacy) (`site/privacy.html`) says the same for this
 project's copy, with who runs it and how to reach them.
 
@@ -151,7 +151,8 @@ project's copy, with who runs it and how to reach them.
   with that password. The plan's name is encrypted too. The password is never part of the link,
   so send it separately. A locked link can be attacked offline by trying passwords, so a few
   random words are better than a short password. There's no recovery: a forgotten password means
-  sharing again.
+  sharing again. [SECURITY.md](SECURITY.md) has the link's format, and what a password does and
+  doesn't protect.
 - **Offline**: once the site has loaded over https, you can install it as an app, and it keeps
   working without a connection.
 
@@ -174,14 +175,24 @@ your plans are never part of a request (a share link keeps the plan after the `#
 don't send). Questions about this project's copy: [open an
 issue](https://github.com/gabriardi/fire-simulator/issues).
 
-If you publish your own copy, you're the one running that site: tell your visitors who you are,
-how to reach you, and which host you use. A few files point at this project, and need yours:
+## How it works
 
-- `site/privacy.html`: the operator, the contact, the host and the logs. It's this project's notice,
-  not a template that fits every copy.
-- `site/index.html`: the footer's links (the code, Buy me a coffee), and the address in its `<head>`
-  (the canonical link, the link-preview tags and the structured data).
-- `site/robots.txt`, `site/sitemap.xml`: the address.
+Everything is in today's money. Each simulated future goes year by year: retirement accounts
+unlock at their owner's age, the spending rule sets each year's spending from the FIRE start,
+income and one-off events come in or go out, and the markets move, with a random return for
+stocks and one for bonds. A future fails in the first year the money you can reach can't pay the
+bills, and the headline number is the share of futures that never fail.
+
+Every comparison runs on the same futures, so a difference between two options comes from the
+options, not from luck. At 10,000 futures, the success rate is within about ±1 point of the exact
+answer for these assumptions, 19 times in 20.
+
+It is a tool for thinking about a plan, not a forecast, and not financial advice. The return you
+assume moves the answer more than anything else, the years are drawn independently of each
+other, and taxes are simplified.
+
+**[How the simulation works](docs/methodology.md)** has the details: each step of a year, the
+spending rules, precision, every assumption and limit, and how the model is checked.
 
 ## Run it locally
 
@@ -196,7 +207,7 @@ node scripts/serve.js          # http://127.0.0.1:8000
 
 - `node scripts/serve.js --lan` also makes it reachable from a phone on the same network.
 - `PORT=9000 node scripts/serve.js` uses another port.
-- `python3 -m http.server` works too.
+- `python3 -m http.server -d site` works too.
 
 `scripts/serve.js` has no dependencies. It applies the same headers as production (`site/_headers`),
 so you see exactly what the deployed site does, Content-Security-Policy included.
@@ -219,9 +230,9 @@ repository (the README, the tests, the scripts) is part of it.
 4. `wrangler.jsonc` turns on Workers Logs (`observability`). Remove that block to have none, or
    tell your visitors, as *What the host sees* does.
 
-Without Git, `npx wrangler deploy` from the repository's folder does the same. Leave Cloudflare's Web
-Analytics off: its script would break the no-third-party promise (and the Content-Security-Policy
-blocks it anyway).
+Without Git, `npx wrangler deploy` from the repository's folder does the same. Leave
+Cloudflare's Web Analytics off: its script would break the no-third-party promise (and the
+Content-Security-Policy blocks it anyway).
 
 **GitHub Pages**: *Settings → Pages → Source: GitHub Actions*, then pick the workflow GitHub
 suggests for static HTML, and set its `path` to `site`. Every path in the site is relative, so a
@@ -235,191 +246,25 @@ paid GitHub plan.
 After a new deploy, visitors get the new version the next time they open the page. The service
 worker always asks the network first, and uses its stored copy only when offline.
 
-## How the simulation works
+### Make it yours
 
-Everything is in **today's money**. Returns are drawn net of inflation, so a spending of 40,000 a
-year means today's purchasing power in every year. The nominal inputs (returns, interest) are
-turned into real ones with the inflation you set.
+If you publish your own copy, you're the one running that site: tell your visitors who you are,
+how to reach you, and which host you use. A few files point at this project, and need yours:
 
-One step is one calendar year. The first year counts only from the month your balances are
-from. In every simulated future, each year goes like this:
+- `site/privacy.html`: the operator, the contact, the host and the logs. It's this project's notice,
+  not a template that fits every copy.
+- `site/index.html`: the footer's links (the code, Buy me a coffee), and the address in its `<head>`
+  (the canonical link, the link-preview tags and the structured data).
+- `site/robots.txt`, `site/sitemap.xml`: the address.
 
-1. **Retirement accounts unlock.** When its owner reaches the unlock age, an account is paid out,
-   its tax is deducted, and the rest joins the portfolio.
-2. **Money goes out, or comes in.**
-   - One-off events happen in their year.
-   - From the FIRE year, the spending rule sets the year's spending.
-   - Income lines that are active that year reduce what the portfolio has to pay.
-   - The money comes from cash first, then from the portfolio, grossed up for the withdrawal tax.
-     If you keep a cash buffer, it moves into cash at the FIRE start.
-3. **A future fails** in the first year the money you can reach can't pay the bills, even if a
-   retirement account would unlock later.
-4. **Markets move.**
-   - The portfolio, and any retirement account invested like it, is a stock/bond mix rebalanced
-     every year.
-   - Stocks and bonds each get one random real return. By default it's log-normal, with the
-     median and volatility you set. With fat tails it follows a Student-t distribution instead,
-     capped at −60% and +60%.
-   - Cash and fixed-interest accounts grow at their rate minus inflation.
-5. **Savings arrive.** Until the FIRE year, the year's savings are added at the end of the year.
+## Contributing
 
-The headline number is the share of futures that never fail before the plan's end.
+The code is plain ES modules, with no build step and no dependencies, and the tests need only
+Node: `node --test "tests/*.test.js"`.
 
-**Reproducible.** Every future draws from its own random stream, seeded from the seed and the
-future's number. The same seed always gives the same futures. Every comparison (rules, FIRE years,
-spending levels, plans) is therefore made on the same markets, so a difference between two
-options comes from the options themselves, not from luck. *New seed* draws a fresh set of futures.
-
-**Precision.** At 10,000 futures, the default, the success rate is within about ±1 point of the
-exact answer for these assumptions, 19 times in 20 (±0.6 near 90%). You can choose 1,000 to
-50,000. To stay fast, the grid and safe spending use at most 4,000 futures, and the stress test
-and the comparison of rules at most 20,000.
-
-### Spending rules
-
-| Rule | What it does | When it fails |
-| --- | --- | --- |
-| **Fixed** | Spends the same real amount every year, whatever the markets do. This is the classic "4% rule" setup. | When the money can't pay that amount |
-| **Guardrails** (Guyton & Klinger) | Cuts spending (by 10% by default) when the withdrawal rate rises too far above where it started, and raises it when the rate falls too far below. | When even the floor can't be paid |
-| **Vanguard dynamic** | Aims at the starting withdrawal rate applied to the current wealth, but changes spending by at most +5% or −2.5% a year (by default). | When even the floor can't be paid |
-| **Spend-down** (die with zero) | Each year, aims at the amount that could be spent every year until the end, counting locked accounts and future income as money today. It moves towards that amount gradually. | When even the floor can't be paid |
-
-The flexible rules stay between a **floor** (the costs you can't cut) and a **ceiling**. They
-start at your spending, so that has to sit between the two. Until you set them yourself, they
-are a band around the spending (−20%, +25%, rounded) that moves with it. Once you set them, they
-stay, and the spending slider keeps within them; a spending typed outside them gets an error that
-offers to set a band around it.
-
-## Assumptions and limits
-
-The simulator is a tool for thinking about a plan. It is not a forecast, and not financial
-advice.
-
-- **Independent years.** Each year's return is drawn independently. Real markets have long bad
-  stretches and recoveries. The stress test covers the worst case that matters most, a bad start.
-- **The return assumption dominates.** Compare a cautious case with an optimistic one before
-  trusting any single number.
-- **Taxes are simplified.** There is a flat rate on each retirement account when it unlocks, and
-  an optional effective rate on portfolio withdrawals. Put every other tax, plus health insurance,
-  into the spending.
-- **Not modelled**:
-  - changes to pension rules;
-  - costs that rise faster than prices, such as health care late in life;
-  - inflation that varies: it's the rate you set, in every year, and only the returns are random;
-  - how long each person actually lives: the plan simply runs to the age you set;
-  - currency risk, and fees beyond what you subtract from the returns.
-
-## Development
-
-The code is plain ES modules, with no framework, no bundler and no dependencies. Everything the
-site serves is in `site/`; the rest of the repository is for working on it. Only `site/js/app.js` and
-`site/js/ui/` touch the page. The model, the plan format and the storage formats need no page, so the
-tests run them under Node.
-
-In `site/`:
-
-| File | What it does |
-| --- | --- |
-| `index.html`, `app.css` | The page and its styles, in light and dark mode, down to phone width |
-| `js/app.js` | The page's entry point: wires buttons, menus and dialogs to `js/ui/`, then starts |
-| `js/ui/state.js` | What the page's modules share: settings, saved plans, the plan on screen, its results |
-| `js/ui/fields.js`, `js/ui/form.js` | The form's fields, and the form built from them, section by section |
-| `js/ui/plans.js` | Saving, switching, renaming, deleting, undo, and the plan bar |
-| `js/ui/setup.js`, `js/ui/share.js`, `js/ui/files.js` | Setting up a plan; share links; export and import files |
-| `js/ui/run.js`, `js/ui/charts.js` | Running the model in workers, and drawing what they return |
-| `js/ui/messages.js`, `js/ui/dom.js` | Help and the guide, toasts and errors; small page helpers |
-| `js/engine.js` | The model: random draws, accounts, income, spending rules, one future at a time |
-| `js/views.js` | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |
-| `js/worker.js` | Runs the views in Web Workers, so the page never freezes |
-| `js/plan.js` | The plan format: defaults, the example, cleaning a plan that comes from storage, a file or a link |
-| `js/store.js` | Local storage, export and import files, share links |
-| `js/format.js` | Currencies, number formats, and parsing typed numbers |
-| `js/help.js` | Every "?" text and the guide |
-| `sw.js`, `manifest.webmanifest` | Offline use and installing as an app |
-| `vendor/` | Plotly's cartesian bundle (charts) |
-| `privacy.html` | The privacy notice of this project's copy |
-| `robots.txt`, `sitemap.xml`, `images/social.png` | For search engines and link previews |
-| `_headers` | The response headers: the Content-Security-Policy, caching |
-| `LICENSE` | A copy of the repository's license, served with the code |
-
-Around it:
-
-| File | What it does |
-| --- | --- |
-| `scripts/serve.js` | The local server, with the production headers |
-| `wrangler.jsonc` | Hosting on Cloudflare: `site/` as static files, and the logs |
-| `tests/` | The tests, below |
-| `docs/` | The README's screenshots, and `social-card.html`, from which `site/images/social.png` is made |
-| `.github/` | The tests on GitHub Actions, and the sponsor button |
-
-### Tests
-
-```bash
-node --test "tests/*.test.js"   # Node 22 or newer; no packages to install
-```
-
-GitHub Actions runs them on every push to `main` and every pull request, on Node 22 and 24
-(`.github/workflows/test.yml`). It also checks that the bundled Plotly is, byte for byte, the
-file published on npm for its version.
-
-- `tests/engine.test.js` covers the model's mechanics:
-  - accounts unlocking, income lines and events;
-  - taxes and the spending rules' limits;
-  - the statistics of the random draws;
-  - results that can be worked out by hand: the most a portfolio can pay as an annuity, and the
-    odds of a bad first year, from the normal distribution.
-- `tests/parity.test.js` checks the engine against the Python/numpy model it was ported from. The
-  numbers in `tests/fixtures/python-model.json` come from that model, run on fictional plans:
-  - without volatility, both are deterministic and agree year by year to within 1e-9;
-  - with volatility, the success rates agree within sampling noise.
-
-  That model isn't published, so the fixture is frozen. Agreeing shows that the port is faithful,
-  not that the model is right: the hand-worked results in `tests/engine.test.js` are for that.
-- `tests/views.test.js` covers what the charts show:
-  - the percentiles (numpy's method), and the safe-spending search, which finds an annuity's
-    payment;
-  - every failing future counted, also those that fail before the FIRE start;
-  - the grid and the stress test agreeing with direct runs on the same futures.
-- `tests/plan.test.js` covers:
-  - cleaning untrusted plans;
-  - comparing plans, for the "unsaved changes" marks;
-  - share links (with and without a password, with the run they were shared with) and export
-    files round-tripping;
-  - migrating plans from an older schema;
-  - number and list parsing in several locales.
-- `tests/site.test.js` checks what the notes below would otherwise leave to memory:
-  - every file the page and its workers load is in the service worker's list, and every file
-    in that list exists;
-  - the Plotly file name is the same everywhere;
-  - every "?" has an explanation, and the guide shows all of them.
-
-### Notes for changes
-
-- **The default currency** is `DEFAULT_CURRENCY` in `site/js/plan.js`.
-- **Plans are versioned** (`schema` in `site/js/plan.js`). Anything loaded from storage, a file or a
-  link goes through `normalize()`, which fills in missing fields, clamps values and repairs
-  references. A new field needs a default there.
-- **Renaming or reshaping a field** needs a step in `MIGRATIONS` (`site/js/plan.js`) and `SCHEMA` one
-  higher. Otherwise `normalize()` drops the old field and uses the default, and plans in storage,
-  files and links already sent silently lose that value. A plan from a newer schema than the
-  page knows isn't opened or imported: the page asks for a reload, which fetches the new version.
-- **New modules**: a module the page or a worker imports has to be added to `SHELL` in `site/sw.js`,
-  or the app won't work offline. `tests/site.test.js` fails until it is.
-- **The link-preview image** (`site/images/social.png`) is `docs/social-card.html` at 1200 × 630: the
-  command to make it again is at the top of that file. Make it again after a new screenshot.
-- **Upgrading Plotly**: take `plotly-cartesian.min.js` and `LICENSE` from the npm package
-  `plotly.js-cartesian-dist-min` at the new version (`npm pack plotly.js-cartesian-dist-min@<version>`),
-  unchanged. The file name carries the version, so it can be cached forever: update
-  `site/index.html`, `site/sw.js` and this README with it. The tests check the name; CI checks
-  the file against the package.
-- **Browser support**: any current browser. The page needs module workers and CSS subgrid
-  (Chrome and Edge 117+, Safari 16+, Firefox 114+). It has been tested in Chrome. Share links use `CompressionStream` where
-  available, and fall back to uncompressed links elsewhere. Password-locked links need Web Crypto,
-  which browsers offer only over https and on `localhost`: elsewhere the password field is hidden.
-- **Locked link format**: `#plan=e` + base64url of `[version][salt 16][iv 12][AES-GCM]`. The
-  version byte comes first. A later change of rounds or cipher needs a new version (`LOCK` in
-  `site/js/store.js`), and `unpackPlan` has to keep reading the old one, or links already sent stop
-  opening.
+[CONTRIBUTING.md](CONTRIBUTING.md) has the layout, the tests, what to check before a pull request,
+and notes for changes. [SECURITY.md](SECURITY.md) says how the site protects what people type, and
+how to report a problem privately.
 
 ## Support
 
