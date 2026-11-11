@@ -1,6 +1,13 @@
 # When can I stop?
 
+**[whencanistop.fyi](https://whencanistop.fyi)** · a Monte Carlo FIRE simulator that runs in your browser
+
+[![whencanistop.fyi](https://img.shields.io/website?url=https%3A%2F%2Fwhencanistop.fyi&label=whencanistop.fyi&up_message=online&down_message=offline)](https://whencanistop.fyi)
 [![Tests](https://github.com/gabriardi/fire-simulator/actions/workflows/test.yml/badge.svg)](https://github.com/gabriardi/fire-simulator/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/github/license/gabriardi/fire-simulator)](LICENSE)
+[![Dependencies: none](https://img.shields.io/badge/dependencies-none-brightgreen)](CONTRIBUTING.md#what-the-project-is)
+[![Tracking: none](https://img.shields.io/badge/tracking-none-brightgreen)](#your-data-stays-with-you)
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-support-ffdd00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gabriardif)
 
 **When can you stop working, and how much can you spend once you do?**
 
