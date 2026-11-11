@@ -74,17 +74,20 @@ export function confirmBox({ title, text, ok = "OK", cancel = "Cancel" }) {
 }
 
 let toastTimer = null;
-export function toast(text, { undo = null, error = false } = {}) {
+/** A short message: `undo` adds an Undo button, `action` ({ label, run }) another one, `stay` keeps it until dismissed. */
+export function toast(text, { undo = null, action = null, error = false, stay = false } = {}) {
   const t = $("#toast");
   $("#toast-text").textContent = text;
-  const action = $("#toast-action");
-  action.hidden = !undo;
-  action.onclick = undo ? () => { hideToast(); undo(); } : null;
+  const act = action ?? (undo ? { label: "Undo", run: undo } : null);
+  const btn = $("#toast-action");
+  btn.hidden = !act;
+  if (act) btn.textContent = act.label;
+  btn.onclick = act ? () => { hideToast(); act.run(); } : null;
   t.classList.toggle("error", error);
   t.classList.add("show");
-  t.dataset.ms = undo || error ? 10000 : 4500;
+  t.dataset.ms = stay ? 0 : act || error ? 10000 : 4500;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(hideToast, Number(t.dataset.ms));
+  if (!stay) toastTimer = setTimeout(hideToast, Number(t.dataset.ms));
 }
 function hideToast() {
   clearTimeout(toastTimer);
@@ -96,7 +99,7 @@ export function wireToast() {
   $("#toast-close").addEventListener("click", hideToast);
   const t = $("#toast");
   const hold = () => clearTimeout(toastTimer);
-  const release = () => { if (t.classList.contains("show")) toastTimer = setTimeout(hideToast, Number(t.dataset.ms)); };
+  const release = () => { if (t.classList.contains("show") && Number(t.dataset.ms)) toastTimer = setTimeout(hideToast, Number(t.dataset.ms)); };
   t.addEventListener("mouseenter", hold);
   t.addEventListener("focusin", hold);
   t.addEventListener("mouseleave", release);

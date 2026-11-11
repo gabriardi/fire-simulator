@@ -243,8 +243,10 @@ paid GitHub plan.
 **Anywhere else**: copy `site/` to any static host. To match production, serve the headers in
 `site/_headers`.
 
-After a new deploy, visitors get the new version the next time they open the page. The service
-worker always asks the network first, and uses its stored copy only when offline.
+After a new deploy, visitors get the new version the next time they open the page: the service
+worker always asks the network first, and uses its stored copy only when offline. A page left
+open, such as an installed app resumed from the background, checks for a new version when it
+comes back into view and every hour, and loads it; the plan on screen is kept.
 
 ### Make it yours
 

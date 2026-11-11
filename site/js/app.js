@@ -40,6 +40,7 @@ import {
   settings,
   sim,
 } from "./ui/state.js";
+import { startServiceWorker } from "./ui/updates.js";
 
 const ACTIONS = {
   new: openSetup,
@@ -192,8 +193,8 @@ function start() {
   buildForm();
   persistSession();
   if (!canStore) storageProblem();
-  // Installable as an app, and usable offline once loaded (manifest + service worker).
-  if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+  // Installable as an app, usable offline once loaded, and up to date when left open.
+  startServiceWorker();
   openSharedLink();
   if (location.hash === "#guide") openGuide();
   runSim();

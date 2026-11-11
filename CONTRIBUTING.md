@@ -47,6 +47,7 @@ In `site/`:
 | `js/ui/setup.js`, `js/ui/share.js`, `js/ui/files.js` | Setting up a plan; share links; export and import files |
 | `js/ui/run.js`, `js/ui/charts.js` | Running the model in workers, and drawing what they return |
 | `js/ui/messages.js`, `js/ui/dom.js` | Help and the guide, toasts and errors; small page helpers |
+| `js/ui/updates.js` | Starting the service worker; loading a new version into a page left open |
 | `js/engine.js` | The model: random draws, accounts, income, spending rules, one future at a time |
 | `js/views.js` | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |
 | `js/worker.js` | Runs the views in Web Workers, so the page never freezes |
@@ -54,7 +55,7 @@ In `site/`:
 | `js/store.js` | Local storage, export and import files, share links |
 | `js/format.js` | Currencies, number formats, and parsing typed numbers |
 | `js/help.js` | Every "?" text and the guide |
-| `sw.js`, `manifest.webmanifest` | Offline use and installing as an app |
+| `sw.js`, `manifest.webmanifest` | Offline use, installing as an app, and telling a page left open about a new version |
 | `vendor/` | Plotly's cartesian bundle (charts) |
 | `privacy.html` | The privacy notice of this project's copy |
 | `robots.txt`, `sitemap.xml`, `images/social.png` | For search engines and link previews |

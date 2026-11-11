@@ -42,7 +42,8 @@ branch are what gets fixed.
   the server, and the page removes it from the address bar once opened.
 - **The service worker** answers only the site's own `GET` requests, and keeps only the site's
   own files. It asks the network first, except for the chart library, whose file name carries its
-  version.
+  version. A page left open checks for a new version and loads it, so a fix reaches installed
+  apps too (`site/js/ui/updates.js`).
 
 ## Share links: the format
 
