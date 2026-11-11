@@ -1427,20 +1427,48 @@ function layout(extra = {}) {
 }
 const CONFIG = { responsive: true, displaylogo: false, displayModeBar: false, scrollZoom: false };
 
-// Short names for the age row under the year axis: initials where they're unique.
+// Short names for the age rows under the year axis: as short as they can be while still telling
+// everyone apart. First letters (A, S); else the initials of each word, numbers kept whole (M, P2,
+// P3 for "Me", "Person 2", "Person 3"); else the first three letters; else 1, 2, 3.
 function shortNames(people) {
-  const initials = people.map((x) => [...x.name][0] ?? "?");
-  const unique = new Set(initials).size === initials.length;
-  return people.map((x, i) => esc(unique ? initials[i] : [...x.name].slice(0, 3).join("")));
+  const tries = [
+    (n) => [...n][0] ?? "?",
+    (n) => n.split(/\s+/).filter(Boolean).map((w) => (/^\d+$/.test(w) ? w : [...w][0])).join("") || "?",
+    (n) => [...n].slice(0, 3).join("") || "?",
+  ];
+  for (const f of tries) {
+    const short = people.map((x) => f(x.name.trim()));
+    if (new Set(short).size === short.length) return short;
+  }
+  return people.map((_, i) => String(i + 1));
 }
-function yearTicks(years, people) {
-  const step = isPhone() ? 10 : 5;
-  const first = Math.ceil(years[0] / step) * step;
+let measureCtx = null;
+const textWidth = (text, px) => {
+  measureCtx ??= document.createElement("canvas").getContext("2d");
+  measureCtx.font = `${px}px ${css("--font")}`;
+  return measureCtx.measureText(text).width;
+};
+// Every 5 years (or 10, 20 where the labels wouldn't fit), each with the ages that year, two people
+// per line. Never tilted (a tilted label runs into the chart's bottom edge), and none so close to
+// either end that it would be cut off: `room` is the margin beside the plot on each side.
+function yearTicks(years, people, plotWidth, room) {
   const names = shortNames(people);
+  const rowsAt = (y) => {
+    const parts = people.map((x, i) => (people.length > 1 ? `${names[i]} ${y - x.birth_year}` : `age ${y - x.birth_year}`));
+    const rows = [];
+    for (let i = 0; i < parts.length; i += 2) rows.push(parts.slice(i, i + 2).join(" · "));
+    return rows;
+  };
+  const last = years[years.length - 1];
+  const widest = Math.max(textWidth(String(last), 12), ...rowsAt(last).map((r) => textWidth(r, 10)));
+  const span = Math.max(last - years[0], 1);
+  const perYear = plotWidth / span;
+  const step = [5, 10, 20].find((st) => perYear * st >= widest + 12) ?? 20;
+  const fits = (y) => (y - years[0]) * perYear + room.l >= widest / 2 && (last - y) * perYear + room.r >= widest / 2;
   const vals = [];
-  for (let y = first; y <= years[years.length - 1]; y += step) vals.push(y);
-  const text = vals.map((y) => `${y}<br><span style="font-size:10px">${people.map((x, i) => (people.length > 1 ? `${names[i]} ${y - x.birth_year}` : `age ${y - x.birth_year}`)).join(" · ")}</span>`);
-  return { tickvals: vals, ticktext: text };
+  for (let y = Math.ceil(years[0] / step) * step; y <= last; y += step) if (fits(y)) vals.push(y);
+  const ticktext = vals.map((y) => [String(y), ...rowsAt(y).map((r) => `<span style="font-size:10px">${esc(r)}</span>`)].join("<br>"));
+  return { tickvals: vals, ticktext, tickangle: 0, lines: 1 + Math.ceil(people.length / 2) };
 }
 const signed = (v) => `${v >= 0 ? "+" : "−"}${fmt.short(Math.abs(v))}`;
 function milestoneLabel(m) {
@@ -1495,10 +1523,12 @@ function renderPaths() {
   const ymax = 1.15 * Math.max(top(P["50"]), top(P["75"], d.fire_index + 11));
   const ms = milestoneShapes(d.milestones, !isPhone());
   ms.shapes.push({ type: "line", x0: d.years[0], x1: d.years[d.years.length - 1], y0: 0, y1: 0, line: { color: css("--muted"), width: 1 } });
+  const room = { l: 58, r: 14 };
+  const { lines, ...ticks } = yearTicks(d.years, d.people, $("#ch-paths").clientWidth - room.l - room.r, room);
   Plotly.react("ch-paths", traces, layout({
     hovermode: "x unified",
-    margin: { l: 58, r: 14, t: 40, b: 58 },
-    xaxis: { range: [d.years[0], d.years[d.years.length - 1]], ...yearTicks(d.years, d.people), showgrid: false },
+    margin: { ...room, t: 40, b: 30 + 14 * lines },
+    xaxis: { range: [d.years[0], d.years[d.years.length - 1]], ...ticks, showgrid: false },
     yaxis: { range: [-0.03 * ymax, ymax], tickformat: byYears ? "" : "~s", title: { text: byYears ? "Years of spending" : `Wealth (${state.currency}, today's)`, font: { size: 11, color: css("--muted") } } },
     shapes: ms.shapes,
     annotations: ms.annotations,
@@ -1804,8 +1834,11 @@ function wire() {
   $("#sheet-close").addEventListener("click", () => $("#rail").classList.remove("open"));
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
   let w = window.innerWidth;
+  let resizeTimer = null;
   window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
     if ((w <= 960) !== (window.innerWidth <= 960)) renderAll();
+    else resizeTimer = setTimeout(() => { if (sim) renderPaths(); }, 200); // the year labels' spacing follows the width
     w = window.innerWidth;
   });
   window.addEventListener("hashchange", openSharedLink);

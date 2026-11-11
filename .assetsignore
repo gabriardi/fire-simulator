@@ -1,6 +1,7 @@
 # Files Cloudflare doesn't upload: the repository's own files that aren't part of the site.
 # (Same syntax as .gitignore. _headers is read by Cloudflare, never served.)
 .git/
+.github/
 .gitignore
 .assetsignore
 .wrangler/

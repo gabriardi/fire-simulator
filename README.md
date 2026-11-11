@@ -1,5 +1,7 @@
 # FIRE Simulator
 
+[![Tests](https://github.com/gabriardi/fire-simulator/actions/workflows/test.yml/badge.svg)](https://github.com/gabriardi/fire-simulator/actions/workflows/test.yml)
+
 **When can you stop working, and how much can you spend once you do?**
 
 A Monte Carlo simulator for FIRE plans (financial independence, retire early). It plays out
@@ -136,6 +138,21 @@ page from loading anything from elsewhere.
   next to yours. Your own plans stay as they are.
 - **Offline**: once the site has loaded over https, you can install it as an app, and it keeps
   working without a connection.
+
+### What the host sees
+
+The page is served by a web host: Cloudflare, for this project's own copy. As with any website,
+the host receives what every browser sends with each request: your IP address, which file was
+asked for, and browser details (the User-Agent). Cloudflare keeps these in its logs and traffic
+statistics, under its own [privacy policy](https://www.cloudflare.com/privacypolicy/).
+
+Nothing else reaches it. The page loads no analytics or tracking scripts and sets no cookies, and
+your plans are never part of a request (a share link keeps the plan after the `#`, which browsers
+don't send). Questions about this project's copy: [open an
+issue](https://github.com/gabriardi/fire-simulator/issues).
+
+If you publish your own copy, you're the one running that site: tell your visitors who you are,
+how to reach you, and which host you use.
 
 ## Run it locally
 
@@ -275,8 +292,11 @@ The code is plain ES modules, with no framework, no bundler and no dependencies.
 ### Tests
 
 ```bash
-node --test tests/             # Node 20 or newer; no packages to install
+node --test tests/             # Node 22 or newer; no packages to install
 ```
+
+GitHub Actions runs them on every push to `main` and every pull request, on Node 22 and 24
+(`.github/workflows/test.yml`).
 
 - `tests/engine.test.js` covers the model's mechanics:
   - accounts unlocking, income lines and events;

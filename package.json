@@ -10,6 +10,6 @@
     "serve": "node scripts/serve.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }
