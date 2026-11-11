@@ -7,10 +7,7 @@ thousands of possible futures for your savings, retirement accounts and pensions
 how often the money lasts. Everything runs in your browser, and nothing you type leaves your
 device.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
-  <img alt="The simulator with its made-up example household: the money lasts in 78% of 10,000 futures, above a chart of wealth over time" src="docs/screenshot-light.png">
-</picture>
+![The simulator with its made-up example household: the money lasts in 78% of 10,000 futures, above a chart of wealth over time](docs/screenshot.png)
 
 - **Static and free to host.** Plain HTML, CSS and JavaScript, with no build step, no server and
   no dependencies. Put the folder on any static host.
@@ -42,10 +39,7 @@ device.
 | What does being flexible buy me? | **Same plan, other rules**: the success rate of each spending rule, side by side |
 | How bad do the bad futures get? | **Wealth over time**, plus the spread of wealth at the start and of the year the money runs out |
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/views-dark.png">
-  <img alt="The grid of FIRE years and spending levels, and the safe spending for each FIRE year" src="docs/views-light.png" width="720">
-</picture>
+![The grid of FIRE years and spending levels, and the safe spending for each FIRE year](docs/views.png)
 
 ## What you can model
 
