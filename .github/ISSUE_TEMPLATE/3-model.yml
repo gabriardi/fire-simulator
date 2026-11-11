@@ -1,0 +1,39 @@
+name: Something it can't model
+description: A pension system, an account, a spending rule or a situation the simulator can't express.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. The simulator is small on purpose: lifting one of its
+        [limits](https://github.com/gabriardi/fire-simulator/blob/main/docs/methodology.md#assumptions-and-limits)
+        is a good change, a screen of options for a rare case usually isn't. Describe what you'd need
+        to model; how to build it can come later.
+
+        **This issue is public**: describe the situation in general terms, or with made-up numbers.
+  - type: textarea
+    id: what
+    attributes:
+      label: What you'd like to model
+      description: The situation, and how the money works in it.
+      placeholder: Health insurance that grows 2% a year faster than prices from age 75.
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: How you get close today
+      description: Optional. A way to approximate it with the current inputs, and where that falls short.
+  - type: input
+    id: who
+    attributes:
+      label: Who it concerns
+      description: Optional. The country, or the kind of plan or household.
+      placeholder: Early retirees who pay for their own health insurance
+  - type: checkboxes
+    id: private
+    attributes:
+      label: Your privacy
+      options:
+        - label: Nothing in this issue comes from my real finances.
+          required: true

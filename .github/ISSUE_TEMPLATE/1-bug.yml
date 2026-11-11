@@ -1,0 +1,51 @@
+name: Something doesn't work
+description: An error, a chart that doesn't appear, a button that does nothing, a link that doesn't open.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting it. **This issue is public**: show the problem with the Example plan or
+        with made-up numbers, never your real finances. A share link carries the whole plan, so make
+        one only from a made-up plan.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, step by step, and what you saw. A screenshot helps; crop out anything personal.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+  - type: input
+    id: link
+    attributes:
+      label: A share link that shows it
+      description: Optional. From *Share*, without a password, on a plan with made-up numbers.
+      placeholder: https://whencanistop.fyi/#plan=z…
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Safari 18 on an iPhone, installed as an app
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - whencanistop.fyi
+        - A copy of my own
+        - Running it locally
+    validations:
+      required: true
+  - type: checkboxes
+    id: private
+    attributes:
+      label: Your privacy
+      options:
+        - label: Nothing in this issue comes from my real finances.
+          required: true

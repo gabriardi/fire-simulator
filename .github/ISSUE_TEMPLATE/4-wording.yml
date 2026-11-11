@@ -1,0 +1,23 @@
+name: Something is unclear
+description: A label, a "?" explanation, the guide or the docs, where the wording could be clearer.
+labels: [documentation]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      placeholder: The "?" next to Floor, in the spending rule
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What's unclear
+      description: What you read, what you understood, and what you needed to know.
+    validations:
+      required: true
+  - type: textarea
+    id: better
+    attributes:
+      label: A clearer way to say it
+      description: Optional, and welcome.

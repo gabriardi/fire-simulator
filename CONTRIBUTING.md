@@ -70,7 +70,7 @@ Around it:
 | `wrangler.jsonc` | Hosting on Cloudflare: `site/` as static files, and the logs |
 | `tests/` | The tests, below |
 | `docs/` | How the simulation works, the README's screenshots, and the link-preview card |
-| `.github/` | The tests on GitHub Actions, Dependabot for those actions, the sponsor button |
+| `.github/` | The tests on GitHub Actions, Dependabot for those actions, the issue forms and the pull request checklist, the sponsor button |
 | `.editorconfig` | UTF-8, LF, two spaces; files from elsewhere left as they came |
 
 ## Tests

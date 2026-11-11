@@ -1,0 +1,42 @@
+name: A result looks wrong
+description: A number or a chart that doesn't match what the inputs should give.
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for checking it. Two things first:
+        - [How the simulation works](https://github.com/gabriardi/fire-simulator/blob/main/docs/methodology.md)
+          has the model and what it leaves out: returns are independent from year to year, taxes are
+          simplified, inflation is fixed.
+        - At 10,000 futures, *Money lasts in* is within about ±1 point, 19 times in 20. A small
+          difference from another run, or another calculator, can be just that.
+
+        **This issue is public**: use the Example plan or made-up numbers, never your real finances.
+  - type: textarea
+    id: what
+    attributes:
+      label: What looks wrong
+      description: Which number or chart, what it shows, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why you expected that
+      description: A calculation by hand, another calculator (which one, with which settings), a study, a rule of thumb.
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: A share link that shows it
+      description: "The quickest way to see the same thing: the link carries the seed and the number of futures too. From *Share*, without a password, on a plan with made-up numbers."
+      placeholder: https://whencanistop.fyi/#plan=z…
+  - type: checkboxes
+    id: private
+    attributes:
+      label: Your privacy
+      options:
+        - label: Nothing in this issue comes from my real finances.
+          required: true

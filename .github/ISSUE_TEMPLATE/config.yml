@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: A security problem
+    url: https://github.com/gabriardi/fire-simulator/security/advisories/new
+    about: Report it privately, not in a public issue. SECURITY.md says what helps.
+  - name: How the simulation works
+    url: https://github.com/gabriardi/fire-simulator/blob/main/docs/methodology.md
+    about: The model, the choices behind it and what it leaves out.
+  - name: Privacy
+    url: https://whencanistop.fyi/privacy
+    about: What stays on your device, what the host receives, and who to write to.
