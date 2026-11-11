@@ -53,7 +53,13 @@ export function openGuide() {
     const top = body.getBoundingClientRect().top + 40;
     let current = links[0];
     for (const l of links) if (document.getElementById(l.dataset.target).getBoundingClientRect().top <= top) current = l;
+    if (body.scrollTop + body.clientHeight >= body.scrollHeight - 2) current = links.at(-1); // the end: short last sections never reach the top
     links.forEach((l) => l.setAttribute("aria-current", String(l === current)));
+    // The list scrolls when it doesn't fit (a short window; a phone's row): keep the current one in view.
+    if (current.offsetTop < toc.scrollTop) toc.scrollTop = current.offsetTop;
+    else if (current.offsetTop + current.offsetHeight > toc.scrollTop + toc.clientHeight) toc.scrollTop = current.offsetTop + current.offsetHeight - toc.clientHeight;
+    if (current.offsetLeft < toc.scrollLeft) toc.scrollLeft = current.offsetLeft;
+    else if (current.offsetLeft + current.offsetWidth > toc.scrollLeft + toc.clientWidth) toc.scrollLeft = current.offsetLeft + current.offsetWidth - toc.clientWidth;
   };
   body.onscroll = mark;
   mark();

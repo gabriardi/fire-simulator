@@ -423,7 +423,10 @@ h3 .help { margin-left: 4px; position: relative; top: -1px; }
   max-height: none;
 }
 #help-dialog.wide .help-body { padding: 0; }
-.guide { display: grid; grid-template-columns: 210px minmax(0, 1fr); min-height: 100%; }
+/* As tall as its entries (flex: none: not shrunk to the dialog), so the sections can stick beside them. */
+.guide { display: grid; grid-template-columns: 210px minmax(0, 1fr); min-height: 100%; flex: none; }
+/* The sections stay in view while the entries scroll (the line between is the entries'), and
+   scroll themselves when the dialog is shorter than the list. */
 .guide-toc {
   position: sticky;
   top: 0;
@@ -432,8 +435,8 @@ h3 .help { margin-left: 4px; position: relative; top: -1px; }
   flex-direction: column;
   gap: 2px;
   padding: 18px 12px;
-  border-right: 1px solid var(--line);
-  min-height: 100%;
+  max-height: calc(min(94vh, 1100px) - 70px);
+  overflow-y: auto;
 }
 .toc-link {
   text-align: left;
@@ -449,7 +452,7 @@ h3 .help { margin-left: 4px; position: relative; top: -1px; }
 .toc-link:hover { color: var(--ink); background: var(--surface-2); }
 .toc-link[aria-current="true"] { color: var(--accent); background: var(--accent-soft); }
 .toc-link:focus-visible { outline: 2px solid var(--accent); }
-.guide-content { padding: 18px 24px 40px; display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+.guide-content { padding: 18px 24px 40px; display: flex; flex-direction: column; gap: 26px; min-width: 0; border-left: 1px solid var(--line); }
 .guide-section { scroll-margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
 .guide-section h3 { margin: 0; font-size: 1.05rem; color: var(--accent); }
 .guide-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 14px; }
@@ -478,14 +481,13 @@ h3 .help { margin-left: 4px; position: relative; top: -1px; }
     overflow-x: auto;
     gap: 6px;
     padding: 10px 16px;
-    border-right: 0;
     border-bottom: 1px solid var(--line);
     background: var(--surface);
     z-index: 1;
-    min-height: 0;
+    max-height: none;
   }
   .toc-link { white-space: nowrap; flex: none; }
-  .guide-content { padding: 14px 16px 32px; }
+  .guide-content { padding: 14px 16px 32px; border-left: 0; }
   .guide-section { scroll-margin-top: 66px; } /* land below the sticky section row */
   .guide-cards { grid-template-columns: minmax(0, 1fr); }
 }
