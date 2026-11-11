@@ -28,6 +28,7 @@ device.
 - [How the simulation works](#how-the-simulation-works)
 - [Assumptions and limits](#assumptions-and-limits)
 - [Development](#development)
+- [Support](#support)
 - [License](#license)
 
 ## What it answers
@@ -162,7 +163,8 @@ don't send). Questions about this project's copy: [open an
 issue](https://github.com/gabriardi/fire-simulator/issues).
 
 If you publish your own copy, you're the one running that site: tell your visitors who you are,
-how to reach you, and which host you use.
+how to reach you, and which host you use. The page's footer links to this project's code and to
+its Buy me a coffee page: change them in `index.html`.
 
 ## Run it locally
 
@@ -361,6 +363,11 @@ GitHub Actions runs them on every push to `main` and every pull request, on Node
   version byte comes first. A later change of rounds or cipher needs a new version (`LOCK` in
   `js/store.js`), and `unpackPlan` has to keep reading the old one, or links already sent stop
   opening.
+
+## Support
+
+The simulator is free. If it helped you think through your plan, you can
+[buy me a coffee](https://buymeacoffee.com/gabriardif).
 
 ## License
 
