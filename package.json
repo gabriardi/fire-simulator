@@ -1,0 +1,15 @@
+{
+  "name": "fire-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "A static, local-first Monte Carlo FIRE simulator.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/",
+    "serve": "node scripts/serve.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

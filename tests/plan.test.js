@@ -1,0 +1,139 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { endYear, simulate } from "../js/engine.js";
+import { makeFormat } from "../js/format.js";
+import { bandAround, blankPlan, differences, examplePlan, normalize, problems, roundish } from "../js/plan.js";
+import { exportFile, packPlan, readFile, unpackPlan } from "../js/store.js";
+
+const today = new Date(2026, 10, 11);
+
+test("a new plan and the example are complete and simulate", () => {
+  for (const plan of [blankPlan({ today }), examplePlan({ today, currency: "EUR" })]) {
+    assert.deepEqual(normalize(plan, { today }), plan); // nothing to clean
+    assert.deepEqual(problems(plan, endYear), []);
+    const res = simulate({ ...plan, seed: 1, n_sims: 200 });
+    assert.equal(res.n, 200);
+  }
+});
+
+test("normalize fills what's missing and drops what doesn't belong", () => {
+  const p = normalize({ spending: 50_000, people: [{ name: "Ana", birth_year: 1980 }], evil: "<script>", rule: { kind: "nope" } }, { today, currency: "CHF" });
+  assert.equal(p.currency, "CHF");
+  assert.equal(p.people.length, 1);
+  assert.equal(p.people[0].name, "Ana");
+  assert.equal(p.end_person, p.people[0].id);
+  assert.equal(p.rule.kind, "fixed");
+  assert.deepEqual(p.rule.floor, bandAround(50_000).floor);
+  assert.equal("evil" in p, false);
+  assert.deepEqual(p.accounts, []);
+});
+
+test("normalize keeps values in bounds and references pointing at people who exist", () => {
+  const p = normalize({
+    people: [{ id: "a", name: "A", birth_year: 1985 }],
+    end_person: "ghost",
+    start_month: 15,
+    stock_vol: -3,
+    fat_tails_df: 1,
+    stress_returns: [-2, "x", 0.1],
+    accounts: [{ owner: "ghost", balance: -5, tax: 2, growth: "magic" }],
+    income: [{ amount: 1000, from: { kind: "age", person: "ghost", value: 67 }, to: { kind: "bogus", value: 2050 } }],
+    people_extra: 1,
+  }, { today });
+  assert.equal(p.end_person, "a");
+  assert.equal(p.start_month, 12);
+  assert.equal(p.stock_vol, 0);
+  assert.equal(p.fat_tails_df, 2.1);
+  assert.deepEqual(p.stress_returns, [-1, 0.1]);
+  assert.equal(p.accounts[0].owner, "a");
+  assert.equal(p.accounts[0].balance, 0);
+  assert.equal(p.accounts[0].tax, 0.9);
+  assert.equal(p.accounts[0].growth, "portfolio");
+  assert.deepEqual(p.income[0].from, { kind: "age", person: "a", value: 67 });
+  assert.equal(p.income[0].to.kind, "year");
+});
+
+test("normalize gives every item a unique id", () => {
+  const p = normalize({
+    people: [{ id: "x", name: "A", birth_year: 1980 }, { id: "x", name: "B", birth_year: 1982 }],
+    accounts: [{ id: "x" }, {}],
+  }, { today });
+  const ids = [...p.people, ...p.accounts].map((x) => x.id);
+  assert.equal(new Set(ids).size, ids.length);
+});
+
+test("problems: the FIRE start, the horizon and the flexible rule's band", () => {
+  const p = blankPlan({ today });
+  assert.deepEqual(problems(p, endYear), []);
+  assert.match(problems({ ...p, fire_year: p.start_year - 1 }, endYear)[0], /FIRE start must be between/);
+  assert.match(problems({ ...p, end_age: 30 }, endYear)[0], /has to run past/);
+  const flex = { ...p, rule: { ...p.rule, kind: "guardrails" }, spending: p.rule.ceiling + 1 };
+  assert.match(problems(flex, endYear)[0], /between the floor and the ceiling/);
+  assert.deepEqual(problems({ ...flex, rule: { ...flex.rule, kind: "spenddown" } }, endYear), []);
+});
+
+test("differences: changed values by path, an added or removed item once", () => {
+  const a = examplePlan({ today });
+  const b = structuredClone(a);
+  b.spending = 70_000;
+  b.income[0].from.value = 66;
+  b.events.push({ id: "e", name: "Roof", year: 2040, amount: -30_000 });
+  b.accounts.pop();
+  assert.deepEqual(differences(a, b).sort(), ["accounts.#", "events.#", "income.0.from.value", "spending"]);
+  assert.deepEqual(differences(a, structuredClone(a)), []);
+  // A stop added where there was none.
+  const c = structuredClone(a);
+  c.income[1].to = { kind: "year", value: 2070 };
+  assert.ok(differences(a, c).some((p) => p.startsWith("income.1.to")));
+});
+
+test("roundish keeps two significant digits", () => {
+  assert.equal(roundish(57_600), 58_000);
+  assert.equal(roundish(5_760_000), 5_800_000);
+  assert.equal(roundish(80), 80);
+});
+
+test("share links round-trip a plan, and refuse a damaged one", async () => {
+  const plan = examplePlan({ today, currency: "JPY" });
+  const code = await packPlan("Retire at 50 — “quotes” & ünïcode", plan);
+  assert.match(code, /^z[\w-]+$/);
+  const back = await unpackPlan(code);
+  assert.equal(back.name, "Retire at 50 — “quotes” & ünïcode");
+  assert.deepEqual(back.plan, plan);
+  await assert.rejects(unpackPlan(`${code.slice(0, -12)}AAAA`), /damaged/);
+  await assert.rejects(unpackPlan("zNotBase64!!"), /damaged/);
+});
+
+test("exported files read back; a bare plan and junk are handled", () => {
+  const plans = [{ name: "A", plan: blankPlan({ today }) }, { name: "B", plan: examplePlan({ today }) }];
+  const f = exportFile(plans, today);
+  assert.equal(f.name, "fire-plans-2026-11-11.json");
+  const back = readFile(f.text);
+  assert.deepEqual(back.map((x) => x.name), ["A", "B"]);
+  assert.deepEqual(back[1].plan, plans[1].plan);
+  assert.equal(readFile(JSON.stringify(blankPlan({ today })))[0].plan.spending, 40_000);
+  assert.throws(() => readFile("not json"), /isn't JSON/);
+  assert.throws(() => readFile(JSON.stringify({ hello: 1 })), /No plans/);
+});
+
+test("typed numbers in several number formats", () => {
+  const en = makeFormat("en-US", "USD");
+  assert.equal(en.parse("1,234,567", "money"), 1_234_567);
+  assert.equal(en.parse("250k", "money"), 250_000);
+  assert.equal(en.parse("1.5M", "money"), 1_500_000);
+  assert.equal(en.parse("-5,000", "money"), -5000);
+  assert.equal(en.parse("4.5", "pct"), 4.5);
+  assert.ok(Number.isNaN(en.parse("abc", "money")));
+  const de = makeFormat("de-DE", "EUR");
+  assert.equal(de.parse("1.234.567", "money"), 1_234_567);
+  assert.equal(de.parse("1.234,5", "money"), 1234.5);
+  assert.equal(de.parse("4,5", "pct"), 4.5);
+  assert.equal(de.parse("4.5", "pct"), 4.5); // either mark works for a percentage
+  assert.equal(de.parse("−3", "num"), -3); // a typographic minus
+  const ch = makeFormat("de-CH", "CHF");
+  assert.equal(ch.parse("1'234'567", "money"), 1_234_567);
+  assert.equal(ch.parse("1’234’567", "money"), 1_234_567);
+  const fr = makeFormat("fr-FR", "EUR");
+  assert.equal(fr.parse("1 234 567", "money"), 1_234_567);
+  assert.equal(fr.parse("1 234,5", "money"), 1234.5);
+});
