@@ -136,6 +136,10 @@ file published on npm for its version.
 
 ## Notes for changes
 
+- **The model is described three times**, for three readers: in full in
+  `docs/methodology.md`, briefly on the page (`site/index.html`, "How the simulation works"),
+  and input by input in the guide (`site/js/help.js`). A change to the model updates all three,
+  and the README's short "How it works" if it's affected.
 - **The default currency** is `DEFAULT_CURRENCY` in `site/js/plan.js`.
 - **Plans are versioned** (`schema` in `site/js/plan.js`). Anything loaded from storage, a file or
   a link goes through `normalize()`, which fills in missing fields, clamps values and repairs
