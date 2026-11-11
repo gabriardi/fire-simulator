@@ -176,16 +176,27 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
   const bad = (v) => Number.isNaN(v) || (min != null && v < min) || (max != null && v > max);
   let range = null;
   const scale = kind === "pct" ? 100 : 1;
-  // A slider whose ends follow its own value (the spending's) must not rescale while a finger or the
-  // mouse holds it: each move would stretch the scale, and the next move would run further on it.
-  // Focus can't tell: touch screens and Safari don't focus a slider being dragged.
+  // A slider scaled on a value (the spending's: 0 to 2.5 times it) is scaled on `anchor`, not on its
+  // own current value: rescaling as it moves would shift the scale under the finger, and after
+  // every release the thumb would jump away from where it was let go. The anchor moves only when
+  // the slider is let go at its top end (more room above), when a value is typed, or when the
+  // value, set from elsewhere, is off the scale. And never while a finger or the mouse holds the
+  // slider: focus can't tell, as touch screens and Safari don't focus a slider being dragged.
   let holding = false;
+  let anchor = getPath(target(), path);
   const setRange = () => {
     if (!range || holding) return;
-    const s = typeof slider === "function" ? slider() : slider;
+    const s = typeof slider === "function" ? slider(anchor) : slider;
     range.min = s.min;
     range.max = s.max;
     range.step = s.step ?? 1;
+  };
+  const settle = () => {
+    if (!range || holding) return;
+    const v = getPath(target(), path);
+    if (v * scale >= Number(range.max)) anchor = v;
+    setRange();
+    range.value = v * scale;
   };
   if (slider) {
     range = el("input", { type: "range", "aria-label": `${label} slider` });
@@ -195,8 +206,7 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
         window.removeEventListener("pointerup", end, true);
         window.removeEventListener("pointercancel", end, true);
         holding = false;
-        setRange();
-        range.value = getPath(target(), path) * scale;
+        settle();
       };
       window.addEventListener("pointerup", end, true);
       window.addEventListener("pointercancel", end, true);
@@ -211,7 +221,7 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
       onchange?.(v, prev);
       changed();
     });
-    range.addEventListener("change", setRange); // keys; after a drag, `end` does it
+    range.addEventListener("change", settle); // keys; after a drag, `end` does it
   }
   input.addEventListener("input", () => {
     const v = fromShow(input.value);
@@ -225,8 +235,13 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
     changed();
   });
   input.addEventListener("blur", () => {
-    if (!invalid.has(path)) input.value = toShow(getPath(target(), path));
+    if (invalid.has(path)) return;
+    const v = getPath(target(), path);
+    input.value = toShow(v);
+    if (!range) return;
+    anchor = v; // typed: the scale centres on it
     setRange();
+    range.value = v * scale;
   });
   syncers.push(() => {
     const v = getPath(target(), path);
@@ -234,6 +249,7 @@ function numberField({ path, label, kind = "money", unit: u, hint, slider, help,
     unitEl.textContent = unitText();
     unitEl.hidden = !unitText();
     if (range) {
+      if (!holding && range.max !== "" && (v * scale > Number(range.max) || v * scale < Number(range.min))) anchor = v;
       setRange();
       range.value = v * scale;
     }
@@ -546,8 +562,9 @@ const mixHint = (w) => {
 };
 
 const ages = (year) => state.people.map((x) => `${x.name} ${year - x.birth_year}`).join(" · ");
-const moneySlider = (get) => () => {
-  const max = niceCeil(Math.max(get() * 2.5, 1000));
+/** An amount's slider: from 0 to 2.5 times the amount it's anchored on, in round steps. */
+const moneySlider = (anchor) => {
+  const max = niceCeil(Math.max(anchor * 2.5, 1000));
   return { min: 0, max, step: niceStep(max / 400) };
 };
 
@@ -564,8 +581,8 @@ const bandByHand = () => bandHolds() && !bandIsAuto(state.spending) && state.rul
 function followBand(v, prev) {
   if (state.rule.kind !== "spenddown" && bandIsAuto(prev)) Object.assign(state.rule, bandAround(v));
 }
-const spendingSlider = () => {
-  if (!bandByHand()) return moneySlider(() => state.spending)();
+const spendingSlider = (anchor) => {
+  if (!bandByHand()) return moneySlider(anchor);
   const { floor, ceiling } = state.rule;
   const step = niceStep((ceiling - floor) / 200);
   const min = Math.ceil(floor / step) * step;
