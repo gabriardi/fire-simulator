@@ -6,6 +6,7 @@
  * Amounts are in the plan's currency, in today's money. Rates are fractions (0.02 = 2%); returns
  * and interest are nominal, the model turns them into real ones with the inflation.
  */
+import { RULE_KINDS, endYear, personById } from "./engine.js";
 
 export const SCHEMA = 1;
 
@@ -246,7 +247,7 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
     bond_vol: num(r.bond_vol, d.bond_vol, 0, 1),
     stock_bond_corr: num(r.stock_bond_corr, 0, -1, 1),
     rule: {
-      kind: oneOf(rule.kind, ["fixed", "guardrails", "vanguard", "spenddown"], "fixed"),
+      kind: oneOf(rule.kind, RULE_KINDS, "fixed"),
       floor: num(rule.floor, band.floor, 0),
       ceiling: num(rule.ceiling, band.ceiling, 0),
       band: num(rule.band, RULE_DEFAULTS.band, 0.001, 0.99),
@@ -261,11 +262,11 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
 }
 
 /** What stops a plan from being simulated, as messages for the person editing it. */
-export function problems(plan, endYearOf) {
+export function problems(plan) {
   const out = [];
-  const end = endYearOf(plan);
+  const end = endYear(plan);
   const years = end - plan.start_year + 1;
-  const who = plan.people.find((x) => x.id === plan.end_person) ?? plan.people[0];
+  const who = personById(plan, plan.end_person);
   if (years < 2) out.push(`The plan has to run past ${plan.start_year}: ${who.name} turns ${plan.end_age} in ${end}.`);
   else if (years > LIMITS.years) out.push(`The plan runs ${years} years (until ${end}): ${LIMITS.years} at most.`);
   if (plan.fire_year < plan.start_year || plan.fire_year >= end) {

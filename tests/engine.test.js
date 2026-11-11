@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  RULE_KINDS,
+  RULE_NAMES,
+  RULE_SHORT,
   incomeByYear,
   lasts,
   marketDraws,
+  mixStats,
   real,
   simulate,
   stockShares,
@@ -212,4 +216,28 @@ test("bond tent shares step down and back", () => {
   assert.equal(at(2036), 0.7);
   assert.ok(Math.abs(at(2040) - 0.85) < 1e-12);
   assert.equal(at(2044), 1);
+});
+
+test("the mix's mean and volatility are those of the model's own draws", () => {
+  const plan = household({ stock_vol: 0.17, bond_vol: 0.06, stock_bond_corr: 0.3, seed: 9 });
+  // All stocks, or all bonds: the median and the volatility that were set.
+  for (const [w, nominal, vol] of [[1, plan.stock_return, 0.17], [0, plan.bond_return, 0.06]]) {
+    const m = mixStats(plan, w);
+    assert.ok(Math.abs(m.compound - real(nominal, plan.inflation)) < 1e-12);
+    assert.ok(Math.abs(m.vol - vol) < 1e-12);
+  }
+  // A 60/40 mix, against 200,000 drawn years.
+  const d = marketDraws(plan, 100_000, 2);
+  const g = Float64Array.from(d.stock, (s, k) => 0.6 * s + 0.4 * d.bond[k] - 1);
+  const mean = g.reduce((a, b) => a + b) / g.length;
+  const sd = Math.sqrt(g.reduce((a, b) => a + (b - mean) ** 2, 0) / g.length);
+  const m = mixStats(plan, 0.6);
+  assert.ok(Math.abs(mean - m.mean) < 0.001, `mean ${mean} vs ${m.mean}`);
+  assert.ok(Math.abs(sd - m.vol) < 0.001, `volatility ${sd} vs ${m.vol}`);
+  assert.ok(m.compound < m.mean); // compounding costs about half the variance
+});
+
+test("every spending rule has a name and a short name", () => {
+  assert.deepEqual(Object.keys(RULE_NAMES), RULE_KINDS);
+  assert.deepEqual(Object.keys(RULE_SHORT), RULE_KINDS);
 });

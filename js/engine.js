@@ -37,6 +37,13 @@ export const RULE_NAMES = {
   vanguard: "Vanguard dynamic",
   spenddown: "Spend-down",
 };
+/** Shorter, where space is tight: the rule buttons, the stress test's legend, suggested names. */
+export const RULE_SHORT = {
+  fixed: "Fixed",
+  guardrails: "Guardrails",
+  vanguard: "Vanguard",
+  spenddown: "Spend-down",
+};
 
 export const real = (nominal, inflation) => (1 + nominal) / (1 + inflation) - 1;
 
@@ -96,6 +103,25 @@ export function stockShares(plan, nYears, i0 = plan.fire_year - plan.start_year)
 export function lognormal(median, sd) {
   const u = (1 + Math.sqrt(1 + 4 * (sd / median) ** 2)) / 2; // sd = median * sqrt(u (u - 1))
   return [Math.log(median), Math.sqrt(Math.log(u))];
+}
+
+/**
+ * The yearly real growth of the portfolio rebalanced at stock share `w`, as the model draws it
+ * (without fat tails): its mean and volatility, and its compound rate (the median of a log-normal
+ * with that mean and volatility). The form's hints show these.
+ */
+export function mixStats(plan, w) {
+  const moments = (nominal, sd) => {
+    const [mu, sigma] = lognormal(1 + real(nominal, plan.inflation), sd);
+    return { mean: Math.exp(mu + sigma ** 2 / 2), sigma };
+  };
+  const st = moments(plan.stock_return, plan.stock_vol);
+  const bd = moments(plan.bond_return, plan.bond_vol);
+  // The model correlates the normal draws behind the two log-normal growth factors.
+  const cov = st.mean * bd.mean * (Math.exp(plan.stock_bond_corr * st.sigma * bd.sigma) - 1);
+  const mean = w * st.mean + (1 - w) * bd.mean;
+  const variance = (w * plan.stock_vol) ** 2 + ((1 - w) * plan.bond_vol) ** 2 + 2 * w * (1 - w) * cov;
+  return { mean: mean - 1, compound: mean / Math.sqrt(1 + variance / mean ** 2) - 1, vol: Math.sqrt(variance) };
 }
 
 // ---- random numbers ----------------------------------------------------------------------------

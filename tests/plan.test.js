@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { endYear, simulate } from "../js/engine.js";
+import { simulate } from "../js/engine.js";
 import { makeFormat } from "../js/format.js";
 import { DEFAULT_CURRENCY, SCHEMA, bandAround, blankPlan, differences, examplePlan, fromNewer, migrate, normalize, problems, roundish } from "../js/plan.js";
 import { cleanRun, cleanSaved, cleanSettings, exportFile, isLocked, packPlan, readFile, unpackPlan } from "../js/store.js";
@@ -10,7 +10,7 @@ const today = new Date(2026, 10, 11);
 test("a new plan and the example are complete and simulate", () => {
   for (const plan of [blankPlan({ today }), examplePlan({ today, currency: "EUR" })]) {
     assert.deepEqual(normalize(plan, { today }), plan); // nothing to clean
-    assert.deepEqual(problems(plan, endYear), []);
+    assert.deepEqual(problems(plan), []);
     const res = simulate({ ...plan, seed: 1, n_sims: 200 });
     assert.equal(res.n, 200);
   }
@@ -64,12 +64,12 @@ test("normalize gives every item a unique id", () => {
 
 test("problems: the FIRE start, the horizon and the flexible rule's band", () => {
   const p = blankPlan({ today });
-  assert.deepEqual(problems(p, endYear), []);
-  assert.match(problems({ ...p, fire_year: p.start_year - 1 }, endYear)[0], /FIRE start must be between/);
-  assert.match(problems({ ...p, end_age: 30 }, endYear)[0], /has to run past/);
+  assert.deepEqual(problems(p), []);
+  assert.match(problems({ ...p, fire_year: p.start_year - 1 })[0], /FIRE start must be between/);
+  assert.match(problems({ ...p, end_age: 30 })[0], /has to run past/);
   const flex = { ...p, rule: { ...p.rule, kind: "guardrails" }, spending: p.rule.ceiling + 1 };
-  assert.match(problems(flex, endYear)[0], /between the floor and the ceiling/);
-  assert.deepEqual(problems({ ...flex, rule: { ...flex.rule, kind: "spenddown" } }, endYear), []);
+  assert.match(problems(flex)[0], /between the floor and the ceiling/);
+  assert.deepEqual(problems({ ...flex, rule: { ...flex.rule, kind: "spenddown" } }), []);
 });
 
 test("differences: changed values by path, an added or removed item once", () => {

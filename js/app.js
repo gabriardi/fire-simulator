@@ -1,6 +1,6 @@
 // The page: the parameter form, the plans kept in this browser, and the charts. The numbers come
 // from workers running the model (engine.js, views.js); nothing here talks to a server.
-import { RULE_NAMES, endYear, personById, real, yearOf } from "./engine.js";
+import { RULE_KINDS, RULE_SHORT, endYear, lognormal, mixStats, personById, real, yearOf } from "./engine.js";
 import { CURRENCIES, LOCALES, currencyName, makeFormat } from "./format.js";
 import { GUIDE, HELP } from "./help.js";
 import {
@@ -438,12 +438,11 @@ const RULE_HINTS = {
   vanguard: "Aim at a fixed share of wealth, but change spending by at most +up / −down a year. Never below the floor or above the ceiling.",
   spenddown: "Die with zero: each year, aim at what would leave nothing at the end if the money earned the assumed return, locked accounts and future income included. Change spending by at most +raise / −cut a year, between the floor and the ceiling.",
 };
-const RULE_SHORT = { fixed: "Fixed", guardrails: "Guardrails", vanguard: "Vanguard", spenddown: "Spend-down" };
 
 function ruleGroup() {
   const seg = el("div", { class: "seg", role: "group", "aria-label": "Spending rule" });
-  for (const [k, t] of Object.entries(RULE_SHORT)) {
-    seg.append(el("button", { type: "button", "data-kind": k, onclick: () => { state.rule.kind = k; changed(); } }, t));
+  for (const k of RULE_KINDS) {
+    seg.append(el("button", { type: "button", "data-kind": k, onclick: () => { state.rule.kind = k; changed(); } }, RULE_SHORT[k]));
   }
   const hintEl = el("div", { class: "hint" });
   const ruleHelp = helpBtn("rule.fixed");
@@ -528,29 +527,14 @@ function stressGroup() {
 }
 
 function marketHint(nominal) {
-  // Same distribution as the model: median 1+g, standard deviation stock_vol.
+  // The model's distribution: median 1+g, standard deviation stock_vol.
   const g = realOf(nominal);
-  const u = (1 + Math.sqrt(1 + 4 * (state.stock_vol / (1 + g)) ** 2)) / 2;
-  const s = Math.sqrt(Math.log(u));
-  const mu = Math.log1p(g);
+  const [mu, s] = lognormal(1 + g, state.stock_vol);
   const at = (z) => Math.exp(mu + s * z) - 1;
   return `= ${fmt.pct(g, 2)} real median. 2 years in 3 between ${fmt.pct(at(-1))} and +${fmt.pct(at(1))}, 19 in 20 between ${fmt.pct(at(-1.96))} and +${fmt.pct(at(1.96))}.`;
 }
-// Return and volatility of the rebalanced stock/bond mix, as the model draws it.
-function mixStats(w) {
-  const ln = (median, sd) => {
-    const u = (1 + Math.sqrt(1 + 4 * (sd / median) ** 2)) / 2;
-    return { mean: median * Math.sqrt(u), sigma: Math.sqrt(Math.log(u)) };
-  };
-  const st = ln(1 + realOf(state.stock_return), state.stock_vol);
-  const bd = ln(1 + realOf(state.bond_return), state.bond_vol);
-  const cov = st.mean * bd.mean * (Math.exp(state.stock_bond_corr * st.sigma * bd.sigma) - 1);
-  const mean = w * st.mean + (1 - w) * bd.mean;
-  const variance = (w * state.stock_vol) ** 2 + ((1 - w) * state.bond_vol) ** 2 + 2 * w * (1 - w) * cov;
-  return { compound: mean / Math.sqrt(1 + variance / mean ** 2) - 1, vol: Math.sqrt(variance) };
-}
 const mixHint = (w) => {
-  const m = mixStats(w);
+  const m = mixStats(state, w);
   return `Mix: ${fmt.pct(m.compound, 2)} real compound, ${fmt.pct(m.vol, 1)} volatility.`;
 };
 
@@ -928,7 +912,8 @@ function saveCurrent() {
   toast(`Saved “${p.name}”.`);
 }
 function suggestName() {
-  const rule = { fixed: "fixed", guardrails: "guardrails", vanguard: "Vanguard", spenddown: "spend-down" }[state.rule.kind];
+  const k = state.rule.kind;
+  const rule = k === "vanguard" ? RULE_SHORT[k] : RULE_SHORT[k].toLowerCase(); // Vanguard is a name
   const amount = state.rule.kind === "spenddown" ? `floor ${fmt.short(state.rule.floor)}` : fmt.short(state.spending);
   return uniqueName(`Stop ${state.fire_year}, ${amount}, ${rule}`);
 }
@@ -1597,7 +1582,7 @@ function changed() {
 }
 function runSim() {
   if (invalid.size) { showError("Some fields aren't valid yet: fix the red ones."); return; }
-  const probs = problems(state, endYear);
+  const probs = problems(state);
   if (probs.length) {
     const r = state.rule;
     const fix = r.kind !== "fixed" && probs.some((p) => p.includes("floor"))
@@ -1960,12 +1945,12 @@ function renderStress() {
   const st = explore.stress;
   if (!st) return;
   const labels = st.map((r) => r.short);
-  const kinds = [["fixed", "Fixed", css("--faint")], ["guardrails", "Guardrails", css("--accent")], ["vanguard", "Vanguard", css("--good")], ["spenddown", "Spend-down", css("--warn")]];
-  const traces = kinds.map(([k, name, color]) => ({
-    type: "bar", orientation: "h", name, y: labels, x: st.map((r) => r.rates[k]),
-    marker: { color, opacity: k === state.rule.kind ? 1 : 0.55 },
+  const colors = { fixed: "--faint", guardrails: "--accent", vanguard: "--good", spenddown: "--warn" };
+  const traces = RULE_KINDS.map((k) => ({
+    type: "bar", orientation: "h", name: RULE_SHORT[k], y: labels, x: st.map((r) => r.rates[k]),
+    marker: { color: css(colors[k]), opacity: k === state.rule.kind ? 1 : 0.55 },
     text: st.map((r) => (r.rates[k] == null ? "n/a" : fmt.pct(r.rates[k]))), textposition: "outside", cliponaxis: false,
-    hovertemplate: `${name}, %{y}: money lasts in %{x:.1%}<extra></extra>`,
+    hovertemplate: `${RULE_SHORT[k]}, %{y}: money lasts in %{x:.1%}<extra></extra>`,
   }));
   Plotly.react("ch-stress", traces, layout({
     barmode: "group",
