@@ -153,21 +153,28 @@ function unlockShared(code) {
 export const NEWER =
   "This plan was made by a newer version of the simulator: reload the page to update it";
 
-export async function openSharedLink() {
+// Links open one at a time, in the order they came: one arriving while another still asks its
+// question (or its password) waits its turn, instead of taking that dialog over.
+let opening = Promise.resolve();
+export function openSharedLink() {
   const m = /^#plan=([\w-]+)$/.exec(location.hash);
   if (!m) return;
   history.replaceState(null, "", location.pathname + location.search);
-  const locked = store.isLocked(m[1]);
+  opening = opening.then(() => openCode(m[1])).catch((err) => toast(err.message, { error: true }));
+}
+
+async function openCode(code) {
+  const locked = store.isLocked(code);
   let shared;
   try {
-    shared = locked ? await unlockShared(m[1]) : await store.unpackPlan(m[1]);
+    shared = locked ? await unlockShared(code) : await store.unpackPlan(code);
   } catch (err) {
     toast(err.message, { error: true });
     return;
   }
   if (!shared) return;
   if (fromNewer(shared.plan)) {
-    history.replaceState(null, "", `${location.pathname}${location.search}#plan=${m[1]}`); // a reload opens it
+    history.replaceState(null, "", `${location.pathname}${location.search}#plan=${code}`); // a reload opens it
     toast(`${NEWER}, and the link opens.`, { error: true });
     return;
   }
@@ -175,12 +182,10 @@ export async function openSharedLink() {
   const name =
     (typeof shared.name === "string" && shared.name.trim().slice(0, 50)) || "Shared plan";
   // Opened before (a bookmarked link, or the sharer's own browser): go to that copy, no new one.
-  const twin = plans.find((x) => eq(x.plan, plan));
-  if (twin) {
-    const unsaved = edits().length > 0;
-    noteRun(twin, shared.run);
-    switchTo(twin.id);
-    if (!unsaved) toast(`Already saved here as “${twin.name}”: opened it.`);
+  // Looked for again after the question: the same link may have opened in another tab meanwhile.
+  const twin = () => plans.find((x) => eq(x.plan, plan));
+  if (twin()) {
+    openTwin(twin(), shared.run);
     return;
   }
   // Typing the password already said yes.
@@ -193,9 +198,19 @@ export async function openSharedLink() {
       cancel: "Not now",
     }));
   if (!yes) return;
+  if (twin()) {
+    openTwin(twin(), shared.run);
+    return;
+  }
   const p = addPlan(uniqueName(name), plan);
   noteRun(p, shared.run);
   switchTo(p.id);
+}
+function openTwin(twin, run) {
+  const unsaved = edits().length > 0;
+  noteRun(twin, run);
+  switchTo(twin.id);
+  if (!unsaved) toast(`Already saved here as “${twin.name}”: opened it.`);
 }
 
 // A share link says which seed and how many futures the sharer used. Different ones here give
