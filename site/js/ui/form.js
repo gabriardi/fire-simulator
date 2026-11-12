@@ -2,7 +2,15 @@
 // and events.
 import { RULE_KINDS, RULE_SHORT, endYear, lognormal, mixStats, personById } from "../engine.js";
 import { CURRENCIES, LOCALES, currencyName } from "../format.js";
-import { LIMITS, bandAround, newAccount, newEvent, newIncome, newPerson, same } from "../plan.js";
+import {
+  LIMITS,
+  bandAround,
+  bandFollows,
+  newAccount,
+  newEvent,
+  newIncome,
+  newPerson,
+} from "../plan.js";
 import * as store from "../store.js";
 import { STRESS_SCENARIOS, niceStep } from "../views.js";
 import { $, clone, el } from "./dom.js";
@@ -238,10 +246,7 @@ const moneySlider = (anchor) => {
 // by hand, the one around the spending, moves with it (not for the spend-down, whose floor is its
 // main input and which doesn't use the spending). A band set by hand stays: the slider then keeps
 // within it, while the box can still go outside, with the error and its fix.
-const bandIsAuto = (spending) => {
-  const b = bandAround(spending);
-  return same(state.rule.floor, b.floor) && same(state.rule.ceiling, b.ceiling);
-};
+const bandIsAuto = (spending) => bandFollows(state.rule, spending);
 const bandHolds = () => ["guardrails", "vanguard"].includes(state.rule.kind);
 const bandByHand = () =>
   bandHolds() && !bandIsAuto(state.spending) && state.rule.floor < state.rule.ceiling;

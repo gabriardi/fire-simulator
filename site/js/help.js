@@ -555,7 +555,11 @@ export const HELP = {
     title: "When can you stop, at which spending?",
     html: `<p>Each cell: how often the money lasts if you stop in that year (row) and spend that much
       (column). The outlined cell is your plan. <b>Tap a cell</b> to try that plan.</p>
-      <p>With the spend-down, which works out its own spending, the columns are its <b>floor</b>.</p>`,
+      <p>With guardrails or Vanguard, a floor and ceiling you set yourself keep the columns between
+      them. Left as they came, around the spending, they move with it: each column has its own,
+      as when you change the spending.</p>
+      <p>With the spend-down, which works out its own spending, the columns are its <b>floor</b>,
+      up to its ceiling.</p>`,
   },
   "chart.safe": {
     title: "Safe spending by FIRE year",

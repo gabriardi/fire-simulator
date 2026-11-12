@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { lasts, simulate, successRate } from "../site/js/engine.js";
 import {
+  columns,
   gridView,
   mainView,
   percentile,
@@ -11,6 +12,7 @@ import {
   stressView,
   sustainable,
 } from "../site/js/views.js";
+import { bandAround, problems } from "../site/js/plan.js";
 import { annuityPlan, household } from "./helpers.js";
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
@@ -77,17 +79,53 @@ test("the main view counts every future that runs out, also those that run out b
   assert.equal(v.start_hist.edges.length, v.start_hist.counts.length + 1);
 });
 
-test("the grid agrees with a direct run on the same futures, and leaves out the cells outside the rule's band", () => {
+test("the grid agrees with a direct run on the same futures, and keeps within a band set by hand", () => {
   const plan = household({ stock_vol: 0.17, n_sims: 1000, seed: 5, rule: { kind: "guardrails" } });
   const g = gridView(plan);
   const i = g.fire_years.indexOf(2040);
   const j = g.values.indexOf(50_000);
   assert.ok(i >= 0 && j >= 0);
   assert.equal(g.success[i][j], lasts(plan, { n: 1000 }));
-  // Guardrails between 40,000 and 65,000: the spending levels outside have no rate.
-  g.values.forEach((v, k) =>
-    assert.equal(g.success[i][k] == null, v < 40_000 || v > 65_000, `spending ${v}`),
+  // Guardrails between 40,000 and 65,000, set by hand: every column is a spending they allow.
+  assert.deepEqual(
+    g.values,
+    Array.from({ length: 11 }, (_, k) => 40_000 + 2_500 * k),
   );
+  assert.ok(g.success.flat().every((x) => typeof x === "number"));
+});
+
+test("the grid moves a band nobody set along with each column, as tapping the cell does", () => {
+  const plan = household({ stock_vol: 0.17, n_sims: 1000, seed: 5, rule: { kind: "vanguard" } });
+  Object.assign(plan.rule, bandAround(plan.spending));
+  const g = gridView(plan);
+  assert.equal(g.values.length, 11);
+  const i = g.fire_years.indexOf(2040);
+  const j = g.values.length - 1;
+  const v = g.values[j];
+  assert.ok(v > plan.rule.ceiling, "a column past the plan's own ceiling");
+  const tapped = { ...plan, spending: v, rule: { ...plan.rule, ...bandAround(v) } };
+  assert.deepEqual(problems(tapped), []);
+  assert.equal(g.success[i][j], lasts(tapped, { n: 1000 }));
+});
+
+test("the grid's columns shift away from the ends of their range, and get finer in a narrow one", () => {
+  // A floor above the spending's lower columns: they start at it instead of leaving a gap.
+  assert.deepEqual(
+    columns(130_000, 105_000, 200_000).values,
+    [110_000, 120_000, 130_000, 140_000, 150_000, 160_000, 170_000, 180_000, 190_000, 200_000],
+  );
+  // The spend-down's floor up to its ceiling.
+  assert.equal(Math.max(...columns(60_000, 0, 65_000).values), 65_000);
+  // A narrow band: smaller steps, still about eleven columns, all inside.
+  const { values, step } = columns(50_000, 48_000, 53_000);
+  assert.equal(step, 500);
+  assert.ok(values.length >= 9 && values.every((v) => v >= 48_000 && v <= 53_000));
+  // No limit: eleven columns around the amount, all above 0.
+  for (const base of [700, 10_000, 64_000]) {
+    const c = columns(base, 0, Infinity).values;
+    assert.equal(c.length, 11);
+    assert.ok(c[0] > 0 && c[0] < base && base < c[10]);
+  }
 });
 
 test("the stress test without a forced crash is the plain result, and a crash at the start only hurts", () => {

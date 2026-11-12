@@ -76,6 +76,15 @@ export const bandAround = (spending) => ({
   ceiling: roundish(spending * 1.25),
 });
 
+/**
+ * Whether a rule's floor and ceiling are the band around this spending: nobody set them by hand,
+ * so they move with the spending (for guardrails and Vanguard, which need the spending between).
+ */
+export function bandFollows(rule, spending) {
+  const b = bandAround(spending);
+  return same(rule.floor, b.floor) && same(rule.ceiling, b.ceiling);
+}
+
 export function blankPlan({ currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
   const y = today.getFullYear();
   return {

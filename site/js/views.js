@@ -17,6 +17,7 @@ import {
   unlockYear,
   yearOf,
 } from "./engine.js";
+import { bandAround, bandFollows } from "./plan.js";
 
 export const PERCENTILES = [5, 10, 25, 50, 75, 90, 95];
 
@@ -278,27 +279,48 @@ export function mainView(plan, nPaths = 120) {
 
 // ---- the heavier views ---------------------------------------------------------------------------
 
-/** How often the money lasts, by FIRE year and spending. The spend-down sets its own spending, so
- * for it the columns are its floor instead. */
+/**
+ * How often the money lasts, by FIRE year and spending. The spend-down sets its own spending, so
+ * for it the columns are its floor instead. Each cell is the plan that tapping it gives, so none is
+ * left empty: with guardrails or Vanguard, a floor and ceiling set by hand keep the columns between
+ * them, and the band around the spending, which nobody set, moves along with each column. The
+ * spend-down's floor stays at or below its ceiling.
+ */
 export function gridView(plan) {
   const n = Math.min(plan.n_sims, 4_000);
   const kind = plan.rule.kind;
   const byFloor = kind === "spenddown";
-  const base = byFloor ? plan.rule.floor : plan.spending;
-  const step = niceStep(base * 0.08);
-  const centre = Math.round(base / step) * step;
-  const values = [];
-  for (let k = -5; k <= 5; k++) if (centre + k * step > 0) values.push(centre + k * step);
+  const { floor, ceiling } = plan.rule;
+  const banded = kind === "guardrails" || kind === "vanguard";
+  const follows = banded && bandFollows(plan.rule, plan.spending);
+  const [lo, hi] = byFloor ? [0, ceiling] : banded && !follows ? [floor, ceiling] : [0, Infinity];
+  const { values, step } = columns(byFloor ? floor : plan.spending, lo, hi);
   const fireYears = nearYears(plan);
   const success = fireYears.map((fy) =>
-    values.map((v) => {
-      if (byFloor)
-        return v > plan.rule.ceiling ? null : lasts(plan, { n, fire_year: fy, rule: { floor: v } });
-      if (!inBand(plan, kind, v)) return null;
-      return lasts(plan, { n, fire_year: fy, spending: v });
-    }),
+    values.map((v) =>
+      byFloor
+        ? lasts(plan, { n, fire_year: fy, rule: { floor: v } })
+        : lasts(plan, { n, fire_year: fy, spending: v, rule: follows ? bandAround(v) : {} }),
+    ),
   );
   return { fire_years: fireYears, axis: byFloor ? "floor" : "spending", values, step, success };
+}
+
+/**
+ * `count` round amounts around `base`, about 8% apart, all above 0 and within lo…hi: next to an
+ * end of that range they shift away from it, and in a range too narrow for them the steps get
+ * finer.
+ */
+export function columns(base, lo, hi, count = 11) {
+  let step = niceStep(base * 0.08);
+  if (hi - lo < (count - 1) * step) step = niceStep((hi - lo) / (count - 1));
+  const kLo = Math.max(1, Math.ceil(lo / step - 1e-9));
+  const kHi = Math.floor(hi / step + 1e-9);
+  const k1 = Math.min(kHi, Math.max(kLo, Math.round(base / step) - (count >> 1)) + count - 1);
+  const k0 = Math.max(kLo, k1 - count + 1);
+  const values = [];
+  for (let k = k0; k <= k1; k++) values.push(k * step);
+  return { values: values.length ? values : [base], step };
 }
 
 /** The highest starting spending that lasts in 90% and 95% of futures, by FIRE year; for the

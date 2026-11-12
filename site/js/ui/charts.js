@@ -630,6 +630,7 @@ function renderGrid() {
         xgap: 2,
         ygap: 2,
         showscale: false,
+        hoverongaps: false, // an empty cell has no rate: Plotly would show it as 0.0%
         hovertemplate: `${text.hover}<br>money lasts in <b>%{z:.1%}</b><extra></extra>`,
       },
     ],
