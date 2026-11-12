@@ -76,6 +76,7 @@ Around it:
 | `.github/`                            | The tests on GitHub Actions, Dependabot for those actions, the issue forms and the pull request checklist, the sponsor button |
 | `.editorconfig`                       | UTF-8, LF, two spaces; files from elsewhere left as they came                                                                 |
 | `.prettierrc.json`, `.prettierignore` | How Prettier formats the code (lines up to 120 columns), and what it leaves alone                                             |
+| `.git-blame-ignore-revs`              | Commits that `git blame` skips: the one that formatted every file                                                             |
 
 ## Tests
 
