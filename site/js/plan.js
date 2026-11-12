@@ -36,7 +36,13 @@ export const fromNewer = (raw) => Number.isInteger(raw?.schema) && raw.schema > 
 
 /** New plans and the example start in this currency; anyone can pick another. */
 export const DEFAULT_CURRENCY = "CHF";
-export const LIMITS = { people: 4, accounts: 12, income: 12, events: 20, years: 120 };
+/**
+ * The most a plan holds. The lists' caps are well above what a household writes in by hand; they
+ * are there for plans from a file or a link, which could hold anything: `normalize` keeps that many
+ * and drops the rest, so a link can't make the page build a form of a million cards, or simulate
+ * them in every future. (A person is a line of ages on the charts: a household has a few.)
+ */
+export const LIMITS = { people: 4, accounts: 50, income: 50, events: 50, years: 120 };
 
 export const RULE_DEFAULTS = {
   kind: "fixed",

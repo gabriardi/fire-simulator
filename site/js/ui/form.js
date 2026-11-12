@@ -259,6 +259,12 @@ const spendingSlider = (anchor) => {
     : { min: floor, max: ceiling, step: (ceiling - floor) / 200 };
 };
 
+// A list that's full says so, instead of leaving a greyed-out button to puzzle over.
+const fullNote = (list, what) =>
+  state[list].length >= LIMITS[list]
+    ? el("div", { class: "hint", text: `A plan holds up to ${LIMITS[list]} ${what}.` })
+    : null;
+
 function peopleGroup() {
   const cards = state.people.map((x, i) =>
     itemCard(
@@ -308,6 +314,7 @@ function peopleGroup() {
     }),
     ...cards,
     addButtons(["Add person", addPerson, state.people.length >= LIMITS.people]),
+    fullNote("people", "people"),
   );
 }
 
@@ -416,6 +423,7 @@ function accountsGroup() {
       () => addItem("accounts", newAccount(state)),
       state.accounts.length >= LIMITS.accounts,
     ]),
+    fullNote("accounts", "retirement accounts"),
   );
 }
 
@@ -471,6 +479,7 @@ function incomeGroup() {
       ["Add income", () => addItem("income", newIncome(state)), full],
       ["Add cost", () => addItem("income", newIncome(state, true)), full],
     ),
+    fullNote("income", "income and cost lines"),
   );
 }
 
@@ -524,6 +533,7 @@ function eventsGroup() {
       () => addItem("events", newEvent(state)),
       state.events.length >= LIMITS.events,
     ]),
+    fullNote("events", "one-off events"),
   );
 }
 

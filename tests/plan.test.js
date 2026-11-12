@@ -4,6 +4,7 @@ import { simulate } from "../site/js/engine.js";
 import { makeFormat } from "../site/js/format.js";
 import {
   DEFAULT_CURRENCY,
+  LIMITS,
   SCHEMA,
   bandAround,
   blankPlan,
@@ -135,6 +136,17 @@ test("differences: changed values by path, an added or removed item once", () =>
   const c = structuredClone(a);
   c.income[1].to = { kind: "year", value: 2070 };
   assert.ok(differences(a, c).some((p) => p.startsWith("income.1.to")));
+});
+
+test("normalize keeps as many items as a plan holds, and drops the rest", () => {
+  const plan = examplePlan({ today });
+  const many = (n) => Array.from({ length: n }, (_, i) => ({ ...plan.accounts[0], id: `a${i}` }));
+  assert.equal(normalize({ ...plan, accounts: many(LIMITS.accounts) }).accounts.length, 50);
+  const cut = normalize({ ...plan, accounts: many(LIMITS.accounts + 5) }).accounts;
+  assert.deepEqual(
+    cut.map((a) => a.id),
+    many(LIMITS.accounts).map((a) => a.id),
+  );
 });
 
 test("differences: a moved item is the same item, and the list changed once", () => {
