@@ -2,8 +2,10 @@
 
 Thanks for looking. Issues and pull requests are welcome: a bug, a number that looks wrong, a
 pension system the simulator can't express, a sentence that could be clearer. For a bigger
-change, open an issue first, so we can agree on it before you write it. A security problem goes
-privately instead: see [SECURITY.md](SECURITY.md).
+change, open an issue first, so we can agree on it before you write it. No GitHub account, or
+something you'd rather not post in public? Write to
+[hello@whencanistop.fyi](mailto:hello@whencanistop.fyi). A security problem goes privately
+instead: see [SECURITY.md](SECURITY.md).
 
 ## What the project is
 

@@ -59,6 +59,8 @@ export const HELP = {
         <li>Something broken, or a number that looks wrong?
           <a href="https://github.com/gabriardi/fire-simulator/issues/new/choose" target="_blank" rel="noopener">Open an issue</a>,
           with made-up numbers: issues are public.</li>
+        <li>No GitHub account, or rather not post in public? Write to
+          <a href="mailto:hello@whencanistop.fyi">hello@whencanistop.fyi</a>.</li>
         <li>If it's useful to you, you can support it:
           <a class="coffee" href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener"><span aria-hidden="true">☕</span> Buy me a coffee</a></li>
       </ul>`,
