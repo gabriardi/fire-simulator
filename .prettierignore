@@ -1,0 +1,5 @@
+# Files from elsewhere stay as they came: the vendored library, the numpy model's fixture.
+site/vendor/
+tests/fixtures/
+# The empty lines under its headings leave room to write.
+.github/pull_request_template.md

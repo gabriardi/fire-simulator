@@ -24,6 +24,18 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: node --test "tests/*.test.js"
 
+  # The code is formatted by Prettier, at the version pinned in package.json's scripts (fetched by
+  # npx, not installed). `npm run format` fixes what this reports.
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm run format:check
+
   # The chart library is checked in, minified: nobody reads 1.5 MB of it. This checks that it is,
   # byte for byte, the file published on npm for the version in its name.
   vendored:

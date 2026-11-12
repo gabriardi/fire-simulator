@@ -26,6 +26,7 @@ git clone https://github.com/gabriardi/fire-simulator.git
 cd fire-simulator
 node scripts/serve.js            # http://127.0.0.1:8000, with the production headers
 node --test "tests/*.test.js"    # Node 22 or newer; no packages to install
+npm run format                   # Prettier; npx fetches the pinned version, nothing is installed
 ```
 
 Opening `site/index.html` from disk won't work: browsers don't load ES modules or Web Workers
@@ -74,12 +75,13 @@ Around it:
 | `docs/` | How the simulation works, the README's screenshots, and the link-preview card |
 | `.github/` | The tests on GitHub Actions, Dependabot for those actions, the issue forms and the pull request checklist, the sponsor button |
 | `.editorconfig` | UTF-8, LF, two spaces; files from elsewhere left as they came |
+| `.prettierrc.json`, `.prettierignore` | How Prettier formats the code (lines up to 120 columns), and what it leaves alone |
 
 ## Tests
 
 GitHub Actions runs them on every push to `main` and every pull request, on Node 22 and 24
-(`.github/workflows/test.yml`). It also checks that the bundled Plotly is, byte for byte, the
-file published on npm for its version.
+(`.github/workflows/test.yml`). It also checks that the code is formatted, and that the bundled
+Plotly is, byte for byte, the file published on npm for its version.
 
 - `tests/engine.test.js` covers the model's mechanics:
   - accounts unlocking, income lines and events;
@@ -117,7 +119,10 @@ file published on npm for its version.
 
 ## Before a pull request
 
-1. `node --test "tests/*.test.js"` passes.
+1. `node --test "tests/*.test.js"` passes, and the code is formatted: `npm run format`. Prettier
+   decides the layout, so there's no style to learn; an editor's Prettier extension with format on
+   save does the same as you type. The version is pinned in `package.json`'s scripts, so everyone
+   gets the same result.
 2. Try the change in the page (`node scripts/serve.js`), in a browser's private window so you start
    from the example. The tests don't drive the page, so it's worth a few minutes:
    - the result and all the charts appear, and update when you change the spending or a slider;
