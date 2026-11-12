@@ -10,6 +10,10 @@
   "env": { "browser": true, "es2024": true },
   "overrides": [
     { "files": ["site/js/*.js"], "env": { "browser": false, "shared-node-browser": true } },
+    {
+      "files": ["site/js/locales/**/*.js"],
+      "env": { "browser": false, "shared-node-browser": true }
+    },
     { "files": ["site/js/app.js"], "env": { "browser": true } },
     { "files": ["site/js/ui/charts.js"], "globals": { "Plotly": "readonly" } },
     { "files": ["site/js/worker.js"], "env": { "browser": false, "worker": true } },

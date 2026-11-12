@@ -1,6 +1,7 @@
 // The page's entry point: wires the buttons, menus and dialogs to the modules in ui/, then starts.
 // The numbers come from workers running the model (engine.js, views.js); nothing here talks to a
 // server.
+import { t } from "./i18n.js";
 import { examplePlan, normalize } from "./plan.js";
 import * as store from "./store.js";
 import { renderAll, renderPaths, setUnit } from "./ui/charts.js";
@@ -154,7 +155,7 @@ function wire() {
     e.preventDefault(); // never the browser's "save page"
     if (!base || document.querySelector("dialog[open]")) return;
     if (edits().length || !planById(base.id)) saveCurrent();
-    else toast(`“${base.name}” has no unsaved changes.`);
+    else toast(t("plans.unchanged", { name: base.name }));
   });
   $("#name-cancel").addEventListener("click", () => $("#name-dialog").close());
   $("#setup-cancel").addEventListener("click", () => $("#setup-dialog").close());
@@ -206,10 +207,10 @@ function wire() {
     if (p && !eq(p.plan, base.values)) {
       if (hadEdits) {
         setBase({ id: p.id, name: p.name, values: clone(p.plan) });
-        toast(`“${p.name}” was saved in another tab. Your unsaved changes here are kept.`);
+        toast(t("plans.savedElsewhere", { name: p.name }));
       } else {
         useBase(p.id);
-        toast(`“${p.name}” was updated in another tab.`);
+        toast(t("plans.updatedElsewhere", { name: p.name }));
       }
     } else if (p) base.name = p.name;
     renderPlanBar();
@@ -221,7 +222,7 @@ function start() {
   setCanStore(store.storageWorks());
   setPlans(store.loadPlans());
   if (!plans.length) {
-    addPlan("Example", examplePlan(), { example: true });
+    addPlan(t("plans.example"), examplePlan(), { example: true });
   }
   const session = store.loadSession();
   const current =

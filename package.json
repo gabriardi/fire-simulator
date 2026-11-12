@@ -13,6 +13,7 @@
   "scripts": {
     "test": "node --test \"tests/*.test.js\"",
     "serve": "node scripts/serve.js",
+    "strings": "node scripts/strings.js",
     "prettier": "npx --yes prettier@3.10.1",
     "format": "npm run --silent prettier -- --write .",
     "format:check": "npm run --silent prettier -- --check .",

@@ -3,20 +3,26 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>When can I stop? · Monte Carlo FIRE simulator</title>
+    <title data-i18n="meta.title">When can I stop? · Monte Carlo FIRE simulator</title>
     <meta
       name="description"
+      data-i18n-content="meta.description"
       content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device."
     />
     <link rel="canonical" href="https://whencanistop.fyi/" />
     <!-- Link previews (Open Graph, X) and search engines' description of the site. A copy of your own
      changes the addresses here, and the operator in privacy.html. -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="When can I stop?" />
+    <meta property="og:site_name" data-i18n-content="app.name" content="When can I stop?" />
     <meta property="og:url" content="https://whencanistop.fyi/" />
-    <meta property="og:title" content="When can I stop? · Monte Carlo FIRE simulator" />
+    <meta
+      property="og:title"
+      data-i18n-content="meta.title"
+      content="When can I stop? · Monte Carlo FIRE simulator"
+    />
     <meta
       property="og:description"
+      data-i18n-content="meta.description"
       content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device."
     />
     <meta property="og:image" content="https://whencanistop.fyi/images/social.png" />
@@ -24,6 +30,7 @@
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
+      data-i18n-content="meta.imageAlt"
       content="When can I stop? A Monte Carlo FIRE simulator, next to a screenshot: the money lasts in 78% of 10,000 futures."
     />
     <meta name="twitter:card" content="summary_large_image" />
@@ -54,25 +61,37 @@
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="Can I stop?" />
+    <meta
+      name="apple-mobile-web-app-title"
+      data-i18n-content="app.shortName"
+      content="Can I stop?"
+    />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
     <div class="shell">
-      <aside class="rail" id="rail" aria-label="Parameters">
+      <aside class="rail" id="rail" aria-label="Parameters" data-i18n-aria-label="page.parameters">
         <div class="rail-head">
           <div class="rail-top">
             <div>
-              <h2>Parameters</h2>
-              <div class="rail-live" id="rail-live">Loading…</div>
+              <h2 data-i18n="page.parameters">Parameters</h2>
+              <div class="rail-live" id="rail-live" data-i18n="page.loading">Loading…</div>
             </div>
-            <button class="btn sheet-close" id="sheet-close" type="button">Done</button>
+            <button class="btn sheet-close" id="sheet-close" type="button" data-i18n="page.done">
+              Done
+            </button>
           </div>
           <div class="scenario" id="scenario">
             <div class="scenario-label">
-              <label for="plan-select">Plan</label>
-              <button class="help" type="button" data-help="plans" aria-label="Explain: Plans">
+              <label for="plan-select" data-i18n="page.plan">Plan</label>
+              <button
+                class="help"
+                type="button"
+                data-help="plans"
+                aria-label="Explain: Plans"
+                data-i18n-aria-label="page.help.plans"
+              >
                 ?
               </button>
             </div>
@@ -87,44 +106,128 @@
                   aria-expanded="false"
                   aria-controls="plan-menu"
                   aria-label="Plan actions"
+                  data-i18n-aria-label="page.planActions"
                   title="Plan actions"
+                  data-i18n-title="page.planActions"
                 >
                   ⋯
                 </button>
-                <div class="menu" id="plan-menu" role="menu" aria-label="Plan actions" hidden>
-                  <button type="button" role="menuitem" data-act="new">New plan…</button>
-                  <button type="button" role="menuitem" data-act="save-as">Save as a copy…</button>
-                  <button type="button" role="menuitem" data-act="rename">Rename…</button>
-                  <button type="button" role="menuitem" data-act="delete" class="danger">
+                <div
+                  class="menu"
+                  id="plan-menu"
+                  role="menu"
+                  aria-label="Plan actions"
+                  data-i18n-aria-label="page.planActions"
+                  hidden
+                >
+                  <button type="button" role="menuitem" data-act="new" data-i18n="page.menu.new">
+                    New plan…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="save-as"
+                    data-i18n="page.menu.saveAs"
+                  >
+                    Save as a copy…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="rename"
+                    data-i18n="page.menu.rename"
+                  >
+                    Rename…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="delete"
+                    class="danger"
+                    data-i18n="page.menu.delete"
+                  >
                     Delete
                   </button>
                   <hr />
-                  <button type="button" role="menuitem" data-act="share">Share link…</button>
-                  <button type="button" role="menuitem" data-act="export">Export plans</button>
-                  <button type="button" role="menuitem" data-act="import">Import plans…</button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="share"
+                    data-i18n="page.menu.share"
+                  >
+                    Share link…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="export"
+                    data-i18n="page.menu.export"
+                  >
+                    Export plans
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="import"
+                    data-i18n="page.menu.import"
+                  >
+                    Import plans…
+                  </button>
                 </div>
               </div>
             </div>
             <div class="scenario-status">
               <span class="scenario-state" id="plan-state"></span>
-              <button class="btn quiet" id="plan-revert" type="button" hidden>Revert</button>
-              <button class="btn primary" id="plan-save" type="button" hidden>Save</button>
+              <button
+                class="btn quiet"
+                id="plan-revert"
+                type="button"
+                data-i18n="page.revert"
+                hidden
+              >
+                Revert
+              </button>
+              <button
+                class="btn primary"
+                id="plan-save"
+                type="button"
+                data-i18n="plans.save"
+                hidden
+              >
+                Save
+              </button>
             </div>
             <div class="backup" id="backup" hidden>
               <span class="backup-text" id="backup-text"></span>
-              <button class="btn small" id="backup-export" type="button">Export</button>
-              <button class="help" type="button" data-help="backup" aria-label="Explain: Backups">
+              <button
+                class="btn small"
+                id="backup-export"
+                type="button"
+                data-i18n="page.backup.export"
+              >
+                Export
+              </button>
+              <button
+                class="help"
+                type="button"
+                data-help="backup"
+                aria-label="Explain: Backups"
+                data-i18n-aria-label="page.help.backup"
+              >
                 ?
               </button>
             </div>
             <div class="backup shared-note" id="shared-note" role="status" hidden>
               <span class="backup-text" id="shared-text"></span>
-              <button class="btn small" id="shared-use" type="button">Use the same</button>
+              <button class="btn small" id="shared-use" type="button" data-i18n="page.shared.use">
+                Use the same
+              </button>
               <button
                 class="btn quiet small"
                 id="shared-close"
                 type="button"
                 aria-label="Dismiss this note"
+                data-i18n-aria-label="page.shared.dismiss"
               >
                 ×
               </button>
@@ -143,49 +246,56 @@
 
       <main>
         <noscript
-          ><p class="noscript">
+          ><p class="noscript" data-i18n="page.noscript">
             <b>When can I stop?</b> is a Monte Carlo FIRE simulator that runs in your browser, so it
             needs JavaScript. Nothing you type is ever sent anywhere.
           </p></noscript
         >
         <header class="top">
           <div class="title">
-            <h1>When can I stop?</h1>
+            <h1 data-i18n="app.name">When can I stop?</h1>
             <button
               class="scenario-pill"
               id="plan-pill"
               type="button"
               title="The plan on screen"
+              data-i18n-title="page.pill"
             ></button>
           </div>
           <div class="top-right">
-            <span class="sub" id="sub">Today's money · Monte Carlo</span>
+            <span class="sub" id="sub" data-i18n="page.sub">Today's money · Monte Carlo</span>
             <button
               class="btn"
               id="new-seed"
               type="button"
               title="Draw a different set of random futures"
+              data-i18n-title="page.newSeed.title"
+              data-i18n="form.newSeed"
             >
               New seed
             </button>
-            <button class="btn" id="guide" type="button">Guide</button>
+            <button class="btn" id="guide" type="button" data-i18n="guide.title">Guide</button>
             <select
               class="btn theme-select"
               id="theme"
               aria-label="Theme"
+              data-i18n-aria-label="page.theme"
               title="Light, dark, or as the device is set"
+              data-i18n-title="page.theme.title"
             >
-              <option value="auto">Theme: auto</option>
-              <option value="light">Theme: light</option>
-              <option value="dark">Theme: dark</option>
+              <option value="auto" data-i18n="page.theme.auto">Theme: auto</option>
+              <option value="light" data-i18n="page.theme.light">Theme: light</option>
+              <option value="dark" data-i18n="page.theme.dark">Theme: dark</option>
             </select>
           </div>
         </header>
 
         <section class="welcome hidden" id="welcome">
           <div>
-            <h2>When can you stop working, and how much can you spend?</h2>
-            <p>
+            <h2 data-i18n="page.welcome.title">
+              When can you stop working, and how much can you spend?
+            </h2>
+            <p data-i18n="page.welcome.text">
               The simulator plays your plan through thousands of possible futures for the markets,
               and tells you how often the money lasts. The numbers below are for Alex and Sam, a
               made-up household, to show how it works. Set up your own plan to see yours: everything
@@ -193,21 +303,38 @@
             </p>
           </div>
           <div class="welcome-actions">
-            <button class="btn primary" id="welcome-setup" type="button">Set up my plan</button>
-            <button class="btn" id="welcome-import" type="button">Import plans</button>
-            <button class="btn quiet" id="welcome-close" type="button">Keep exploring</button>
+            <button
+              class="btn primary"
+              id="welcome-setup"
+              type="button"
+              data-i18n="page.welcome.setup"
+            >
+              Set up my plan
+            </button>
+            <button class="btn" id="welcome-import" type="button" data-i18n="page.welcome.import">
+              Import plans
+            </button>
+            <button
+              class="btn quiet"
+              id="welcome-close"
+              type="button"
+              data-i18n="page.welcome.close"
+            >
+              Keep exploring
+            </button>
           </div>
         </section>
 
         <section class="hero" aria-live="polite">
           <div class="verdict">
             <span class="label"
-              >Money lasts in
+              ><span data-i18n="page.hero.label">Money lasts in</span>
               <button
                 class="help"
                 type="button"
                 data-help="result.success"
                 aria-label="Explain: Money lasts in"
+                data-i18n-aria-label="page.help.success"
               >
                 ?
               </button></span
@@ -223,28 +350,40 @@
           <div class="card-head">
             <div>
               <h3>
-                Wealth over time
+                <span data-i18n="page.paths.title">Wealth over time</span>
                 <button
                   class="help"
                   type="button"
                   data-help="chart.paths"
                   aria-label="Explain: Wealth over time"
+                  data-i18n-aria-label="page.help.paths"
                 >
                   ?
                 </button>
               </h3>
-              <p class="desc">
+              <p class="desc" data-i18n="page.paths.desc">
                 Each thin line is one simulated future, coloured from poorest (purple) to richest
                 (yellow); red lines run out of money. The black line is the median, the shaded bands
                 hold the middle 50% and 80% of futures.
               </p>
             </div>
             <div class="tools">
-              <div class="seg" role="group" aria-label="Unit">
-                <button type="button" data-unit="years" aria-pressed="true">
+              <div class="seg" role="group" aria-label="Unit" data-i18n-aria-label="page.unit">
+                <button
+                  type="button"
+                  data-unit="years"
+                  aria-pressed="true"
+                  data-i18n="page.unit.years"
+                >
                   Years of spending
                 </button>
-                <button type="button" data-unit="money" aria-pressed="false" id="unit-money">
+                <button
+                  type="button"
+                  data-unit="money"
+                  aria-pressed="false"
+                  id="unit-money"
+                  data-i18n="page.unit.money"
+                >
                   Money
                 </button>
               </div>
@@ -257,17 +396,18 @@
           <div class="card-head">
             <div>
               <h3>
-                What you'd get to spend
+                <span data-i18n="page.spending.title">What you'd get to spend</span>
                 <button
                   class="help"
                   type="button"
                   data-help="chart.spending"
                   aria-label="Explain this chart"
+                  data-i18n-aria-label="page.help.chart"
                 >
                   ?
                 </button>
               </h3>
-              <p class="desc">
+              <p class="desc" data-i18n="page.spending.desc">
                 The price of flexibility: each line is one future's yearly spending (red ones end
                 when the money runs out). The band holds 80% of the futures that last.
               </p>
@@ -280,12 +420,15 @@
           <div class="card-head">
             <div>
               <h3>
-                <span id="grid-title">When can you stop, at which spending?</span>
+                <span id="grid-title" data-i18n="grid.spending.title"
+                  >When can you stop, at which spending?</span
+                >
                 <button
                   class="help"
                   type="button"
                   data-help="chart.grid"
                   aria-label="Explain this chart"
+                  data-i18n-aria-label="page.help.chart"
                 >
                   ?
                 </button>
@@ -300,12 +443,13 @@
           <div class="card-head">
             <div>
               <h3>
-                <span id="safe-title">Safe spending by FIRE year</span>
+                <span id="safe-title" data-i18n="safe.title">Safe spending by FIRE year</span>
                 <button
                   class="help"
                   type="button"
                   data-help="chart.safe"
                   aria-label="Explain this chart"
+                  data-i18n-aria-label="page.help.chart"
                 >
                   ?
                 </button>
@@ -320,17 +464,18 @@
           <div class="card-head">
             <div>
               <h3>
-                Stress test: a crash right after you stop
+                <span data-i18n="page.stress.title">Stress test: a crash right after you stop</span>
                 <button
                   class="help"
                   type="button"
                   data-help="chart.stress"
                   aria-label="Explain this chart"
+                  data-i18n-aria-label="page.help.chart"
                 >
                   ?
                 </button>
               </h3>
-              <p class="desc">
+              <p class="desc" data-i18n="page.stress.desc">
                 A historical-style crash forced into the first FIRE years, random markets after it.
                 A bad start is what breaks a withdrawal plan: you sell low to pay the bills, and
                 that money never recovers.
@@ -344,12 +489,13 @@
           <div class="two">
             <div>
               <h3>
-                Wealth at the FIRE start
+                <span data-i18n="page.dist.start">Wealth at the FIRE start</span>
                 <button
                   class="help"
                   type="button"
                   data-help="chart.dist"
                   aria-label="Explain these charts"
+                  data-i18n-aria-label="page.help.charts"
                 >
                   ?
                 </button>
@@ -357,7 +503,7 @@
               <div class="chart small" id="ch-start"></div>
             </div>
             <div>
-              <h3>Year the money runs out</h3>
+              <h3 data-i18n="page.dist.fail">Year the money runs out</h3>
               <div class="chart small" id="ch-fail"></div>
             </div>
           </div>
@@ -365,90 +511,96 @@
 
         <section class="card how">
           <details>
-            <summary>How the simulation works, and what it can't see</summary>
-            <h4>Everything is in today's money</h4>
-            <p>
+            <summary data-i18n="page.how.summary">
+              How the simulation works, and what it can't see
+            </summary>
+            <h4 data-i18n="page.how.money">Everything is in today's money</h4>
+            <p data-i18n="page.how.money.text">
               Returns are drawn after inflation, so a spending of 40,000 a year means today's
               purchasing power in every year. Nominal inputs (returns, interest rates) are converted
               using the inflation you set.
             </p>
-            <h4>One year at a time</h4>
+            <h4 data-i18n="page.how.years">One year at a time</h4>
             <ul>
-              <li>
+              <li data-i18n="page.how.years.portfolio">
                 The portfolio, and the retirement accounts invested like it, is a mix of stocks and
                 bonds rebalanced every year. Stocks and bonds each get one random return per year,
                 drawn independently from a log-normal distribution with the median and spread you
                 set (or a fat-tailed one).
               </li>
-              <li>
+              <li data-i18n="page.how.years.cash">
                 Cash and fixed-interest accounts grow at their interest minus inflation. Until the
                 FIRE year you keep saving.
               </li>
-              <li>
+              <li data-i18n="page.how.years.unlock">
                 When its owner reaches the unlock age, a retirement account is withdrawn, taxed, and
                 added to the portfolio.
               </li>
-              <li>
+              <li data-i18n="page.how.years.income">
                 From the FIRE year, income lines (pensions, part-time work) and extra costs count,
                 and one-off events happen in their year.
               </li>
-              <li>
+              <li data-i18n="page.how.years.fail">
                 Spending comes from cash first, then the portfolio. A future
                 <strong>fails</strong> in the first year the reachable money can't pay the bills,
                 even if a retirement account would unlock later.
               </li>
             </ul>
-            <h4>Spending rules</h4>
+            <h4 data-i18n="page.how.rules">Spending rules</h4>
             <ul>
-              <li>
+              <li data-i18n="page.how.rules.fixed">
                 <strong>Fixed:</strong> the same real amount every year (the classic safe withdrawal
                 rate).
               </li>
-              <li>
+              <li data-i18n="page.how.rules.guardrails">
                 <strong>Guardrails</strong> (Guyton &amp; Klinger): cut spending when the withdrawal
                 rate drifts above where it started by more than the band, raise it when it drifts
                 below.
               </li>
-              <li>
+              <li data-i18n="page.how.rules.vanguard">
                 <strong>Vanguard dynamic:</strong> aim at a fixed share of wealth, but change
                 spending by at most +up / −down a year.
               </li>
-              <li>
+              <li data-i18n="page.how.rules.spenddown">
                 <strong>Spend-down</strong> (die with zero): each year, aim at what could be spent
                 every year until the end if the money earned the assumed return, with the locked
                 accounts and future income counted as money today; until an account unlocks, only
                 the reachable money pays. Spending moves towards it by at most +raise / −cut a year.
               </li>
-              <li>
+              <li data-i18n="page.how.rules.band">
                 The flexible rules stay between the floor (costs you can't cut) and the ceiling.
                 They fail only when even the floor can't be paid.
               </li>
             </ul>
-            <h4>What it can't see</h4>
+            <h4 data-i18n="page.how.limits">What it can't see</h4>
             <ul>
-              <li>
+              <li data-i18n="page.how.limits.markets">
                 Real markets have long bad stretches and recoveries; independent random years are a
                 simplification. Use the stress test for bad starts.
               </li>
-              <li>
+              <li data-i18n="page.how.limits.returns">
                 The return assumption moves the answer more than anything else. Try a cautious case.
               </li>
-              <li>Inflation is the rate you set, in every year: only the returns are random.</li>
-              <li>
+              <li data-i18n="page.how.limits.inflation">
+                Inflation is the rate you set, in every year: only the returns are random.
+              </li>
+              <li data-i18n="page.how.limits.taxes">
                 Taxes are simplified: a flat rate on each retirement account when it unlocks, and
                 optionally an effective rate on portfolio withdrawals. Put everything else (income
                 tax, wealth tax, health insurance) into the spending.
               </li>
-              <li>
+              <li data-i18n="page.how.limits.missing">
                 Not modelled: pension reforms, costs rising faster than prices, how long each person
                 lives (the plan simply runs until the age you set), currency risk.
               </li>
             </ul>
-            <p>This is a tool for thinking about a plan, not financial advice.</p>
+            <p data-i18n="page.how.advice">
+              This is a tool for thinking about a plan, not financial advice.
+            </p>
           </details>
         </section>
         <footer class="site-foot">
-          <p>
+          <p data-i18n="page.foot.free">
             Free, with no ads and no tracking. If it's useful to you:
             <a
               class="coffee"
@@ -458,7 +610,7 @@
               ><span aria-hidden="true">☕</span> Buy me a coffee</a
             >
           </p>
-          <p>
+          <p data-i18n="page.foot.links">
             Open source (<a
               href="https://github.com/gabriardi/fire-simulator/blob/main/LICENSE"
               target="_blank"
@@ -474,22 +626,22 @@
         </footer>
       </main>
     </div>
-    <button class="fab" id="fab" type="button">Adjust parameters</button>
+    <button class="fab" id="fab" type="button" data-i18n="page.fab">Adjust parameters</button>
     <input type="file" id="import-file" accept=".json,application/json" hidden />
 
     <dialog id="help-dialog" aria-labelledby="help-title">
       <div class="help-head">
-        <h2 id="help-title">Help</h2>
-        <button class="btn" id="help-close" type="button">Close</button>
+        <h2 id="help-title" data-i18n="page.help.title">Help</h2>
+        <button class="btn" id="help-close" type="button" data-i18n="page.close">Close</button>
       </div>
       <div class="help-body" id="help-body"></div>
     </dialog>
 
     <dialog class="panel" id="name-dialog" aria-labelledby="name-title">
       <form id="name-form" method="dialog" novalidate>
-        <h2 id="name-title">Save plan</h2>
+        <h2 id="name-title" data-i18n="page.name.title">Save plan</h2>
         <p class="panel-text" id="name-text"></p>
-        <label for="name-input">Name</label>
+        <label for="name-input" data-i18n="form.name">Name</label>
         <div class="input">
           <input
             id="name-input"
@@ -502,32 +654,40 @@
         </div>
         <div class="field-error" id="name-error" role="alert"></div>
         <div class="dialog-actions">
-          <button class="btn" id="name-cancel" type="button">Cancel</button>
-          <button class="btn primary" id="name-ok" type="submit">Save</button>
+          <button class="btn" id="name-cancel" type="button" data-i18n="dialog.cancel">
+            Cancel
+          </button>
+          <button class="btn primary" id="name-ok" type="submit" data-i18n="plans.save">
+            Save
+          </button>
         </div>
       </form>
     </dialog>
 
     <dialog class="panel wide" id="setup-dialog" aria-labelledby="setup-title">
       <form id="setup-form" method="dialog" novalidate>
-        <h2 id="setup-title">Set up a plan</h2>
-        <p class="panel-text">
+        <h2 id="setup-title" data-i18n="page.setup.title">Set up a plan</h2>
+        <p class="panel-text" data-i18n="page.setup.text">
           The essentials, to get a first answer. Retirement accounts, other income, one-off events
           and the market assumptions can be added afterwards in the panel.
         </p>
         <div id="setup-fields" class="setup-fields"></div>
         <div class="field-error" id="setup-error" role="alert"></div>
         <div class="dialog-actions">
-          <button class="btn" id="setup-cancel" type="button">Cancel</button>
-          <button class="btn primary" type="submit">Create plan</button>
+          <button class="btn" id="setup-cancel" type="button" data-i18n="dialog.cancel">
+            Cancel
+          </button>
+          <button class="btn primary" type="submit" data-i18n="page.setup.create">
+            Create plan
+          </button>
         </div>
       </form>
     </dialog>
 
     <dialog class="panel" id="share-dialog" aria-labelledby="share-title">
       <div class="panel-body">
-        <h2 id="share-title">Share this plan</h2>
-        <p class="panel-text">
+        <h2 id="share-title" data-i18n="page.share.title">Share this plan</h2>
+        <p class="panel-text" data-i18n="page.share.text">
           A link that opens a copy of the plan on screen, unsaved changes included. The plan is
           packed into the link itself, after the “#”, which browsers never send to the site: nothing
           is uploaded.
@@ -535,7 +695,7 @@
           password.
         </p>
         <div class="share-field" id="share-lock">
-          <label for="share-password">Password (optional)</label>
+          <label for="share-password" data-i18n="page.share.password">Password (optional)</label>
           <div class="input">
             <input
               id="share-password"
@@ -550,25 +710,29 @@
           <div class="hint" id="share-lock-note" aria-live="polite"></div>
         </div>
         <div class="share-field">
-          <label for="share-url">Link</label>
+          <label for="share-url" data-i18n="page.share.link">Link</label>
           <div class="input"><input id="share-url" type="text" readonly /></div>
         </div>
         <div class="dialog-actions">
-          <button class="btn" id="share-close" type="button">Close</button>
-          <button class="btn" id="share-native" type="button" hidden>Share…</button>
-          <button class="btn primary" id="share-copy" type="button">Copy link</button>
+          <button class="btn" id="share-close" type="button" data-i18n="page.close">Close</button>
+          <button class="btn" id="share-native" type="button" data-i18n="page.share.native" hidden>
+            Share…
+          </button>
+          <button class="btn primary" id="share-copy" type="button" data-i18n="page.share.copy">
+            Copy link
+          </button>
         </div>
       </div>
     </dialog>
 
     <dialog class="panel" id="unlock-dialog" aria-labelledby="unlock-title">
       <form id="unlock-form" method="dialog" novalidate>
-        <h2 id="unlock-title">Open a shared plan?</h2>
-        <p class="panel-text">
+        <h2 id="unlock-title" data-i18n="open.title">Open a shared plan?</h2>
+        <p class="panel-text" data-i18n="page.unlock.text">
           Someone shared a plan locked with a password: ask them for it. It opens as a new plan in
           this browser; your own plans stay as they are.
         </p>
-        <label for="unlock-input">Password</label>
+        <label for="unlock-input" data-i18n="page.unlock.password">Password</label>
         <div class="input">
           <input
             id="unlock-input"
@@ -582,8 +746,12 @@
         </div>
         <div class="field-error" id="unlock-error" role="alert"></div>
         <div class="dialog-actions">
-          <button class="btn" id="unlock-cancel" type="button">Not now</button>
-          <button class="btn primary" id="unlock-ok" type="submit">Open it</button>
+          <button class="btn" id="unlock-cancel" type="button" data-i18n="open.cancel">
+            Not now
+          </button>
+          <button class="btn primary" id="unlock-ok" type="submit" data-i18n="unlock.ok">
+            Open it
+          </button>
         </div>
       </form>
     </dialog>
@@ -593,8 +761,12 @@
         <h2 id="confirm-title"></h2>
         <p class="panel-text" id="confirm-text"></p>
         <div class="dialog-actions">
-          <button class="btn" id="confirm-cancel" type="button">Cancel</button>
-          <button class="btn primary" id="confirm-ok" type="button">OK</button>
+          <button class="btn" id="confirm-cancel" type="button" data-i18n="dialog.cancel">
+            Cancel
+          </button>
+          <button class="btn primary" id="confirm-ok" type="button" data-i18n="dialog.ok">
+            OK
+          </button>
         </div>
       </div>
     </dialog>
@@ -602,8 +774,18 @@
     <div class="sr-only" id="announce" role="status" aria-live="polite"></div>
     <div class="toast" id="toast" role="status" aria-live="polite">
       <span id="toast-text"></span>
-      <button class="toast-action" id="toast-action" type="button" hidden>Undo</button>
-      <button class="toast-close" id="toast-close" type="button" aria-label="Dismiss">×</button>
+      <button class="toast-action" id="toast-action" type="button" data-i18n="toast.undo" hidden>
+        Undo
+      </button>
+      <button
+        class="toast-close"
+        id="toast-close"
+        type="button"
+        aria-label="Dismiss"
+        data-i18n-aria-label="page.dismiss"
+      >
+        ×
+      </button>
     </div>
 
     <script src="vendor/plotly-cartesian-4.1.1.min.js"></script>

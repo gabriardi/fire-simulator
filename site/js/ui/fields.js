@@ -2,6 +2,7 @@
 // Each field registers a syncer, which puts the plan's value on screen, and its path in FIELDS,
 // for the "edited" marks.
 import { personById, yearOf } from "../engine.js";
+import { t } from "../i18n.js";
 import * as store from "../store.js";
 import { el, getPath, setPath } from "./dom.js";
 import { helpBtn } from "./messages.js";
@@ -83,7 +84,7 @@ export function numberField({
     range.value = v * scale;
   };
   if (slider) {
-    range = el("input", { type: "range", "aria-label": `${label} slider` });
+    range = el("input", { type: "range", "aria-label": t("field.slider", { label }) });
     range.addEventListener("pointerdown", () => {
       holding = true;
       const end = () => {
@@ -265,25 +266,31 @@ export function checkField({ path, label, what, help }) {
       helpBtn(help),
     ),
   );
-  FIELDS.push({ path, label: what ?? label, node, show: (v) => (v ? "yes" : "no") });
+  FIELDS.push({
+    path,
+    label: what ?? label,
+    node,
+    show: (v) => (v ? t("field.yes") : t("field.no")),
+  });
   return node;
 }
 
 // A moment: a calendar year, an age of someone, or years after the FIRE start (or never).
 function describeWhen(w) {
-  if (!w) return "never";
+  if (!w) return t("when.never");
   if (w.kind === "fire")
-    return w.value === 0 ? "at the FIRE start" : `${w.value} years after the FIRE start`;
-  if (w.kind === "age") return `when ${personById(state, w.person).name} turns ${w.value}`;
-  return `in ${w.value}`;
+    return w.value === 0 ? t("when.atFire") : t("when.afterFire", { n: w.value });
+  if (w.kind === "age")
+    return t("when.turns", { name: personById(state, w.person).name, age: w.value });
+  return t("when.inYear", { year: w.value });
 }
 export function whenField({ path, label, what, never = false }) {
   const id = `f-${path.replace(/\./g, "-")}`;
-  const sel = el("select", { id, "aria-label": `${label}: how` });
+  const sel = el("select", { id, "aria-label": t("when.how", { label }) });
   const input = el("input", {
     type: "text",
     inputmode: "numeric",
-    "aria-label": `${label}: value`,
+    "aria-label": t("when.value", { label }),
   });
   const unitEl = el("span", { class: "unit" });
   const valueBox = el("div", { class: "input" }, input, unitEl);
@@ -291,10 +298,10 @@ export function whenField({ path, label, what, never = false }) {
   let optKey = "";
   const fill = () => {
     const opts = [
-      ...(never ? [["never", "Never"]] : []),
-      ["fire", "FIRE start +"],
-      ["year", "In the year"],
-      ...state.people.map((p) => [`age:${p.id}`, `When ${p.name} turns`]),
+      ...(never ? [["never", t("when.option.never")]] : []),
+      ["fire", t("when.option.fire")],
+      ["year", t("when.option.year")],
+      ...state.people.map((p) => [`age:${p.id}`, t("when.option.age", { name: p.name })]),
     ];
     const k = JSON.stringify(opts);
     if (k === optKey) return;
@@ -341,7 +348,7 @@ export function whenField({ path, label, what, never = false }) {
     sel.value = keyOf(w);
     valueBox.classList.toggle("hidden", !w);
     if (w && document.activeElement !== input && !invalid.has(path)) input.value = String(w.value);
-    unitEl.textContent = w?.kind === "fire" ? "years" : "";
+    unitEl.textContent = w?.kind === "fire" ? t("unit.years") : "";
   };
   const hintEl = el("div", { class: "hint" });
   syncers.push(syncNow, () => {
@@ -354,9 +361,7 @@ export function whenField({ path, label, what, never = false }) {
     const line = getPath(state, path.split(".").slice(0, -1).join("."));
     const from = yearOf(state, line.from);
     const stopsFirst = path.endsWith(".to") && y <= from;
-    hintEl.textContent = stopsFirst
-      ? `${y}: before it starts (${from}), so it never pays`
-      : `${y} · ${ages(y)}`;
+    hintEl.textContent = stopsFirst ? t("when.stopsFirst", { year: y, from }) : `${y} · ${ages(y)}`;
     hintEl.classList.toggle("warn", stopsFirst);
   });
   const head = el(
@@ -379,9 +384,9 @@ export function whenField({ path, label, what, never = false }) {
 // A list item: a card with a title and a remove button and, when the list has others, the grip and
 // buttons that move it (reorder.js). `key` is the item's id.
 export function itemCard({ title, key, move, onremove, removeLabel }, ...fields) {
-  const t = el("span", { class: "item-title" });
+  const heading = el("span", { class: "item-title" });
   syncers.push(() => {
-    t.textContent = title();
+    heading.textContent = title();
   });
   const { grip = null, buttons = null } = move ? moveControls({ ...move, name: title() }) : {};
   return el(
@@ -391,7 +396,7 @@ export function itemCard({ title, key, move, onremove, removeLabel }, ...fields)
       "div",
       { class: "item-head" },
       grip,
-      t,
+      heading,
       el(
         "span",
         { class: "item-actions" },
@@ -406,7 +411,7 @@ export function itemCard({ title, key, move, onremove, removeLabel }, ...fields)
                 title: removeLabel,
                 onclick: onremove,
               },
-              "Remove",
+              t("item.remove"),
             )
           : null,
       ),
@@ -425,22 +430,41 @@ export function addButtons(...buttons) {
   );
 }
 
+// The form's sections, by id: each one's title is `group.<id>` in the messages, and this is the
+// name this browser remembers it open or closed under. The names are the English titles they
+// were remembered under before the titles came from the catalog: kept as they are, so a section
+// stays as it was left, in any language.
+const SECTIONS = {
+  plan: "Plan",
+  rule: "Spending rule",
+  household: "Household",
+  savings: "Savings and portfolio",
+  accounts: "Retirement accounts",
+  income: "Income and costs after stopping",
+  events: "One-off events",
+  markets: "Markets",
+  mix: "Portfolio mix",
+  stress: "Stress test",
+  simulation: "Simulation",
+};
+
 // Every section starts in its default state; opening or closing one is remembered in this browser.
-export function group(title, open, ...fields) {
+export function group(id, open, ...fields) {
   const list = typeof open === "object" ? open.list : null;
   if (typeof open === "object") open = open.open;
-  const remembered = store.loadGroups()[title];
+  const remember = SECTIONS[id];
+  const remembered = store.loadGroups()[remember];
   const d = el(
     "details",
     { class: "group", open: remembered ?? open },
-    el("summary", {}, el("span", { class: "group-title", text: title })),
+    el("summary", {}, el("span", { class: "group-title", text: t(`group.${id}`) })),
     el("div", { class: "fields" }, ...fields),
   );
   if (list) d.dataset.list = list;
   groups.push(d);
   d.addEventListener("toggle", () => {
     const g = store.loadGroups();
-    g[title] = d.open;
+    g[remember] = d.open;
     store.saveGroups(g);
   });
   return d;

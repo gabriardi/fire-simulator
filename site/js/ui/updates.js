@@ -11,6 +11,7 @@
 // screen, unsaved changes included, survives a reload (the session, in store.js), so a new version
 // is loaded as soon as it's found when the page comes back into view, unless something is in
 // progress: then a toast offers it, and it's loaded the next time the page comes back into view.
+import { t } from "../i18n.js";
 import { toast } from "./messages.js";
 
 const FIRST = 5_000; // after opening, when the page notes its version
@@ -58,8 +59,8 @@ async function check({ shown = false } = {}) {
     ready = true;
     if (shown && quiet()) location.reload();
     else
-      toast("A new version is ready. Your plan stays as it is.", {
-        action: { label: "Reload", run: () => location.reload() },
+      toast(t("update.ready"), {
+        action: { label: t("update.reload"), run: () => location.reload() },
         stay: true,
       });
   } finally {

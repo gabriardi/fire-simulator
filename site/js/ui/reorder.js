@@ -3,6 +3,7 @@
 // are also the way for the keyboard, a screen reader, and anyone who can't drag (WCAG 2.5.7), so
 // the grip itself is left out of both. Each move is announced; Escape or a lost pointer drops a
 // drag where it started.
+import { t } from "../i18n.js";
 import { el } from "./dom.js";
 import { announce } from "./messages.js";
 
@@ -19,7 +20,7 @@ const cardsIn = (list) => [...list.children].filter((n) => n.classList.contains(
  */
 export function moveControls({ index, count, name, move }) {
   if (count < 2) return { grip: null, buttons: null };
-  const grip = el("span", { class: "grip", "aria-hidden": "true", title: "Drag to move" });
+  const grip = el("span", { class: "grip", "aria-hidden": "true", title: t("move.drag") });
   grip.addEventListener("pointerdown", (e) => drag(e, grip, index, count, name, move));
   const button = (dir, to, text, label) =>
     el(
@@ -38,8 +39,8 @@ export function moveControls({ index, count, name, move }) {
   const buttons = el(
     "span",
     { class: "moves" },
-    button("up", index - 1, "↑", `Move “${name}” up`),
-    button("down", index + 1, "↓", `Move “${name}” down`),
+    button("up", index - 1, "↑", t("move.up", { name })),
+    button("down", index + 1, "↓", t("move.down", { name })),
   );
   return { grip, buttons };
 }
@@ -155,7 +156,7 @@ function drag(e, grip, index, count, name, move) {
   frame = requestAnimationFrame(scroll);
 }
 
-const say = (name, to, count) => announce(`“${name}” moved to place ${to + 1} of ${count}.`);
+const say = (name, to, count) => announce(t("move.moved", { name, place: to + 1, count }));
 
 // Each card's place on screen, by its item's id.
 const tops = (cards) => new Map(cards.map((c) => [c.dataset.key, c.getBoundingClientRect().top]));

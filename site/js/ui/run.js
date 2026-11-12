@@ -2,7 +2,8 @@
 //
 // One worker for the main result (one request at a time, the newest waiting), and one per heavier
 // view: those restart when the plan changes while they run, so a slider never queues stale work.
-import { bandAround, problems } from "../plan.js";
+import { t } from "../i18n.js";
+import { bandAround, bandProblem, problems } from "../plan.js";
 import { RENDER, renderSim } from "./charts.js";
 import { invalid, syncAll } from "./fields.js";
 import { showError } from "./messages.js";
@@ -35,7 +36,7 @@ export function spawnMain() {
     if (e.data.id !== main.latest) return;
     busy(MAIN_CARDS, false);
     if (e.data.error) {
-      showError(`The simulation stopped: ${e.data.error}`);
+      showError(t("run.stopped", { error: e.data.error }));
       return;
     }
     setSim({ ...e.data.result, ms: e.data.ms });
@@ -45,7 +46,7 @@ export function spawnMain() {
     main.busy = false;
     main.queued = null;
     busy(MAIN_CARDS, false);
-    showError(`The simulation couldn't run: ${e.message || "worker error"}`);
+    showError(t("run.failed", { error: e.message || t("run.workerError") }));
   };
 }
 function postMain(msg) {
@@ -72,7 +73,7 @@ function runHeavy(name, plan) {
       h.id = 0;
       busy([CARDS[name]], false);
       if (e.data.error) {
-        showError(`The ${name} view stopped: ${e.data.error}`);
+        showError(t("run.view.stopped", { view: t(`run.view.${name}`), error: e.data.error }));
         return;
       }
       explore[name] = e.data.result;
@@ -81,7 +82,12 @@ function runHeavy(name, plan) {
     h.worker.onerror = (e) => {
       h.id = 0;
       busy([CARDS[name]], false);
-      showError(`The ${name} view couldn't run: ${e.message || "worker error"}`);
+      showError(
+        t("run.view.failed", {
+          view: t(`run.view.${name}`),
+          error: e.message || t("run.workerError"),
+        }),
+      );
     };
   }
   h.id = ++reqId;
@@ -100,22 +106,21 @@ export function changed() {
 }
 export function runSim() {
   if (invalid.size) {
-    showError("Some fields aren't valid yet: fix the red ones.");
+    showError(t("run.invalid"));
     return;
   }
   const probs = problems(state);
   if (probs.length) {
-    const r = state.rule;
-    const fix =
-      r.kind !== "fixed" && probs.some((p) => p.includes("floor"))
-        ? {
-            label: "Set floor and ceiling around this spending",
-            run: () => {
-              Object.assign(state.rule, bandAround(state.spending));
-              changed();
-            },
-          }
-        : null;
+    // A floor and ceiling that don't fit the spending: one click puts them around it.
+    const fix = bandProblem(state)
+      ? {
+          label: t("run.fixBand"),
+          run: () => {
+            Object.assign(state.rule, bandAround(state.spending));
+            changed();
+          },
+        }
+      : null;
     showError(probs.join(" "), fix);
     return;
   }

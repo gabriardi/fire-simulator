@@ -6,7 +6,11 @@
  * Amounts are in the plan's currency, in today's money. Rates are fractions (0.02 = 2%); returns
  * and interest are nominal, the model turns them into real ones with the inflation.
  */
+import { bandAround, bandFollows, roundish, same } from "./band.js";
 import { RULE_KINDS, endYear, personById } from "./engine.js";
+import { t } from "./i18n.js";
+
+export { bandAround, bandFollows, roundish, same };
 
 export const SCHEMA = 1;
 
@@ -63,28 +67,6 @@ export function uid() {
   }
 }
 
-/** Two significant digits: 57,600 → 58,000. */
-export function roundish(x) {
-  if (!(x > 0)) return 0;
-  const step = 10 ** Math.max(Math.floor(Math.log10(x)) - 1, 0);
-  return Math.round(x / step) * step;
-}
-
-/** A floor and ceiling for the flexible rules, around a spending. */
-export const bandAround = (spending) => ({
-  floor: roundish(spending * 0.8),
-  ceiling: roundish(spending * 1.25),
-});
-
-/**
- * Whether a rule's floor and ceiling are the band around this spending: nobody set them by hand,
- * so they move with the spending (for guardrails and Vanguard, which need the spending between).
- */
-export function bandFollows(rule, spending) {
-  const b = bandAround(spending);
-  return same(rule.floor, b.floor) && same(rule.ceiling, b.ceiling);
-}
-
 export function blankPlan({ currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
   const y = today.getFullYear();
   return {
@@ -92,7 +74,7 @@ export function blankPlan({ currency = DEFAULT_CURRENCY, today = new Date() } = 
     currency,
     start_year: y,
     start_month: today.getMonth() + 1,
-    people: [{ id: "p1", name: "Me", birth_year: y - 35 }],
+    people: [{ id: "p1", name: t("plan.me"), birth_year: y - 35 }],
     end_person: "p1",
     end_age: 95,
     fire_year: y + 15,
@@ -127,8 +109,8 @@ export function blankPlan({ currency = DEFAULT_CURRENCY, today = new Date() } = 
 export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
   const y = today.getFullYear();
   const p = blankPlan({ currency, today });
-  const alex = { id: "alex", name: "Alex", birth_year: y - 38 };
-  const sam = { id: "sam", name: "Sam", birth_year: y - 36 };
+  const alex = { id: "alex", name: t("example.alex"), birth_year: y - 38 };
+  const sam = { id: "sam", name: t("example.sam"), birth_year: y - 36 };
   return {
     ...p,
     people: [alex, sam],
@@ -141,7 +123,7 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
     accounts: [
       {
         id: "ret-alex",
-        name: "Retirement account",
+        name: t("plan.account"),
         owner: "alex",
         balance: 140_000,
         contrib: 12_000,
@@ -152,7 +134,7 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
       },
       {
         id: "pen-sam",
-        name: "Workplace pension",
+        name: t("example.workplacePension"),
         owner: "sam",
         balance: 95_000,
         contrib: 9_000,
@@ -165,7 +147,7 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
     income: [
       {
         id: "sp-alex",
-        name: "State pension (Alex)",
+        name: t("plan.statePensionOf", { name: alex.name }),
         amount: 21_000,
         from: { kind: "age", person: "alex", value: 67 },
         to: null,
@@ -173,7 +155,7 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
       },
       {
         id: "sp-sam",
-        name: "State pension (Sam)",
+        name: t("plan.statePensionOf", { name: sam.name }),
         amount: 17_000,
         from: { kind: "age", person: "sam", value: 67 },
         to: null,
@@ -187,16 +169,16 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
 export function newPerson(plan) {
   const used = new Set(plan.people.map((x) => x.name));
   let k = plan.people.length + 1;
-  while (used.has(`Person ${k}`)) k++;
+  while (used.has(t("plan.person", { n: k }))) k++;
   return {
     id: uid(),
-    name: `Person ${k}`,
+    name: t("plan.person", { n: k }),
     birth_year: plan.people[0]?.birth_year ?? plan.start_year - 35,
   };
 }
 export const newAccount = (plan, owner = plan.people[0].id) => ({
   id: uid(),
-  name: "Retirement account",
+  name: t("plan.account"),
   owner,
   balance: 0,
   contrib: 0,
@@ -209,7 +191,7 @@ export const newIncome = (plan, cost = false) =>
   cost
     ? {
         id: uid(),
-        name: "Extra cost",
+        name: t("plan.extraCost"),
         amount: -5_000,
         from: { kind: "fire", value: 0 },
         to: { kind: "fire", value: 10 },
@@ -217,7 +199,7 @@ export const newIncome = (plan, cost = false) =>
       }
     : {
         id: uid(),
-        name: "State pension",
+        name: t("plan.statePension"),
         amount: 15_000,
         from: { kind: "age", person: plan.people[0].id, value: 67 },
         to: null,
@@ -225,7 +207,7 @@ export const newIncome = (plan, cost = false) =>
       };
 export const newEvent = (plan) => ({
   id: uid(),
-  name: "One-off",
+  name: t("plan.event"),
   year: plan.fire_year,
   amount: -20_000,
 });
@@ -259,7 +241,7 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
 
   const people = list(r.people, LIMITS.people).map((x, k) => ({
     id: idOf(x.id),
-    name: str(x.name, `Person ${k + 1}`, 40),
+    name: str(x.name, t("plan.person", { n: k + 1 }), 40),
     birth_year: int(x.birth_year, d.start_year - 35, 1900, 2100),
   }));
   if (!people.length) people.push({ ...d.people[0], id: idOf("p1") });
@@ -304,7 +286,7 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
     portfolio_tax: num(r.portfolio_tax, 0, 0, 0.9),
     accounts: list(r.accounts, LIMITS.accounts).map((a) => ({
       id: idOf(a.id),
-      name: str(a.name, "Retirement account"),
+      name: str(a.name, t("plan.account")),
       owner: person(a.owner),
       balance: num(a.balance, 0, 0),
       contrib: num(a.contrib, 0, 0),
@@ -315,7 +297,7 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
     })),
     income: list(r.income, LIMITS.income).map((s) => ({
       id: idOf(s.id),
-      name: str(s.name, "Income"),
+      name: str(s.name, t("plan.income")),
       amount: num(s.amount, 0),
       from: when(s.from, { kind: "fire", value: 0 }) ?? { kind: "fire", value: 0 },
       to: when(s.to, null),
@@ -323,7 +305,7 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
     })),
     events: list(r.events, LIMITS.events).map((e) => ({
       id: idOf(e.id),
-      name: str(e.name, "One-off"),
+      name: str(e.name, t("plan.event")),
       year: int(e.year, d.fire_year, 1900, 2300),
       amount: num(e.amount, 0),
     })),
@@ -359,6 +341,21 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
   };
 }
 
+/**
+ * What's wrong with the rule's floor and ceiling, if anything: "order" (the floor is above the
+ * ceiling), "outside" (guardrails or Vanguard with the spending outside them), or null.
+ */
+export function bandProblem(plan) {
+  const r = plan.rule;
+  if (r.kind !== "fixed" && r.floor > r.ceiling) return "order";
+  if (
+    (r.kind === "guardrails" || r.kind === "vanguard") &&
+    (plan.spending < r.floor || plan.spending > r.ceiling)
+  )
+    return "outside";
+  return null;
+}
+
 /** What stops a plan from being simulated, as messages for the person editing it. */
 export function problems(plan) {
   const out = [];
@@ -367,27 +364,16 @@ export function problems(plan) {
   const who = personById(plan, plan.end_person);
   if (years < 2)
     out.push(
-      `The plan has to run past ${plan.start_year}: ${who.name} turns ${plan.end_age} in ${end}.`,
+      t("problem.tooShort", { start: plan.start_year, name: who.name, age: plan.end_age, end }),
     );
   else if (years > LIMITS.years)
-    out.push(`The plan runs ${years} years (until ${end}): ${LIMITS.years} at most.`);
-  if (plan.fire_year < plan.start_year || plan.fire_year >= end) {
-    out.push(
-      `The FIRE start must be between ${plan.start_year} (the balances' year) and ${end - 1}.`,
-    );
-  }
-  if (!(plan.spending > 0)) out.push("The spending per year must be more than 0.");
-  const r = plan.rule;
-  if (r.kind !== "fixed" && r.floor > r.ceiling)
-    out.push("The spending rule's floor must not be above its ceiling.");
-  else if (
-    (r.kind === "guardrails" || r.kind === "vanguard") &&
-    (plan.spending < r.floor || plan.spending > r.ceiling)
-  ) {
-    out.push(
-      "With a flexible rule the spending per year must be between the floor and the ceiling.",
-    );
-  }
+    out.push(t("problem.tooLong", { n: years, end, max: LIMITS.years }));
+  if (plan.fire_year < plan.start_year || plan.fire_year >= end)
+    out.push(t("problem.fireYear", { start: plan.start_year, last: end - 1 }));
+  if (!(plan.spending > 0)) out.push(t("problem.spending"));
+  const band = bandProblem(plan);
+  if (band === "order") out.push(t("problem.bandOrder"));
+  else if (band === "outside") out.push(t("problem.bandOutside"));
   return out;
 }
 
@@ -404,15 +390,6 @@ function counterparts(from, to) {
   const key = (x, i) => (typeof x.id === "string" ? x.id : i);
   const was = new Map(from.map((x, i) => [key(x, i), x]));
   return to.map((x, i) => was.get(key(x, i)));
-}
-
-/** Equal, numbers to 1e-9: 2.5 typed in as % is 0.025. */
-export function same(a, b) {
-  if (typeof a === "number" && typeof b === "number")
-    return Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
-  if (Array.isArray(a) && Array.isArray(b))
-    return a.length === b.length && a.every((x, i) => same(x, b[i]));
-  return a === b || (a == null && b == null);
 }
 
 /**

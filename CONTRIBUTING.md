@@ -57,10 +57,13 @@ In `site/`:
 | `js/engine.js`                                       | The model: random draws, accounts, income, spending rules, one future at a time                      |
 | `js/views.js`                                        | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |
 | `js/worker.js`                                       | Runs the views in Web Workers, so the page never freezes                                             |
+| `js/band.js`                                         | The flexible rules' floor and ceiling around a spending, for the plan and the workers                |
 | `js/plan.js`                                         | The plan format: defaults, the example, cleaning a plan that comes from storage, a file or a link    |
 | `js/store.js`                                        | Local storage, export and import files, share links                                                  |
 | `js/format.js`                                       | Currencies, number formats, and parsing typed numbers                                                |
-| `js/help.js`                                         | Every "?" text and the guide                                                                         |
+| `js/i18n.js`                                         | The page's words: `t()` finds each text in the catalog, by key                                       |
+| `js/locales/en/`                                     | The English catalog: the code's messages, and every "?" text and guide card                          |
+| `js/help.js`                                         | The guide's sections, and the order of their cards                                                   |
 | `sw.js`, `manifest.webmanifest`                      | Offline use, installing as an app, and telling a page left open about a new version                  |
 | `vendor/`                                            | Plotly's cartesian bundle (charts)                                                                   |
 | `privacy.html`                                       | The privacy notice of this project's copy                                                            |
@@ -73,6 +76,7 @@ Around it:
 | File                                  | What it does                                                                                                                  |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `scripts/serve.js`                    | The local server, with the production headers                                                                                 |
+| `scripts/strings.js`                  | Every text the site shows, by key, from the code and the pages: `npm run strings`                                             |
 | `wrangler.jsonc`                      | Hosting on Cloudflare: `site/` as static files, and the logs                                                                  |
 | `tests/`                              | The tests, below                                                                                                              |
 | `docs/`                               | How the simulation works, the README's screenshots, and the link-preview card                                                 |
@@ -117,6 +121,9 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
     files round-tripping;
   - migrating plans from an older schema;
   - number and list parsing in several locales.
+- `tests/i18n.test.js` checks that every text the site shows is in the catalog, by key (the
+  notes below say where): none left in the code or unmarked on a page, none asked for and
+  missing, none in the catalog and unused.
 - `tests/site.test.js` checks what the notes below would otherwise leave to memory:
   - every file the page and its workers load is in the service worker's list, and every file
     in that list exists;
@@ -151,8 +158,22 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
 
 - **The model is described three times**, for three readers: in full in
   `docs/methodology.md`, briefly on the page (`site/index.html`, "How the simulation works"),
-  and input by input in the guide (`site/js/help.js`). A change to the model updates all three,
-  and the README's short "How it works" if it's affected.
+  and input by input in the guide (`site/js/locales/en/help.js`). A change to the model updates
+  all three, and the README's short "How it works" if it's affected.
+- **Text is in the catalog, never in the code**, so that it can be translated. Only English
+  exists so far.
+  - A text the code shows is a message, `t("plans.saved", { name })`, with its English in
+    `site/js/locales/en/messages.js`. A "?" explanation or a guide card is in
+    `site/js/locales/en/help.js`.
+  - The pages keep their English in place, each piece marked with its key: `data-i18n="key"` for
+    an element's content, `data-i18n-title="key"` (`-aria-label`, `-content`…) for an attribute.
+    The manifest and the structured data are listed by the field in `scripts/strings.js`.
+  - A message is a whole sentence with `{values}` in it, never one glued from pieces: other
+    languages put the words in another order. A count takes `{ one, other }` and `{n}`, as
+    languages count differently; a list of things, `andList()`. Quotes around a name (“…”) are
+    part of the message, as they differ too.
+  - `npm run strings` lists the whole catalog, and `tests/i18n.test.js` fails on text left out of
+    it, a key nothing uses, or the same key with two texts.
 - **The default currency** is `DEFAULT_CURRENCY` in `site/js/plan.js`.
 - **Plans are versioned** (`schema` in `site/js/plan.js`). Anything loaded from storage, a file or
   a link goes through `normalize()`, which fills in missing fields, clamps values and repairs

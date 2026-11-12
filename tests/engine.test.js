@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  RULE_KINDS,
-  RULE_NAMES,
-  RULE_SHORT,
   incomeByYear,
   lasts,
   marketDraws,
@@ -324,11 +321,6 @@ test("the mix's mean and volatility are those of the model's own draws", () => {
   assert.ok(Math.abs(mean - m.mean) < 0.001, `mean ${mean} vs ${m.mean}`);
   assert.ok(Math.abs(sd - m.vol) < 0.001, `volatility ${sd} vs ${m.vol}`);
   assert.ok(m.compound < m.mean); // compounding costs about half the variance
-});
-
-test("every spending rule has a name and a short name", () => {
-  assert.deepEqual(Object.keys(RULE_NAMES), RULE_KINDS);
-  assert.deepEqual(Object.keys(RULE_SHORT), RULE_KINDS);
 });
 
 // ---- results that can be worked out by hand, without this code or the model it was ported from ----

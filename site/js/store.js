@@ -2,6 +2,7 @@
  * Where plans live: this browser's localStorage, and nowhere else. A file export is the backup and
  * the way to move plans to another device; a share link carries one plan inside the link itself.
  */
+import { t } from "./i18n.js";
 import { normalize, uid } from "./plan.js";
 
 const KEYS = {
@@ -63,7 +64,10 @@ export function cleanSaved(list) {
       const shared = cleanRun(p.shared);
       return {
         id: typeof p.id === "string" ? p.id : uid(),
-        name: typeof p.name === "string" && p.name.trim() ? p.name.trim().slice(0, 60) : "Plan",
+        name:
+          typeof p.name === "string" && p.name.trim()
+            ? p.name.trim().slice(0, 60)
+            : t("plan.untitled"),
         plan: normalize(p.plan), // its own currency if it's a currency code, else the default
         updated: Number.isFinite(p.updated) ? p.updated : null,
         example: p.example === true,
@@ -97,10 +101,10 @@ export const loadGroups = () => read(KEYS.groups, {});
 export const saveGroups = (g) => write(KEYS.groups, g);
 /** When the plans were last exported (ms since 1970), 0 if never. */
 export const loadExported = () => {
-  const t = read(KEYS.backup, {})?.exported;
-  return Number.isFinite(t) && t > 0 ? t : 0;
+  const ms = read(KEYS.backup, {})?.exported;
+  return Number.isFinite(ms) && ms > 0 ? ms : 0;
 };
-export const saveExported = (t) => write(KEYS.backup, { exported: t });
+export const saveExported = (ms) => write(KEYS.backup, { exported: ms });
 
 /**
  * Ask the browser to keep this site's storage for good, instead of clearing it when space runs low.
@@ -130,7 +134,7 @@ export function exportFile(plans, today = new Date()) {
   const pad = (n) => String(n).padStart(2, "0");
   const day = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`; // local, not UTC
   return {
-    name: `fire-plans-${day}.json`,
+    name: t("files.name", { day }),
     text: JSON.stringify(body, null, 1),
   };
 }
@@ -141,7 +145,7 @@ export function readFile(text) {
   try {
     data = JSON.parse(text);
   } catch {
-    throw new Error("This file isn't a plans file: it isn't JSON.");
+    throw new Error(t("files.notJson"));
   }
   const items = data?.format === FILE_FORMAT ? data.plans : Array.isArray(data) ? data : [data];
   const out = (items || [])
@@ -152,7 +156,7 @@ export function readFile(text) {
         : { name: x.name, plan: x },
     )
     .filter((x) => Array.isArray(x.plan.people) || typeof x.plan.spending === "number");
-  if (!out.length) throw new Error("No plans found in this file.");
+  if (!out.length) throw new Error(t("files.empty"));
   return out;
 }
 
@@ -163,8 +167,8 @@ export function readFile(text) {
 // plan's name. All of it after the "#", so browsers never send it to the site's server.
 
 const LOCK = { version: 1, iterations: 600_000, salt: 16, iv: 12 }; // a new version may change these
-const DAMAGED = "This share link is damaged or incomplete: ask for it again.";
 const fail = (code, message) => Object.assign(new Error(message), { code });
+const damaged = () => fail("damaged", t("link.damaged"));
 const encoder = new TextEncoder();
 
 const concat = (...parts) => {
@@ -266,22 +270,14 @@ export async function unpackPlan(code, password = "") {
   try {
     bytes = fromB64(code.slice(1));
   } catch {
-    throw fail("damaged", DAMAGED);
+    throw damaged();
   }
   if (kind === "e") {
-    if (!password) throw fail("locked", "This share link is locked with a password.");
-    if (!canLock())
-      throw fail(
-        "locked",
-        "This share link is locked with a password, which this browser can only unlock over https.",
-      );
-    if (bytes[0] > LOCK.version)
-      throw fail(
-        "newer",
-        "This share link was made by a newer version of the simulator: reload the page, then open it again.",
-      );
+    if (!password) throw fail("locked", t("link.locked"));
+    if (!canLock()) throw fail("locked", t("link.lockedHttps"));
+    if (bytes[0] > LOCK.version) throw fail("newer", t("link.newer"));
     const top = 1 + LOCK.salt + LOCK.iv;
-    if (bytes[0] !== LOCK.version || bytes.length <= top + 16) throw fail("damaged", DAMAGED);
+    if (bytes[0] !== LOCK.version || bytes.length <= top + 16) throw damaged();
     let inner;
     try {
       const key = await lockKey(password, bytes.subarray(1, 1 + LOCK.salt), "decrypt");
@@ -295,7 +291,7 @@ export async function unpackPlan(code, password = "") {
       );
     } catch {
       // AES-GCM can't tell a wrong password from a changed link; a wrong password is far likelier.
-      throw fail("password", "That password doesn't open this link.");
+      throw fail("password", t("link.wrongPassword"));
     }
     kind = String.fromCharCode(inner[0]);
     bytes = inner.subarray(1);
@@ -306,8 +302,12 @@ export async function unpackPlan(code, password = "") {
       kind === "z" ? await through(bytes, new DecompressionStream("deflate-raw")) : bytes;
     const d = JSON.parse(new TextDecoder().decode(json));
     if (!d || typeof d.p !== "object") throw new Error();
-    return { name: typeof d.n === "string" ? d.n : "Shared plan", plan: d.p, run: cleanRun(d.r) };
+    return {
+      name: typeof d.n === "string" ? d.n : t("link.untitled"),
+      plan: d.p,
+      run: cleanRun(d.r),
+    };
   } catch {
-    throw fail("damaged", DAMAGED);
+    throw damaged();
   }
 }
