@@ -165,6 +165,18 @@ export function wireToast() {
   t.addEventListener("mouseleave", release);
   t.addEventListener("focusout", release);
 }
+// For screen readers, what just happened when nothing on the screen says it in words (a card
+// moved). Emptied first, so the same words twice are read twice.
+let announceTimer = 0;
+export function announce(text) {
+  const a = $("#announce");
+  a.textContent = "";
+  clearTimeout(announceTimer);
+  announceTimer = setTimeout(() => {
+    a.textContent = text;
+  }, 100);
+}
+
 export function showNotice(msg) {
   const n = $("#notice");
   n.textContent = msg;

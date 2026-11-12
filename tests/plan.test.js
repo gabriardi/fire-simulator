@@ -7,6 +7,7 @@ import {
   SCHEMA,
   bandAround,
   blankPlan,
+  counterpart,
   differences,
   examplePlan,
   fromNewer,
@@ -134,6 +135,35 @@ test("differences: changed values by path, an added or removed item once", () =>
   const c = structuredClone(a);
   c.income[1].to = { kind: "year", value: 2070 };
   assert.ok(differences(a, c).some((p) => p.startsWith("income.1.to")));
+});
+
+test("differences: a moved item is the same item, and the list changed once", () => {
+  const a = examplePlan({ today });
+  const b = structuredClone(a);
+  b.accounts.reverse();
+  assert.deepEqual(differences(a, b), ["accounts.#"]);
+  // Moved and changed: its own field, at its new place.
+  b.accounts[0].balance = 1;
+  assert.deepEqual(differences(a, b).sort(), ["accounts.#", "accounts.0.balance"]);
+  // One removed and one added in its place: the list changed, the new item's fields don't count.
+  const c = structuredClone(a);
+  c.income[0] = { ...c.income[0], id: "new", amount: 5 };
+  assert.deepEqual(differences(a, c), ["income.#"]);
+  // Moved back where it was: nothing changed.
+  b.accounts[0].balance = a.accounts[1].balance;
+  b.accounts.reverse();
+  assert.deepEqual(differences(a, b), []);
+});
+
+test("counterpart finds a moved item's saved value, and none for a new one", () => {
+  const a = examplePlan({ today });
+  const b = structuredClone(a);
+  b.people.reverse();
+  b.people.push({ id: "kid", name: "Kid", birth_year: 2020 });
+  assert.equal(counterpart(a, b, "people.0.name"), a.people[1].name);
+  assert.equal(counterpart(a, b, "people.2.name"), undefined);
+  assert.equal(counterpart(a, b, "spending"), a.spending);
+  assert.deepEqual(counterpart(a, b, "income.0.from"), a.income[0].from);
 });
 
 test("roundish keeps two significant digits", () => {

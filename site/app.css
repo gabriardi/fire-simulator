@@ -1399,10 +1399,82 @@ dialog.panel form > label {
   min-height: 28px;
 }
 .item-title {
+  flex: 1;
+  min-width: 0;
   font-weight: 650;
   font-size: 0.9rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.item-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.moves {
+  display: flex;
+}
+.btn.move {
+  min-width: 28px;
+  padding: 3px 6px;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+/* A card's grip: six dots to drag it by, with room around them for a finger. */
+.grip {
+  flex: none;
+  width: 10px;
+  height: 16px;
+  padding: 6px 7px;
+  margin: -6px -2px -6px -8px;
+  box-sizing: content-box;
+  background: radial-gradient(circle, var(--faint) 1.5px, transparent 2px) content-box 0 0 / 5px
+    5.33px;
+  cursor: grab;
+  touch-action: none;
+}
+.grip:hover,
+.item.lifted .grip {
+  background-image: radial-gradient(circle, var(--accent) 1.5px, transparent 2px);
+}
+@media (pointer: coarse) {
+  .grip {
+    padding: 10px 10px;
+    margin: -10px -2px -10px -10px;
+  }
+}
+.item.lifted {
+  position: relative;
+  z-index: 1; /* above the other cards, under the panel's sticky head */
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+.sorting > .item:not(.lifted) {
+  transition: transform 0.15s ease;
+}
+html.grabbing,
+html.grabbing * {
+  cursor: grabbing !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sorting > .item:not(.lifted) {
+    transition: none;
+  }
+}
+/* Read by screen readers, not shown. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 .btn.small {

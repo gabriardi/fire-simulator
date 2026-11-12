@@ -264,6 +264,8 @@ function peopleGroup() {
     itemCard(
       {
         title: () => state.people[i]?.name || `Person ${i + 1}`,
+        key: x.id,
+        move: moving("people", i),
         onremove: state.people.length > 1 ? () => removePerson(i) : null,
         removeLabel: `Remove ${x.name}`,
       },
@@ -328,6 +330,8 @@ function accountsGroup() {
     return itemCard(
       {
         title: () => state.accounts[i]?.name || "Account",
+        key: a.id,
+        move: moving("accounts", i),
         onremove: () => removeItem("accounts", i),
         removeLabel: `Remove ${a.name}`,
       },
@@ -421,6 +425,8 @@ function incomeGroup() {
     return itemCard(
       {
         title: () => state.income[i]?.name || "Line",
+        key: s.id,
+        move: moving("income", i),
         onremove: () => removeItem("income", i),
         removeLabel: `Remove ${s.name}`,
       },
@@ -473,6 +479,8 @@ function eventsGroup() {
     itemCard(
       {
         title: () => state.events[i]?.name || "Event",
+        key: e.id,
+        move: moving("events", i),
         onremove: () => removeItem("events", i),
         removeLabel: `Remove ${e.name}`,
       },
@@ -855,6 +863,19 @@ function addPerson() {
   state.people.push(newPerson(state));
   afterAdd("people");
 }
+// Moving an item to another place in its list changes no result, only the order things are shown
+// in (for people, also in the charts' ages) and, for the first person, who a new account or
+// pension starts out with.
+const moving = (list, i) => ({
+  index: i,
+  count: state[list].length,
+  move: (to) => {
+    state[list].splice(to, 0, ...state[list].splice(i, 1));
+    rebuild();
+    changed();
+    return [...document.querySelectorAll(`#form [data-list="${list}"] > .fields > .item`)];
+  },
+});
 function removeItem(list, i) {
   const before = snapshot();
   const [gone] = state[list].splice(i, 1);

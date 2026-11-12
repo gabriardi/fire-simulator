@@ -5,6 +5,7 @@ import { personById, yearOf } from "../engine.js";
 import * as store from "../store.js";
 import { el, getPath, setPath } from "./dom.js";
 import { helpBtn } from "./messages.js";
+import { moveControls } from "./reorder.js";
 import { changed } from "./run.js";
 import { base, fmt, settings, state } from "./state.js";
 
@@ -375,32 +376,40 @@ export function whenField({ path, label, what, never = false }) {
   return node;
 }
 
-// A list item: a card with a title and a remove button.
-export function itemCard({ title, onremove, removeLabel }, ...fields) {
+// A list item: a card with a title and a remove button and, when the list has others, the grip and
+// buttons that move it (reorder.js). `key` is the item's id.
+export function itemCard({ title, key, move, onremove, removeLabel }, ...fields) {
   const t = el("span", { class: "item-title" });
   syncers.push(() => {
     t.textContent = title();
   });
+  const { grip = null, buttons = null } = move ? moveControls({ ...move, name: title() }) : {};
   return el(
     "div",
-    { class: "item" },
+    { class: "item", "data-key": key },
     el(
       "div",
       { class: "item-head" },
+      grip,
       t,
-      onremove
-        ? el(
-            "button",
-            {
-              type: "button",
-              class: "btn quiet small",
-              "aria-label": removeLabel,
-              title: removeLabel,
-              onclick: onremove,
-            },
-            "Remove",
-          )
-        : null,
+      el(
+        "span",
+        { class: "item-actions" },
+        buttons,
+        onremove
+          ? el(
+              "button",
+              {
+                type: "button",
+                class: "btn quiet small",
+                "aria-label": removeLabel,
+                title: removeLabel,
+                onclick: onremove,
+              },
+              "Remove",
+            )
+          : null,
+      ),
     ),
     ...fields,
   );

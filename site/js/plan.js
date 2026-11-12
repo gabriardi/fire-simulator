@@ -378,21 +378,17 @@ export function problems(plan) {
 
 // ---- comparing plans -----------------------------------------------------------------------------
 
+const isObj = (x) => x && typeof x === "object" && !Array.isArray(x);
+/** A list of items (people, accounts…), walked into; other lists (crash years) are one value. */
+const isItems = (v) => Array.isArray(v) && v.every(isObj);
 /**
- * {dotted path: value}. Objects and lists of objects (people, accounts) are walked into, and a list
- * of objects also gives its length at "<path>.#"; other lists (crash years) are one value.
+ * For each of `to`'s items, the same item in `from`: the one with its id (by place, for items
+ * without one), wherever it was moved; undefined for an item `to` added.
  */
-export function flatten(v, prefix = "", out = {}) {
-  const isObj = (x) => x && typeof x === "object" && !Array.isArray(x);
-  const objList =
-    Array.isArray(v) && (v.length === 0 ? prefix !== "stress_returns" : v.every(isObj));
-  if (!(isObj(v) || objList)) {
-    out[prefix] = v;
-    return out;
-  }
-  if (objList) out[`${prefix}.#`] = v.length;
-  for (const [k, x] of Object.entries(v)) flatten(x, prefix ? `${prefix}.${k}` : k, out);
-  return out;
+function counterparts(from, to) {
+  const key = (x, i) => (typeof x.id === "string" ? x.id : i);
+  const was = new Map(from.map((x, i) => [key(x, i), x]));
+  return to.map((x, i) => was.get(key(x, i)));
 }
 
 /** Equal, numbers to 1e-9: 2.5 typed in as % is 0.025. */
@@ -405,21 +401,40 @@ export function same(a, b) {
 }
 
 /**
- * The paths whose values differ between two plans. An item added to or removed from a list counts
- * once, as the list's length, not as each of its fields.
+ * The dotted paths whose values differ between two plans, as paths in `to`. List items are matched
+ * by id, so an item moved up or down is compared with itself. An item added, removed or moved
+ * changes the list, which counts once, at "<list>.#", not as each of its items' fields.
  */
 export function differences(from, to) {
-  const a = flatten(from);
-  const b = flatten(to);
-  const lengths = {};
-  for (const [p, v] of Object.entries({ ...a, ...b }))
-    if (p.endsWith(".#")) lengths[p.slice(0, -2)] = Math.min(a[p] ?? 0, b[p] ?? 0, v);
-  const inChangedItem = (p) =>
-    Object.entries(lengths).some(([list, n]) => {
-      if (!p.startsWith(`${list}.`)) return false;
-      const k = Number(p.slice(list.length + 1).split(".")[0]);
-      return Number.isInteger(k) && k >= n;
-    });
-  const paths = new Set([...Object.keys(a), ...Object.keys(b)]);
-  return [...paths].filter((p) => !same(a[p], b[p]) && !inChangedItem(p));
+  const out = [];
+  const walk = (a, b, path) => {
+    const at = (k) => (path ? `${path}.${k}` : k);
+    if (isObj(a) && isObj(b)) {
+      for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) walk(a[k], b[k], at(k));
+    } else if (isItems(a) && isItems(b)) {
+      const was = counterparts(a, b);
+      const kept = was.filter(Boolean);
+      const order = a.filter((x) => kept.includes(x)); // the same items, in `from`'s order
+      if (
+        kept.length !== a.length ||
+        kept.length !== b.length ||
+        kept.some((x, k) => x !== order[k])
+      )
+        out.push(at("#"));
+      was.forEach((x, i) => x && walk(x, b[i], at(i)));
+    } else if (!same(a, b)) out.push(path);
+  };
+  walk(from, to, "");
+  return out;
+}
+
+/** What `from` has at `to`'s dotted path: list items matched as in `differences`. */
+export function counterpart(from, to, path) {
+  let a = from;
+  let b = to;
+  for (const k of path.split(".")) {
+    a = isItems(a) && isItems(b) && /^\d+$/.test(k) ? counterparts(a, b)[k] : a?.[k];
+    b = b?.[k];
+  }
+  return a;
 }

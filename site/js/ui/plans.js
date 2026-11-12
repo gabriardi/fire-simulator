@@ -3,7 +3,7 @@
 // The values on screen always start from a saved plan (`base`); whatever differs from it is an
 // unsaved change, kept in this browser so a reload carries on where it was.
 import { RULE_SHORT } from "../engine.js";
-import { differences, examplePlan, uid } from "../plan.js";
+import { counterpart, differences, examplePlan, uid } from "../plan.js";
 import * as store from "../store.js";
 import { $, byName, clone, el, eq, getPath } from "./dom.js";
 import { FIELDS, groups, invalid } from "./fields.js";
@@ -253,12 +253,15 @@ export function renderPlanBar() {
     sel.value = base.id;
   }
   const edited = edits();
+  // Each field is compared with the same one in the saved plan: in a list, the item's own, wherever
+  // it was moved.
   for (const f of FIELDS) {
     const a = getPath(state, f.path);
-    const b = getPath(base.values, f.path);
+    const b = counterpart(base.values, state, f.path);
     f.node.classList.toggle("edited", !eq(a, b));
   }
-  // A section is edited when a field in it is, or when one of its list items was added or removed.
+  // A section is edited when a field in it is, or when one of its list items was added, removed or
+  // moved.
   for (const g of groups) {
     const list = g.dataset.list;
     g.classList.toggle(

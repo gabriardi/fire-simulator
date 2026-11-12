@@ -16,6 +16,7 @@ const SHELL = [
   "js/ui/form.js",
   "js/ui/messages.js",
   "js/ui/plans.js",
+  "js/ui/reorder.js",
   "js/ui/run.js",
   "js/ui/setup.js",
   "js/ui/share.js",

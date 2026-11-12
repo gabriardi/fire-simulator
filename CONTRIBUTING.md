@@ -47,6 +47,7 @@ In `site/`:
 | `js/app.js`                                          | The page's entry point: wires buttons, menus and dialogs to `js/ui/`, then starts                    |
 | `js/ui/state.js`                                     | What the page's modules share: settings, saved plans, the plan on screen, its results                |
 | `js/ui/fields.js`, `js/ui/form.js`                   | The form's fields, and the form built from them, section by section                                  |
+| `js/ui/reorder.js`                                   | Moving a list's cards: dragging them by the grip, or the ↑ ↓ buttons                                 |
 | `js/ui/plans.js`                                     | Saving, switching, renaming, deleting, undo, and the plan bar                                        |
 | `js/ui/setup.js`, `js/ui/share.js`, `js/ui/files.js` | Setting up a plan; share links; export and import files                                              |
 | `js/ui/run.js`, `js/ui/charts.js`                    | Running the model in workers, and drawing what they return                                           |
