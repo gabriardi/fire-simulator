@@ -22,7 +22,8 @@ test("no spending, no failure, and wealth only grows after the FIRE start", () =
   const res = simulate(household({ spending: 0, income: [] }), { record: true });
   assert.equal(successRate(res), 1);
   const i0 = res.years.indexOf(2040);
-  for (let t = i0 + 1; t < res.years.length; t++) assert.ok(res.total[t] >= res.total[t - 1] - 1e-6);
+  for (let t = i0 + 1; t < res.years.length; t++)
+    assert.ok(res.total[t] >= res.total[t - 1] - 1e-6);
 });
 
 test("spending more than the money fails in the first FIRE year, and leaves nothing after", () => {
@@ -85,7 +86,14 @@ test("income lines: by age, by year, after the FIRE start, and not before it", (
 test("an income line that isn't indexed loses value to inflation", () => {
   const plan = household({
     income: [
-      { id: "1", name: "Annuity", amount: 10_000, from: { kind: "year", value: 2040 }, to: null, indexed: false },
+      {
+        id: "1",
+        name: "Annuity",
+        amount: 10_000,
+        from: { kind: "year", value: 2040 },
+        to: null,
+        indexed: false,
+      },
     ],
   });
   const years = Array.from({ length: 30 }, (_, k) => 2026 + k);
@@ -99,7 +107,16 @@ test("income reduces what the portfolio pays: a pension covering all spending ne
     cash: 0,
     contrib: 0,
     accounts: [],
-    income: [{ id: "1", name: "Pension", amount: 60_000, from: { kind: "fire", value: 0 }, to: null, indexed: true }],
+    income: [
+      {
+        id: "1",
+        name: "Pension",
+        amount: 60_000,
+        from: { kind: "fire", value: 0 },
+        to: null,
+        indexed: true,
+      },
+    ],
   });
   const res = simulate(plan, { record: true });
   assert.equal(successRate(res), 1);
@@ -109,21 +126,35 @@ test("income reduces what the portfolio pays: a pension covering all spending ne
 
 test("a one-off event before the FIRE start adds to the portfolio in its year", () => {
   const without = simulate(household(), { record: true });
-  const withIt = simulate(household({ events: [{ id: "e", name: "Inheritance", year: 2030, amount: 100_000 }] }), {
-    record: true,
-  });
+  const withIt = simulate(
+    household({ events: [{ id: "e", name: "Inheritance", year: 2030, amount: 100_000 }] }),
+    {
+      record: true,
+    },
+  );
   assert.equal(row(withIt, "total", 2030), row(without, "total", 2030)); // the start of the year
   const g = 1 + real(0.06, 0.02);
-  assert.ok(Math.abs(row(withIt, "total", 2031) - row(without, "total", 2031) - 100_000 * g) < 1e-6);
+  assert.ok(
+    Math.abs(row(withIt, "total", 2031) - row(without, "total", 2031) - 100_000 * g) < 1e-6,
+  );
 });
 
 test("a one-off cost larger than the money is a failure in its year, even before the FIRE start", () => {
-  const res = simulate(household({ events: [{ id: "e", name: "House", year: 2030, amount: -5_000_000 }] }));
+  const res = simulate(
+    household({ events: [{ id: "e", name: "House", year: 2030, amount: -5_000_000 }] }),
+  );
   assert.equal(res.fail[0], 2030);
 });
 
 test("the tax on portfolio withdrawals grosses up what the portfolio pays, not cash", () => {
-  const plan = household({ cash: 0, accounts: [], income: [], contrib: 0, fire_year: 2026, start_month: 1 });
+  const plan = household({
+    cash: 0,
+    accounts: [],
+    income: [],
+    contrib: 0,
+    fire_year: 2026,
+    start_month: 1,
+  });
   const none = simulate(plan, { record: true });
   const taxed = simulate({ ...plan, portfolio_tax: 0.2 }, { record: true });
   const g = 1 + real(0.06, 0.02);
@@ -150,7 +181,9 @@ test("savings grow by the savings growth each year until the FIRE start", () => 
 
 test("the flexible rules stay within their floor and ceiling", () => {
   for (const kind of ["guardrails", "vanguard", "spenddown"]) {
-    const res = simulate(household({ stock_vol: 0.17, n_sims: 2000, rule: { kind } }), { record: true });
+    const res = simulate(household({ stock_vol: 0.17, n_sims: 2000, rule: { kind } }), {
+      record: true,
+    });
     const Y = res.years.length;
     for (let i = 0; i < res.n; i++) {
       if (!Number.isNaN(res.fail[i])) continue;
@@ -178,7 +211,11 @@ test("the spend-down with returns as assumed spends evenly, down to nothing at t
 });
 
 test("the spend-down never runs out when it may cut freely", () => {
-  const plan = household({ stock_vol: 0.25, n_sims: 2000, rule: { kind: "spenddown", floor: 0, max_cut: 1 } });
+  const plan = household({
+    stock_vol: 0.25,
+    n_sims: 2000,
+    rule: { kind: "spenddown", floor: 0, max_cut: 1 },
+  });
   assert.equal(lasts(plan), 1);
 });
 

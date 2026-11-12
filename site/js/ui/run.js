@@ -17,7 +17,11 @@ let spawned = 0;
 const spawn = () => new Worker(`${WORKER}?${++spawned}`, { type: "module" });
 let reqId = 0;
 const main = { worker: null, busy: false, queued: null, latest: 0 };
-const heavy = { grid: { worker: null, id: 0 }, safe: { worker: null, id: 0 }, stress: { worker: null, id: 0 } };
+const heavy = {
+  grid: { worker: null, id: 0 },
+  safe: { worker: null, id: 0 },
+  stress: { worker: null, id: 0 },
+};
 const CARDS = { grid: "c-grid", safe: "c-safe", stress: "c-stress" };
 const MAIN_CARDS = ["c-paths", "c-spending", "c-dist"];
 

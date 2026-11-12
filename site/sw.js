@@ -53,7 +53,8 @@ self.addEventListener("activate", (event) => {
       const cache = await caches.open(CACHE);
       for (const req of await cache.keys()) {
         const path = new URL(req.url).pathname;
-        if (path.includes("/vendor/") && !SHELL.some((p) => path.endsWith(`/${p}`))) await cache.delete(req);
+        if (path.includes("/vendor/") && !SHELL.some((p) => path.endsWith(`/${p}`)))
+          await cache.delete(req);
       }
       await self.clients.claim();
     })(),
@@ -77,7 +78,8 @@ async function networkFirst(req, url) {
     return res;
   } catch (err) {
     const hit =
-      (await cache.match(req, { ignoreSearch: true })) || (req.mode === "navigate" ? await cache.match("./") : null);
+      (await cache.match(req, { ignoreSearch: true })) ||
+      (req.mode === "navigate" ? await cache.match("./") : null);
     if (hit) return hit;
     throw err;
   }
@@ -109,7 +111,8 @@ async function fingerprint(from) {
   const cache = await caches.open(CACHE);
   const hashes = await Promise.all(
     CODE.map(async (path) => {
-      const res = from === "server" ? await fetch(path, { cache: "no-cache" }) : await cache.match(path);
+      const res =
+        from === "server" ? await fetch(path, { cache: "no-cache" }) : await cache.match(path);
       if (!res?.ok) throw new Error(`${path} can't be read`);
       const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", await res.arrayBuffer()));
       return Array.from(hash.subarray(0, 8), (b) => b.toString(16).padStart(2, "0")).join("");

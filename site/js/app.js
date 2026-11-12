@@ -116,7 +116,9 @@ function wire() {
   document.querySelectorAll("#c-paths [data-unit]").forEach((b) =>
     b.addEventListener("click", () => {
       setUnit(b.dataset.unit);
-      document.querySelectorAll("#c-paths [data-unit]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      document
+        .querySelectorAll("#c-paths [data-unit]")
+        .forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
       if (sim) renderPaths();
     }),
   );
@@ -207,7 +209,8 @@ function start() {
     addPlan("Example", examplePlan(), { example: true });
   }
   const session = store.loadSession();
-  const current = planById(session?.current) ?? [...plans].sort((a, b) => (b.updated ?? 0) - (a.updated ?? 0))[0];
+  const current =
+    planById(session?.current) ?? [...plans].sort((a, b) => (b.updated ?? 0) - (a.updated ?? 0))[0];
   setBase({ id: current.id, name: current.name, values: clone(current.plan) });
   setState(
     session?.current === current.id && session.working

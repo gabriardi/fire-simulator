@@ -34,17 +34,28 @@ export const CURRENCIES = [
 // Number formats to pick from, each shown the way this browser writes it.
 export const LOCALES = [
   ["", "Browser default"],
-  ...["en-US", "en-GB", "de-DE", "de-CH", "fr-FR", "fr-CH", "it-IT", "es-ES", "nl-NL", "sv-SE", "en-IN", "ja-JP"].map(
-    (loc) => {
-      let sample = loc;
-      try {
-        sample = new Intl.NumberFormat(loc).format(1234567.89);
-      } catch {
-        /* unknown to this browser */
-      }
-      return [loc, `${sample} (${loc})`];
-    },
-  ),
+  ...[
+    "en-US",
+    "en-GB",
+    "de-DE",
+    "de-CH",
+    "fr-FR",
+    "fr-CH",
+    "it-IT",
+    "es-ES",
+    "nl-NL",
+    "sv-SE",
+    "en-IN",
+    "ja-JP",
+  ].map((loc) => {
+    let sample = loc;
+    try {
+      sample = new Intl.NumberFormat(loc).format(1234567.89);
+    } catch {
+      /* unknown to this browser */
+    }
+    return [loc, `${sample} (${loc})`];
+  }),
 ];
 
 export function currencyName(code, locale) {
@@ -124,7 +135,12 @@ export function makeFormat(locale, currency) {
     num: (v) => (ok(v) ? whole.format(Math.round(v)) : dash),
     money: (v) => (ok(v) ? money.format(Math.round(v)) : dash),
     /** 1.23M-style, three digits, for tiles and chart labels. */
-    short: (v) => (!ok(v) ? dash : Math.abs(v) < 1e6 && !thousands ? money.format(Math.round(v)) : compact.format(v)),
+    short: (v) =>
+      !ok(v)
+        ? dash
+        : Math.abs(v) < 1e6 && !thousands
+          ? money.format(Math.round(v))
+          : compact.format(v),
     pct: (v, d = 0) => (ok(v) ? `${(v * 100).toFixed(d).replace(".", decimal)}%` : dash),
     parse,
     /** A typed list of numbers ("-15, -20, -25"), each read by `parse`: NaN where one isn't. */

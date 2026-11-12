@@ -1,7 +1,15 @@
 // Setting up a new plan: the essentials in one dialog; everything else starts from the defaults.
 import { endYear } from "../engine.js";
 import { CURRENCIES, currencyName, makeFormat } from "../format.js";
-import { DEFAULT_CURRENCY, LIMITS, RULE_DEFAULTS, bandAround, blankPlan, normalize, uid } from "../plan.js";
+import {
+  DEFAULT_CURRENCY,
+  LIMITS,
+  RULE_DEFAULTS,
+  bandAround,
+  blankPlan,
+  normalize,
+  uid,
+} from "../plan.js";
 import { $, el } from "./dom.js";
 import { toast } from "./messages.js";
 import { addPlan, nameProblem, switchTo, uniqueName } from "./plans.js";
@@ -41,7 +49,9 @@ export function openSetup() {
     const cur = el(
       "select",
       {},
-      ...CURRENCIES.map((c) => el("option", { value: c, text: `${c} · ${currencyName(c, fmt.locale)}` })),
+      ...CURRENCIES.map((c) =>
+        el("option", { value: c, text: `${c} · ${currencyName(c, fmt.locale)}` }),
+      ),
     );
     cur.value = money.currency;
     cur.addEventListener("change", () => {
@@ -54,7 +64,10 @@ export function openSetup() {
         { class: "setup-person" },
         field("Name", text(p, "name", { maxlength: 40 })),
         field("Born", text(p, "born", { inputmode: "numeric" })),
-        field("State pension / yr", text(p, "pension", { inputmode: "decimal", placeholder: "optional" })),
+        field(
+          "State pension / yr",
+          text(p, "pension", { inputmode: "decimal", placeholder: "optional" }),
+        ),
         field("from age", text(p, "age", { inputmode: "numeric" })),
         people.length > 1
           ? el(
@@ -88,9 +101,15 @@ export function openSetup() {
           type: "button",
           class: "btn small",
           disabled: people.length >= LIMITS.people,
-          title: people.length >= LIMITS.people ? `A plan holds up to ${LIMITS.people} people.` : null,
+          title:
+            people.length >= LIMITS.people ? `A plan holds up to ${LIMITS.people} people.` : null,
           onclick: () => {
-            people.push({ name: `Person ${people.length + 1}`, born: String(y - 35), pension: "", age: 67 });
+            people.push({
+              name: `Person ${people.length + 1}`,
+              born: String(y - 35),
+              pension: "",
+              age: 67,
+            });
             render();
           },
         },
@@ -105,7 +124,10 @@ export function openSetup() {
           text(money, "portfolio", { inputmode: "decimal", placeholder: "0" }),
           "funds, shares: what you could sell",
         ),
-        field(`Cash today (${money.currency})`, text(money, "cash", { inputmode: "decimal", placeholder: "0" })),
+        field(
+          `Cash today (${money.currency})`,
+          text(money, "cash", { inputmode: "decimal", placeholder: "0" }),
+        ),
         field(
           `Saved per year (${money.currency})`,
           text(money, "contrib", { inputmode: "decimal", placeholder: "0" }),
@@ -116,7 +138,11 @@ export function openSetup() {
           text(money, "spending", { inputmode: "decimal" }),
           "once you stop, today's money, taxes included",
         ),
-        field("Stop working in", text(money, "fire", { inputmode: "numeric" }), "the FIRE start, a year"),
+        field(
+          "Stop working in",
+          text(money, "fire", { inputmode: "numeric" }),
+          "the FIRE start, a year",
+        ),
       ),
     );
   };
@@ -139,7 +165,9 @@ export function openSetup() {
       plan.people = people.map((p, i) => {
         const born = Math.round(F.parse(p.born, "num"));
         if (!(born >= 1900 && born <= y))
-          throw new Error(`${p.name || `Person ${i + 1}`}: the birth year should be between 1900 and ${y}.`);
+          throw new Error(
+            `${p.name || `Person ${i + 1}`}: the birth year should be between 1900 and ${y}.`,
+          );
         return { id: uid(), name: p.name.trim() || `Person ${i + 1}`, birth_year: born };
       });
       plan.income = people.flatMap((p, i) => {
@@ -147,7 +175,9 @@ export function openSetup() {
         const age = Math.round(F.parse(p.age, "num"));
         if (!v) return [];
         if (!(age >= 40 && age <= 90))
-          throw new Error(`${plan.people[i].name}'s state pension: the age should be between 40 and 90.`);
+          throw new Error(
+            `${plan.people[i].name}'s state pension: the age should be between 40 and 90.`,
+          );
         const name = people.length > 1 ? `State pension (${plan.people[i].name})` : "State pension";
         return [
           {
@@ -176,7 +206,9 @@ export function openSetup() {
       $("#setup-dialog").close();
       const p = addPlan(name, normalize(plan, { currency: plan.currency, today: now }));
       switchTo(p.id);
-      toast(`Created “${p.name}”. Add retirement accounts, income and one-off events in the panel.`);
+      toast(
+        `Created “${p.name}”. Add retirement accounts, income and one-off events in the panel.`,
+      );
     } catch (err) {
       $("#setup-error").textContent = err.message;
     }

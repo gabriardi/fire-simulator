@@ -91,7 +91,11 @@ export async function openShare() {
 function unlockShared(code) {
   return new Promise((resolve, reject) => {
     if (!store.canLock()) {
-      reject(new Error("This share link is locked with a password, which this browser can only unlock over https."));
+      reject(
+        new Error(
+          "This share link is locked with a password, which this browser can only unlock over https.",
+        ),
+      );
       return;
     }
     const d = $("#unlock-dialog");
@@ -146,7 +150,8 @@ function unlockShared(code) {
 // A link opened while an older copy of the page is still open (a tab left from last week, an
 // installed app offline) can't read a newer plan without losing what it doesn't know: reloading
 // fetches the new version.
-export const NEWER = "This plan was made by a newer version of the simulator: reload the page to update it";
+export const NEWER =
+  "This plan was made by a newer version of the simulator: reload the page to update it";
 
 export async function openSharedLink() {
   const m = /^#plan=([\w-]+)$/.exec(location.hash);
@@ -167,7 +172,8 @@ export async function openSharedLink() {
     return;
   }
   const plan = normalize(shared.plan, { currency: state.currency });
-  const name = (typeof shared.name === "string" && shared.name.trim().slice(0, 50)) || "Shared plan";
+  const name =
+    (typeof shared.name === "string" && shared.name.trim().slice(0, 50)) || "Shared plan";
   // Opened before (a bookmarked link, or the sharer's own browser): go to that copy, no new one.
   const twin = plans.find((x) => eq(x.plan, plan));
   if (twin) {
@@ -208,11 +214,14 @@ export function renderShared() {
   if (box.hidden) return;
   const seed = run.seed !== settings.seed;
   const n = run.n_sims !== settings.n_sims;
-  const theirs = [seed && `seed ${run.seed}`, n && `${fmt.num(run.n_sims)} futures`].filter(Boolean).join(" and ");
+  const theirs = [seed && `seed ${run.seed}`, n && `${fmt.num(run.n_sims)} futures`]
+    .filter(Boolean)
+    .join(" and ");
   const yours = [seed && `seed ${settings.seed}`, n && `${fmt.num(settings.n_sims)} futures`]
     .filter(Boolean)
     .join(" and ");
-  $("#shared-text").textContent = `Shared with ${theirs}. With your ${yours}, the numbers can differ a little.`;
+  $("#shared-text").textContent =
+    `Shared with ${theirs}. With your ${yours}, the numbers can differ a little.`;
 }
 export function forgetRun() {
   const p = planById(base.id);
@@ -229,5 +238,7 @@ export function useSharedRun() {
   store.saveSettings(settings);
   forgetRun();
   changed();
-  toast(`Now on seed ${run.seed} and ${fmt.num(run.n_sims)} futures, as shared. Change them under Simulation.`);
+  toast(
+    `Now on seed ${run.seed} and ${fmt.num(run.n_sims)} futures, as shared. Change them under Simulation.`,
+  );
 }

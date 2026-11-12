@@ -116,7 +116,10 @@ for (const g of golden.deterministic) {
         close(res.accessible[t], g.accessible[t]),
         `accessible ${y}: ${res.accessible[t]} vs ${g.accessible[t]}`,
       );
-      assert.ok(close(res.spending[t], g.spending[t]), `spending ${y}: ${res.spending[t]} vs ${g.spending[t]}`);
+      assert.ok(
+        close(res.spending[t], g.spending[t]),
+        `spending ${y}: ${res.spending[t]} vs ${g.spending[t]}`,
+      );
     }
   });
 }
@@ -139,7 +142,10 @@ for (const g of golden.monte_carlo) {
         close(sortedMedian(res.atFire), want.start_median, 0.02),
         `${kind}: median at FIRE ${sortedMedian(res.atFire)} vs ${want.start_median}`,
       );
-      assert.ok(close(sortedMedian(res.atFire, 10), want.start_p10, 0.03), `${kind}: 10th pct at FIRE`);
+      assert.ok(
+        close(sortedMedian(res.atFire, 10), want.start_p10, 0.03),
+        `${kind}: 10th pct at FIRE`,
+      );
       // Wealth decades later is spread very widely: its median moves 2.5–6% between seeds.
       const Y = res.years.length;
       const ends = Array.from({ length: res.n }, (_, i) => res.total[i * Y + Y - 1]);

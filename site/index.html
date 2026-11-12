@@ -71,7 +71,9 @@
           <div class="scenario" id="scenario">
             <div class="scenario-label">
               <label for="plan-select">Plan</label>
-              <button class="help" type="button" data-help="plans" aria-label="Explain: Plans">?</button>
+              <button class="help" type="button" data-help="plans" aria-label="Explain: Plans">
+                ?
+              </button>
             </div>
             <div class="scenario-row">
               <div class="input"><select id="plan-select"></select></div>
@@ -92,7 +94,9 @@
                   <button type="button" role="menuitem" data-act="new">New plan…</button>
                   <button type="button" role="menuitem" data-act="save-as">Save as a copy…</button>
                   <button type="button" role="menuitem" data-act="rename">Rename…</button>
-                  <button type="button" role="menuitem" data-act="delete" class="danger">Delete</button>
+                  <button type="button" role="menuitem" data-act="delete" class="danger">
+                    Delete
+                  </button>
                   <hr />
                   <button type="button" role="menuitem" data-act="share">Share link…</button>
                   <button type="button" role="menuitem" data-act="export">Export plans</button>
@@ -108,12 +112,21 @@
             <div class="backup" id="backup" hidden>
               <span class="backup-text" id="backup-text"></span>
               <button class="btn small" id="backup-export" type="button">Export</button>
-              <button class="help" type="button" data-help="backup" aria-label="Explain: Backups">?</button>
+              <button class="help" type="button" data-help="backup" aria-label="Explain: Backups">
+                ?
+              </button>
             </div>
             <div class="backup shared-note" id="shared-note" role="status" hidden>
               <span class="backup-text" id="shared-text"></span>
               <button class="btn small" id="shared-use" type="button">Use the same</button>
-              <button class="btn quiet small" id="shared-close" type="button" aria-label="Dismiss this note">×</button>
+              <button
+                class="btn quiet small"
+                id="shared-close"
+                type="button"
+                aria-label="Dismiss this note"
+              >
+                ×
+              </button>
             </div>
           </div>
         </div>
@@ -121,7 +134,8 @@
           <div class="notice" id="notice" role="status"></div>
           <form id="form" autocomplete="off" novalidate></form>
           <div class="error" id="error" role="alert">
-            <span id="error-text"></span><button class="btn" id="error-fix" type="button" hidden></button>
+            <span id="error-text"></span
+            ><button class="btn" id="error-fix" type="button" hidden></button>
           </div>
         </div>
       </aside>
@@ -129,18 +143,28 @@
       <main>
         <noscript
           ><p class="noscript">
-            <b>When can I stop?</b> is a Monte Carlo FIRE simulator that runs in your browser, so it needs JavaScript.
-            Nothing you type is ever sent anywhere.
+            <b>When can I stop?</b> is a Monte Carlo FIRE simulator that runs in your browser, so it
+            needs JavaScript. Nothing you type is ever sent anywhere.
           </p></noscript
         >
         <header class="top">
           <div class="title">
             <h1>When can I stop?</h1>
-            <button class="scenario-pill" id="plan-pill" type="button" title="The plan on screen"></button>
+            <button
+              class="scenario-pill"
+              id="plan-pill"
+              type="button"
+              title="The plan on screen"
+            ></button>
           </div>
           <div class="top-right">
             <span class="sub" id="sub">Today's money · Monte Carlo</span>
-            <button class="btn" id="new-seed" type="button" title="Draw a different set of random futures">
+            <button
+              class="btn"
+              id="new-seed"
+              type="button"
+              title="Draw a different set of random futures"
+            >
               New seed
             </button>
             <button class="btn" id="guide" type="button">Guide</button>
@@ -151,10 +175,10 @@
           <div>
             <h2>When can you stop working, and how much can you spend?</h2>
             <p>
-              The simulator plays your plan through thousands of possible futures for the markets, and tells you how
-              often the money lasts. The numbers below are for Alex and Sam, a made-up household, to show how it works.
-              Set up your own plan to see yours: everything you enter stays in this browser, and nothing is sent
-              anywhere.
+              The simulator plays your plan through thousands of possible futures for the markets,
+              and tells you how often the money lasts. The numbers below are for Alex and Sam, a
+              made-up household, to show how it works. Set up your own plan to see yours: everything
+              you enter stays in this browser, and nothing is sent anywhere.
             </p>
           </div>
           <div class="welcome-actions">
@@ -168,7 +192,12 @@
           <div class="verdict">
             <span class="label"
               >Money lasts in
-              <button class="help" type="button" data-help="result.success" aria-label="Explain: Money lasts in">
+              <button
+                class="help"
+                type="button"
+                data-help="result.success"
+                aria-label="Explain: Money lasts in"
+              >
                 ?
               </button></span
             >
@@ -184,19 +213,29 @@
             <div>
               <h3>
                 Wealth over time
-                <button class="help" type="button" data-help="chart.paths" aria-label="Explain: Wealth over time">
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.paths"
+                  aria-label="Explain: Wealth over time"
+                >
                   ?
                 </button>
               </h3>
               <p class="desc">
-                Each thin line is one simulated future, coloured from poorest (purple) to richest (yellow); red lines
-                run out of money. The black line is the median, the shaded bands hold the middle 50% and 80% of futures.
+                Each thin line is one simulated future, coloured from poorest (purple) to richest
+                (yellow); red lines run out of money. The black line is the median, the shaded bands
+                hold the middle 50% and 80% of futures.
               </p>
             </div>
             <div class="tools">
               <div class="seg" role="group" aria-label="Unit">
-                <button type="button" data-unit="years" aria-pressed="true">Years of spending</button>
-                <button type="button" data-unit="money" aria-pressed="false" id="unit-money">Money</button>
+                <button type="button" data-unit="years" aria-pressed="true">
+                  Years of spending
+                </button>
+                <button type="button" data-unit="money" aria-pressed="false" id="unit-money">
+                  Money
+                </button>
               </div>
             </div>
           </div>
@@ -208,11 +247,18 @@
             <div>
               <h3>
                 What you'd get to spend
-                <button class="help" type="button" data-help="chart.spending" aria-label="Explain this chart">?</button>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.spending"
+                  aria-label="Explain this chart"
+                >
+                  ?
+                </button>
               </h3>
               <p class="desc">
-                The price of flexibility: each line is one future's yearly spending (red ones end when the money runs
-                out). The band holds 80% of the futures that last.
+                The price of flexibility: each line is one future's yearly spending (red ones end
+                when the money runs out). The band holds 80% of the futures that last.
               </p>
             </div>
           </div>
@@ -224,7 +270,14 @@
             <div>
               <h3>
                 <span id="grid-title">When can you stop, at which spending?</span>
-                <button class="help" type="button" data-help="chart.grid" aria-label="Explain this chart">?</button>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.grid"
+                  aria-label="Explain this chart"
+                >
+                  ?
+                </button>
               </h3>
               <p class="desc" id="grid-desc"></p>
             </div>
@@ -237,7 +290,14 @@
             <div>
               <h3>
                 <span id="safe-title">Safe spending by FIRE year</span>
-                <button class="help" type="button" data-help="chart.safe" aria-label="Explain this chart">?</button>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.safe"
+                  aria-label="Explain this chart"
+                >
+                  ?
+                </button>
               </h3>
               <p class="desc" id="safe-desc"></p>
             </div>
@@ -250,11 +310,19 @@
             <div>
               <h3>
                 Stress test: a crash right after you stop
-                <button class="help" type="button" data-help="chart.stress" aria-label="Explain this chart">?</button>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.stress"
+                  aria-label="Explain this chart"
+                >
+                  ?
+                </button>
               </h3>
               <p class="desc">
-                A historical-style crash forced into the first FIRE years, random markets after it. A bad start is what
-                breaks a withdrawal plan: you sell low to pay the bills, and that money never recovers.
+                A historical-style crash forced into the first FIRE years, random markets after it.
+                A bad start is what breaks a withdrawal plan: you sell low to pay the bills, and
+                that money never recovers.
               </p>
             </div>
           </div>
@@ -266,7 +334,14 @@
             <div>
               <h3>
                 Wealth at the FIRE start
-                <button class="help" type="button" data-help="chart.dist" aria-label="Explain these charts">?</button>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.dist"
+                  aria-label="Explain these charts"
+                >
+                  ?
+                </button>
               </h3>
               <div class="chart small" id="ch-start"></div>
             </div>
@@ -282,71 +357,80 @@
             <summary>How the simulation works, and what it can't see</summary>
             <h4>Everything is in today's money</h4>
             <p>
-              Returns are drawn after inflation, so a spending of 40,000 a year means today's purchasing power in every
-              year. Nominal inputs (returns, interest rates) are converted using the inflation you set.
+              Returns are drawn after inflation, so a spending of 40,000 a year means today's
+              purchasing power in every year. Nominal inputs (returns, interest rates) are converted
+              using the inflation you set.
             </p>
             <h4>One year at a time</h4>
             <ul>
               <li>
-                The portfolio, and the retirement accounts invested like it, is a mix of stocks and bonds rebalanced
-                every year. Stocks and bonds each get one random return per year, drawn independently from a log-normal
-                distribution with the median and spread you set (or a fat-tailed one).
+                The portfolio, and the retirement accounts invested like it, is a mix of stocks and
+                bonds rebalanced every year. Stocks and bonds each get one random return per year,
+                drawn independently from a log-normal distribution with the median and spread you
+                set (or a fat-tailed one).
               </li>
               <li>
-                Cash and fixed-interest accounts grow at their interest minus inflation. Until the FIRE year you keep
-                saving.
+                Cash and fixed-interest accounts grow at their interest minus inflation. Until the
+                FIRE year you keep saving.
               </li>
               <li>
-                When its owner reaches the unlock age, a retirement account is withdrawn, taxed, and added to the
-                portfolio.
+                When its owner reaches the unlock age, a retirement account is withdrawn, taxed, and
+                added to the portfolio.
               </li>
               <li>
-                From the FIRE year, income lines (pensions, part-time work) and extra costs count, and one-off events
-                happen in their year.
+                From the FIRE year, income lines (pensions, part-time work) and extra costs count,
+                and one-off events happen in their year.
               </li>
               <li>
-                Spending comes from cash first, then the portfolio. A future <strong>fails</strong> in the first year
-                the reachable money can't pay the bills, even if a retirement account would unlock later.
+                Spending comes from cash first, then the portfolio. A future
+                <strong>fails</strong> in the first year the reachable money can't pay the bills,
+                even if a retirement account would unlock later.
               </li>
             </ul>
             <h4>Spending rules</h4>
             <ul>
-              <li><strong>Fixed:</strong> the same real amount every year (the classic safe withdrawal rate).</li>
               <li>
-                <strong>Guardrails</strong> (Guyton &amp; Klinger): cut spending when the withdrawal rate drifts above
-                where it started by more than the band, raise it when it drifts below.
+                <strong>Fixed:</strong> the same real amount every year (the classic safe withdrawal
+                rate).
               </li>
               <li>
-                <strong>Vanguard dynamic:</strong> aim at a fixed share of wealth, but change spending by at most +up /
-                −down a year.
+                <strong>Guardrails</strong> (Guyton &amp; Klinger): cut spending when the withdrawal
+                rate drifts above where it started by more than the band, raise it when it drifts
+                below.
               </li>
               <li>
-                <strong>Spend-down</strong> (die with zero): each year, aim at what could be spent every year until the
-                end if the money earned the assumed return, with the locked accounts and future income counted as money
-                today; until an account unlocks, only the reachable money pays. Spending moves towards it by at most
-                +raise / −cut a year.
+                <strong>Vanguard dynamic:</strong> aim at a fixed share of wealth, but change
+                spending by at most +up / −down a year.
               </li>
               <li>
-                The flexible rules stay between the floor (costs you can't cut) and the ceiling. They fail only when
-                even the floor can't be paid.
+                <strong>Spend-down</strong> (die with zero): each year, aim at what could be spent
+                every year until the end if the money earned the assumed return, with the locked
+                accounts and future income counted as money today; until an account unlocks, only
+                the reachable money pays. Spending moves towards it by at most +raise / −cut a year.
+              </li>
+              <li>
+                The flexible rules stay between the floor (costs you can't cut) and the ceiling.
+                They fail only when even the floor can't be paid.
               </li>
             </ul>
             <h4>What it can't see</h4>
             <ul>
               <li>
-                Real markets have long bad stretches and recoveries; independent random years are a simplification. Use
-                the stress test for bad starts.
+                Real markets have long bad stretches and recoveries; independent random years are a
+                simplification. Use the stress test for bad starts.
               </li>
-              <li>The return assumption moves the answer more than anything else. Try a cautious case.</li>
+              <li>
+                The return assumption moves the answer more than anything else. Try a cautious case.
+              </li>
               <li>Inflation is the rate you set, in every year: only the returns are random.</li>
               <li>
-                Taxes are simplified: a flat rate on each retirement account when it unlocks, and optionally an
-                effective rate on portfolio withdrawals. Put everything else (income tax, wealth tax, health insurance)
-                into the spending.
+                Taxes are simplified: a flat rate on each retirement account when it unlocks, and
+                optionally an effective rate on portfolio withdrawals. Put everything else (income
+                tax, wealth tax, health insurance) into the spending.
               </li>
               <li>
-                Not modelled: pension reforms, costs rising faster than prices, how long each person lives (the plan
-                simply runs until the age you set), currency risk.
+                Not modelled: pension reforms, costs rising faster than prices, how long each person
+                lives (the plan simply runs until the age you set), currency risk.
               </li>
             </ul>
             <p>This is a tool for thinking about a plan, not financial advice.</p>
@@ -355,7 +439,11 @@
         <footer class="site-foot">
           <p>
             Free, with no ads and no tracking. If it's useful to you:
-            <a class="coffee" href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener"
+            <a
+              class="coffee"
+              href="https://buymeacoffee.com/gabriardif"
+              target="_blank"
+              rel="noopener"
               ><span aria-hidden="true">☕</span> Buy me a coffee</a
             >
           </p>
@@ -413,8 +501,8 @@
       <form id="setup-form" method="dialog" novalidate>
         <h2 id="setup-title">Set up a plan</h2>
         <p class="panel-text">
-          The essentials, to get a first answer. Retirement accounts, other income, one-off events and the market
-          assumptions can be added afterwards in the panel.
+          The essentials, to get a first answer. Retirement accounts, other income, one-off events
+          and the market assumptions can be added afterwards in the panel.
         </p>
         <div id="setup-fields" class="setup-fields"></div>
         <div class="field-error" id="setup-error" role="alert"></div>
@@ -429,9 +517,11 @@
       <div class="panel-body">
         <h2 id="share-title">Share this plan</h2>
         <p class="panel-text">
-          A link that opens a copy of the plan on screen, unsaved changes included. The plan is packed into the link
-          itself, after the “#”, which browsers never send to the site: nothing is uploaded.
-          <strong>Anyone with the link sees every number in it</strong>, unless you lock it with a password.
+          A link that opens a copy of the plan on screen, unsaved changes included. The plan is
+          packed into the link itself, after the “#”, which browsers never send to the site: nothing
+          is uploaded.
+          <strong>Anyone with the link sees every number in it</strong>, unless you lock it with a
+          password.
         </p>
         <div class="share-field" id="share-lock">
           <label for="share-password">Password (optional)</label>
@@ -464,8 +554,8 @@
       <form id="unlock-form" method="dialog" novalidate>
         <h2 id="unlock-title">Open a shared plan?</h2>
         <p class="panel-text">
-          Someone shared a plan locked with a password: ask them for it. It opens as a new plan in this browser; your
-          own plans stay as they are.
+          Someone shared a plan locked with a password: ask them for it. It opens as a new plan in
+          this browser; your own plans stay as they are.
         </p>
         <label for="unlock-input">Password</label>
         <div class="input">

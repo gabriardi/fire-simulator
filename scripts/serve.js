@@ -65,7 +65,10 @@ createServer(async (req, res) => {
     }
     if (info?.isDirectory()) file = join(file, "index.html");
     const body = await readFile(file);
-    const headers = { "Content-Type": TYPES[extname(file)] ?? "application/octet-stream", "Cache-Control": "no-cache" };
+    const headers = {
+      "Content-Type": TYPES[extname(file)] ?? "application/octet-stream",
+      "Cache-Control": "no-cache",
+    };
     for (const r of RULES) if (r.pattern.test(path)) Object.assign(headers, r.headers);
     res.writeHead(200, headers);
     res.end(body);
@@ -77,7 +80,8 @@ createServer(async (req, res) => {
   if (LAN) {
     for (const nets of Object.values(networkInterfaces())) {
       for (const n of nets ?? [])
-        if (n.family === "IPv4" && !n.internal) console.log(`On your network: http://${n.address}:${PORT}`);
+        if (n.family === "IPv4" && !n.internal)
+          console.log(`On your network: http://${n.address}:${PORT}`);
     }
   }
 });

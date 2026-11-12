@@ -38,7 +38,10 @@ export async function importPlans(file) {
     return;
   }
   const added = items.map((x) =>
-    addPlan(uniqueName(str(x.name) || "Imported plan"), normalize(x.plan, { currency: state.currency })),
+    addPlan(
+      uniqueName(str(x.name) || "Imported plan"),
+      normalize(x.plan, { currency: state.currency }),
+    ),
   );
   switchTo(added[0].id);
   toast(`Imported ${added.length} plan${added.length > 1 ? "s" : ""}.`);

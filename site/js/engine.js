@@ -72,7 +72,8 @@ export function incomeByYear(plan, years, fireYear = plan.fire_year) {
     for (let t = 0; t < years.length; t++) {
       const y = years[t];
       if (y < fireYear || y < from || (to != null && y >= to)) continue;
-      out[t] += s.indexed === false ? s.amount / (1 + plan.inflation) ** (y - plan.start_year) : s.amount;
+      out[t] +=
+        s.indexed === false ? s.amount / (1 + plan.inflation) ** (y - plan.start_year) : s.amount;
     }
   }
   return out;
@@ -89,11 +90,17 @@ export function eventsByYear(plan, years) {
 
 /** Stock share of the portfolio in each simulated year (the rest is in bonds). */
 export function stockShares(plan, nYears, i0 = plan.fire_year - plan.start_year) {
-  const { stock_share: share, tent_share: tent, tent_years_before: before, tent_years_after: after } = plan;
+  const {
+    stock_share: share,
+    tent_share: tent,
+    tent_years_before: before,
+    tent_years_after: after,
+  } = plan;
   const w = new Float64Array(nYears).fill(share);
   for (let i = 0; i < nYears; i++) {
     const k = i - i0; // years after (>= 0) or before (< 0) the FIRE start
-    if ((k >= 0 && k < after) || (k === 0 && after === 0)) w[i] = tent + ((share - tent) * k) / Math.max(after, 1);
+    if ((k >= 0 && k < after) || (k === 0 && after === 0))
+      w[i] = tent + ((share - tent) * k) / Math.max(after, 1);
     else if (k < 0 && k >= -before) w[i] = tent + ((share - tent) * -k) / before;
   }
   return w;
@@ -120,8 +127,13 @@ export function mixStats(plan, w) {
   // The model correlates the normal draws behind the two log-normal growth factors.
   const cov = st.mean * bd.mean * (Math.exp(plan.stock_bond_corr * st.sigma * bd.sigma) - 1);
   const mean = w * st.mean + (1 - w) * bd.mean;
-  const variance = (w * plan.stock_vol) ** 2 + ((1 - w) * plan.bond_vol) ** 2 + 2 * w * (1 - w) * cov;
-  return { mean: mean - 1, compound: mean / Math.sqrt(1 + variance / mean ** 2) - 1, vol: Math.sqrt(variance) };
+  const variance =
+    (w * plan.stock_vol) ** 2 + ((1 - w) * plan.bond_vol) ** 2 + 2 * w * (1 - w) * cov;
+  return {
+    mean: mean - 1,
+    compound: mean / Math.sqrt(1 + variance / mean ** 2) - 1,
+    vol: Math.sqrt(variance),
+  };
 }
 
 // ---- random numbers ----------------------------------------------------------------------------
@@ -135,7 +147,8 @@ function mix32(h) {
 /** A seeded generator (sfc32) for one stream of one simulated future. */
 export function makeRng(seed, path, stream) {
   let s = mix32(
-    mix32(mix32((seed >>> 0) ^ 0x9e3779b9) ^ Math.imul(path + 1, 0x85ebca6b)) ^ Math.imul(stream + 1, 0xc2b2ae35),
+    mix32(mix32((seed >>> 0) ^ 0x9e3779b9) ^ Math.imul(path + 1, 0x85ebca6b)) ^
+      Math.imul(stream + 1, 0xc2b2ae35),
   );
   const next0 = () => {
     s = (s + 0x9e3779b9) | 0;
@@ -357,7 +370,8 @@ function spendDownTables(c) {
     for (let a = 0; a < c.A; a++) {
       const k = c.unlockT[a] - t;
       // An invested account grows like the portfolio: today's value is its balance.
-      fac[a] = k > 0 && k < L ? (c.fixed[a] ? c.gfix[a] ** k * disc[k] : 1) * c.keep[a] * c.keepP : 0;
+      fac[a] =
+        k > 0 && k < L ? (c.fixed[a] ? c.gfix[a] ** k * disc[k] : 1) * c.keep[a] * c.keepP : 0;
     }
     tables.push({ cost, flow, fac });
   }
@@ -453,7 +467,10 @@ export function runPath(c, i, spend0, out = null) {
           spend = spend0;
           ref = (spend - inc) / wealth;
         } else {
-          spend = ref > 0 ? clip(ref * wealthNow + inc, prev * (1 - rule.down), prev * (1 + rule.up)) : prev;
+          spend =
+            ref > 0
+              ? clip(ref * wealthNow + inc, prev * (1 - rule.down), prev * (1 + rule.up))
+              : prev;
           spend = clip(spend, rule.floor, rule.ceiling);
         }
       } else {
@@ -462,7 +479,11 @@ export function runPath(c, i, spend0, out = null) {
           if (out?.startAmount) out.startAmount[i] = amount;
           spend = clip(amount, rule.floor, rule.ceiling);
         } else {
-          spend = clip(clip(amount, prev * (1 - rule.max_cut), prev * (1 + rule.max_raise)), rule.floor, rule.ceiling);
+          spend = clip(
+            clip(amount, prev * (1 - rule.max_cut), prev * (1 + rule.max_raise)),
+            rule.floor,
+            rule.ceiling,
+          );
         }
       }
       prev = spend;

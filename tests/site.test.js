@@ -40,7 +40,8 @@ function modulesFrom(entry) {
       ...[...src.matchAll(/\bfrom "(\.\.?\/[^"]+)"/g)].map((m) => m[1]),
       ...[...src.matchAll(/new URL\("(\.\.?\/[^"]+)", import\.meta\.url\)/g)].map((m) => m[1]),
     ];
-    for (const spec of specs) visit(new URL(spec, new URL(path, ROOT)).pathname.slice(ROOT.pathname.length));
+    for (const spec of specs)
+      visit(new URL(spec, new URL(path, ROOT)).pathname.slice(ROOT.pathname.length));
   };
   visit(entry);
   return [...seen];
@@ -49,11 +50,19 @@ function modulesFrom(entry) {
 test("everything the page needs offline is in the service worker's list", () => {
   const page = [
     ...[...html.matchAll(/<script [^>]*src="([^"]+)"/g)].map((m) => m[1]),
-    ...[...html.matchAll(/<link rel="(?:stylesheet|manifest|icon)" href="([^"]+)"/g)].map((m) => m[1]),
+    ...[...html.matchAll(/<link rel="(?:stylesheet|manifest|icon)" href="([^"]+)"/g)].map(
+      (m) => m[1],
+    ),
   ];
-  assert.ok(page.includes("js/app.js") && page.includes("app.css"), "the page's own script and styles were found");
+  assert.ok(
+    page.includes("js/app.js") && page.includes("app.css"),
+    "the page's own script and styles were found",
+  );
   const needed = new Set([...page, ...modulesFrom("js/app.js")]);
-  assert.ok(needed.has("js/worker.js") && needed.has("js/engine.js"), "the worker and what it imports were found");
+  assert.ok(
+    needed.has("js/worker.js") && needed.has("js/engine.js"),
+    "the worker and what it imports were found",
+  );
   const missing = [...needed].filter((f) => !SHELL.includes(f));
   assert.deepEqual(missing, [], "add these to SHELL in sw.js, or the app won't work offline");
 });
@@ -72,7 +81,10 @@ test("the chart library is the same version everywhere", () => {
   assert.match(file, /-\d+\.\d+\.\d+\.min\.js$/);
   assert.ok(html.includes(`<script src="${file}">`), `index.html loads ${file}`);
   assert.ok(SHELL.includes(file), `sw.js keeps ${file}`);
-  assert.ok(readFileSync(new URL("README.md", REPO), "utf8").includes(file), `README.md names ${file}`);
+  assert.ok(
+    readFileSync(new URL("README.md", REPO), "utf8").includes(file),
+    `README.md names ${file}`,
+  );
 });
 
 const entry = (key) => (HELP[key]?.alias ? HELP[HELP[key].alias] : HELP[key]);
@@ -109,7 +121,8 @@ test("every ? has an explanation, and the guide shows all of them", () => {
       if (!path) continue; // the function's own definition
       fields++;
       if (/\bhelp: "/.test(args)) continue;
-      if (path[1] === "`") problems.push(`${fn} ${path[2]}: a path made per item needs its own \`help\``);
+      if (path[1] === "`")
+        problems.push(`${fn} ${path[2]}: a path made per item needs its own \`help\``);
       else keys.add(path[2]);
     }
   }
@@ -119,7 +132,8 @@ test("every ? has an explanation, and the guide shows all of them", () => {
     if (h.alias && !HELP[h.alias]) problems.push(`"${key}" is an alias of a missing "${h.alias}"`);
 
   const inGuide = GUIDE.flatMap(([, list]) => list);
-  for (const key of inGuide) if (!entry(key)) problems.push(`the guide lists "${key}", which has no entry`);
+  for (const key of inGuide)
+    if (!entry(key)) problems.push(`the guide lists "${key}", which has no entry`);
   if (new Set(inGuide).size !== inGuide.length) problems.push("the guide lists an entry twice");
   for (const key of Object.keys(HELP))
     if (!HELP[key].alias && !inGuide.includes(key)) problems.push(`"${key}" isn't in the guide`);

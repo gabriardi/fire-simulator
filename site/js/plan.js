@@ -65,7 +65,10 @@ export function roundish(x) {
 }
 
 /** A floor and ceiling for the flexible rules, around a spending. */
-export const bandAround = (spending) => ({ floor: roundish(spending * 0.8), ceiling: roundish(spending * 1.25) });
+export const bandAround = (spending) => ({
+  floor: roundish(spending * 0.8),
+  ceiling: roundish(spending * 1.25),
+});
 
 export function blankPlan({ currency = DEFAULT_CURRENCY, today = new Date() } = {}) {
   const y = today.getFullYear();
@@ -170,7 +173,11 @@ export function newPerson(plan) {
   const used = new Set(plan.people.map((x) => x.name));
   let k = plan.people.length + 1;
   while (used.has(`Person ${k}`)) k++;
-  return { id: uid(), name: `Person ${k}`, birth_year: plan.people[0]?.birth_year ?? plan.start_year - 35 };
+  return {
+    id: uid(),
+    name: `Person ${k}`,
+    birth_year: plan.people[0]?.birth_year ?? plan.start_year - 35,
+  };
 }
 export const newAccount = (plan, owner = plan.people[0].id) => ({
   id: uid(),
@@ -201,7 +208,12 @@ export const newIncome = (plan, cost = false) =>
         to: null,
         indexed: true,
       };
-export const newEvent = (plan) => ({ id: uid(), name: "One-off", year: plan.fire_year, amount: -20_000 });
+export const newEvent = (plan) => ({
+  id: uid(),
+  name: "One-off",
+  year: plan.fire_year,
+  amount: -20_000,
+});
 
 // ---- cleaning what comes from outside ------------------------------------------------------------
 
@@ -210,7 +222,8 @@ const num = (v, d, lo = -1e12, hi = 1e12) => (isNum(v) ? Math.min(Math.max(v, lo
 const int = (v, d, lo, hi) => Math.round(num(v, d, lo, hi));
 const str = (v, d, max = 60) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : d);
 const oneOf = (v, options, d) => (options.includes(v) ? v : d);
-const list = (v, max) => (Array.isArray(v) ? v.filter((x) => x && typeof x === "object").slice(0, max) : []);
+const list = (v, max) =>
+  Array.isArray(v) ? v.filter((x) => x && typeof x === "object").slice(0, max) : [];
 
 /**
  * A complete, well-formed plan from anything: every field present with the right type, within
@@ -243,7 +256,12 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
     const kind = oneOf(w.kind, ["year", "age", "fire"], "year");
     const out = {
       kind,
-      value: int(w.value, kind === "year" ? d.fire_year : 0, kind === "year" ? 1900 : 0, kind === "year" ? 2300 : 150),
+      value: int(
+        w.value,
+        kind === "year" ? d.fire_year : 0,
+        kind === "year" ? 1900 : 0,
+        kind === "year" ? 2300 : 150,
+      ),
     };
     if (kind === "age") out.person = person(w.person);
     return out;
@@ -332,19 +350,28 @@ export function problems(plan) {
   const end = endYear(plan);
   const years = end - plan.start_year + 1;
   const who = personById(plan, plan.end_person);
-  if (years < 2) out.push(`The plan has to run past ${plan.start_year}: ${who.name} turns ${plan.end_age} in ${end}.`);
-  else if (years > LIMITS.years) out.push(`The plan runs ${years} years (until ${end}): ${LIMITS.years} at most.`);
+  if (years < 2)
+    out.push(
+      `The plan has to run past ${plan.start_year}: ${who.name} turns ${plan.end_age} in ${end}.`,
+    );
+  else if (years > LIMITS.years)
+    out.push(`The plan runs ${years} years (until ${end}): ${LIMITS.years} at most.`);
   if (plan.fire_year < plan.start_year || plan.fire_year >= end) {
-    out.push(`The FIRE start must be between ${plan.start_year} (the balances' year) and ${end - 1}.`);
+    out.push(
+      `The FIRE start must be between ${plan.start_year} (the balances' year) and ${end - 1}.`,
+    );
   }
   if (!(plan.spending > 0)) out.push("The spending per year must be more than 0.");
   const r = plan.rule;
-  if (r.kind !== "fixed" && r.floor > r.ceiling) out.push("The spending rule's floor must not be above its ceiling.");
+  if (r.kind !== "fixed" && r.floor > r.ceiling)
+    out.push("The spending rule's floor must not be above its ceiling.");
   else if (
     (r.kind === "guardrails" || r.kind === "vanguard") &&
     (plan.spending < r.floor || plan.spending > r.ceiling)
   ) {
-    out.push("With a flexible rule the spending per year must be between the floor and the ceiling.");
+    out.push(
+      "With a flexible rule the spending per year must be between the floor and the ceiling.",
+    );
   }
   return out;
 }
@@ -357,7 +384,8 @@ export function problems(plan) {
  */
 export function flatten(v, prefix = "", out = {}) {
   const isObj = (x) => x && typeof x === "object" && !Array.isArray(x);
-  const objList = Array.isArray(v) && (v.length === 0 ? prefix !== "stress_returns" : v.every(isObj));
+  const objList =
+    Array.isArray(v) && (v.length === 0 ? prefix !== "stress_returns" : v.every(isObj));
   if (!(isObj(v) || objList)) {
     out[prefix] = v;
     return out;
@@ -371,7 +399,8 @@ export function flatten(v, prefix = "", out = {}) {
 export function same(a, b) {
   if (typeof a === "number" && typeof b === "number")
     return Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
-  if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((x, i) => same(x, b[i]));
+  if (Array.isArray(a) && Array.isArray(b))
+    return a.length === b.length && a.every((x, i) => same(x, b[i]));
   return a === b || (a == null && b == null);
 }
 

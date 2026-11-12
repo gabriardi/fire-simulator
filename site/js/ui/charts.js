@@ -50,7 +50,11 @@ function layout(extra = {}) {
     font: { family: css("--font"), color: ink, size: 12 },
     margin: { l: 58, r: 14, t: 14, b: 44 },
     separators: fmt.plotly,
-    hoverlabel: { bgcolor: css("--surface"), bordercolor: line, font: { color: ink, family: css("--font") } },
+    hoverlabel: {
+      bgcolor: css("--surface"),
+      bordercolor: line,
+      font: { color: ink, family: css("--font") },
+    },
     legend: { orientation: "h", x: 0, y: -0.16, font: { color: css("--muted"), size: 11 } },
     dragmode: phone ? false : "zoom",
     ...extra,
@@ -101,15 +105,21 @@ function yearTicks(years, people, plotWidth, room) {
     return rows;
   };
   const last = years[years.length - 1];
-  const widest = Math.max(textWidth(String(last), 12), ...rowsAt(last).map((r) => textWidth(r, 10)));
+  const widest = Math.max(
+    textWidth(String(last), 12),
+    ...rowsAt(last).map((r) => textWidth(r, 10)),
+  );
   const span = Math.max(last - years[0], 1);
   const perYear = plotWidth / span;
   const step = [5, 10, 20].find((st) => perYear * st >= widest + 12) ?? 20;
-  const fits = (y) => (y - years[0]) * perYear + room.l >= widest / 2 && (last - y) * perYear + room.r >= widest / 2;
+  const fits = (y) =>
+    (y - years[0]) * perYear + room.l >= widest / 2 && (last - y) * perYear + room.r >= widest / 2;
   const vals = [];
   for (let y = Math.ceil(years[0] / step) * step; y <= last; y += step) if (fits(y)) vals.push(y);
   const ticktext = vals.map((y) =>
-    [String(y), ...rowsAt(y).map((r) => `<span style="font-size:10px">${esc(r)}</span>`)].join("<br>"),
+    [String(y), ...rowsAt(y).map((r) => `<span style="font-size:10px">${esc(r)}</span>`)].join(
+      "<br>",
+    ),
   );
   return { tickvals: vals, ticktext, tickangle: 0, lines: 1 + Math.ceil(people.length / 2) };
 }
@@ -163,8 +173,11 @@ export function renderPaths() {
   const P = Object.fromEntries(Object.entries(d.percentiles).map(([k, v]) => [k, conv(v)]));
   const ink = css("--ink");
   const bad = css("--bad");
-  const show = (v) => (v == null ? "–" : byYears ? `${v.toFixed(1).replace(".", fmt.decimal)} years` : fmt.short(v));
-  const ages = d.years.map((y) => esc(d.people.map((x) => `${x.name} ${y - x.birth_year}`).join(", ")));
+  const show = (v) =>
+    v == null ? "–" : byYears ? `${v.toFixed(1).replace(".", fmt.decimal)} years` : fmt.short(v);
+  const ages = d.years.map((y) =>
+    esc(d.people.map((x) => `${x.name} ${y - x.birth_year}`).join(", ")),
+  );
   const traces = d.paths.map((p) => ({
     x: d.years,
     y: conv(p.values),
@@ -231,7 +244,12 @@ export function renderPaths() {
     line: { color: css("--muted"), width: 1 },
   });
   const room = { l: 58, r: 14 };
-  const { lines, ...ticks } = yearTicks(d.years, d.people, $("#ch-paths").clientWidth - room.l - room.r, room);
+  const { lines, ...ticks } = yearTicks(
+    d.years,
+    d.people,
+    $("#ch-paths").clientWidth - room.l - room.r,
+    room,
+  );
   Plotly.react(
     "ch-paths",
     traces,
@@ -318,16 +336,28 @@ function renderSpending() {
   });
   const start = sim.summary.first_year ? null : state.spending;
   if (start != null) traces.push(flat(start, "starting spending", "dash"));
-  traces.push(flat(s.floor, "floor / ceiling", "dot"), { ...flat(s.ceiling, "", "dot"), showlegend: false });
+  traces.push(flat(s.floor, "floor / ceiling", "dot"), {
+    ...flat(s.ceiling, "", "dot"),
+    showlegend: false,
+  });
   Plotly.react(
     "ch-spending",
     traces,
     layout({
       hovermode: "x unified",
       xaxis: { range: [s.years[0], s.years[s.years.length - 1]], showgrid: false },
-      yaxis: { tickformat: "~s", range: [Math.min(s.floor * 0.9, (start ?? s.floor) * 0.8), s.ceiling * 1.05] },
+      yaxis: {
+        tickformat: "~s",
+        range: [Math.min(s.floor * 0.9, (start ?? s.floor) * 0.8), s.ceiling * 1.05],
+      },
       margin: { l: 58, r: 14, t: 36, b: 44 },
-      legend: { orientation: "h", x: 0, y: 1.01, yanchor: "bottom", font: { size: 11, color: css("--muted") } },
+      legend: {
+        orientation: "h",
+        x: 0,
+        y: 1.01,
+        yanchor: "bottom",
+        font: { size: 11, color: css("--muted") },
+      },
     }),
     CONFIG,
   );
@@ -355,11 +385,22 @@ function renderDist() {
       bargap: 0.05,
       xaxis: {
         tickformat: "~s",
-        title: { text: `${state.currency} in ${state.fire_year}, today's`, font: { size: 11, color: css("--muted") } },
+        title: {
+          text: `${state.currency} in ${state.fire_year}, today's`,
+          font: { size: 11, color: css("--muted") },
+        },
       },
       yaxis: { tickformat: ".0%" },
       shapes: [
-        { type: "line", x0: median, x1: median, y0: 0, y1: 1, yref: "paper", line: { color: css("--ink"), width: 2 } },
+        {
+          type: "line",
+          x0: median,
+          x1: median,
+          y0: 0,
+          y1: 1,
+          yref: "paper",
+          line: { color: css("--ink"), width: 2 },
+        },
       ],
       annotations: [
         {
@@ -422,7 +463,11 @@ function renderHero() {
   $("#k-what").textContent = first
     ? `of ${fmt.num(sim.n_sims)} simulated futures, spending down from ${state.fire_year}: typically ${fmt.money(first.p50)} in the first year, never below ${fmt.money(sim.spending.floor)}.`
     : `of ${fmt.num(sim.n_sims)} simulated futures, spending ${fmt.money(state.spending)} a year from ${state.fire_year} (${rule}).`;
-  $("#rail-live").replaceChildren("Money lasts in ", el("strong", { text: fmt.pct(s.success) }), ` · ${sim.ms} ms`);
+  $("#rail-live").replaceChildren(
+    "Money lasts in ",
+    el("strong", { text: fmt.pct(s.success) }),
+    ` · ${sim.ms} ms`,
+  );
   const tile = (k, v, sub, help) =>
     el(
       "div",
@@ -454,7 +499,12 @@ function renderHero() {
           ),
         ]
       : []),
-    tile("Starting withdrawal rate", fmt.pct(s.withdrawal_rate, 2), "of the median wealth", "result.rate"),
+    tile(
+      "Starting withdrawal rate",
+      fmt.pct(s.withdrawal_rate, 2),
+      "of the median wealth",
+      "result.rate",
+    ),
     tile(
       "Runs out",
       s.fail_median_year ? `in ${fmt.pct(1 - s.success)} of futures` : "in no future",
@@ -470,9 +520,19 @@ function renderHero() {
   ];
   if (s.avg_spending_median != null) {
     tiles.push(
-      tile("Average spending", fmt.money(s.avg_spending_median), "median lasting future", "result.flex"),
+      tile(
+        "Average spending",
+        fmt.money(s.avg_spending_median),
+        "median lasting future",
+        "result.flex",
+      ),
       tile("Leanest year", fmt.money(s.lowest_p10), "10th percentile", "result.flex"),
-      tile("Ever spending at the floor", fmt.pct(s.floor_share), "of lasting futures", "result.flex"),
+      tile(
+        "Ever spending at the floor",
+        fmt.pct(s.floor_share),
+        "of lasting futures",
+        "result.flex",
+      ),
     );
   }
   $("#tiles").replaceChildren(...tiles);
@@ -666,7 +726,13 @@ function renderSafe() {
         },
       ],
       margin: { l: 58, r: 14, t: 36, b: 36 },
-      legend: { orientation: "h", x: 0, y: 1.01, yanchor: "bottom", font: { size: 11, color: css("--muted") } },
+      legend: {
+        orientation: "h",
+        x: 0,
+        y: 1.01,
+        yanchor: "bottom",
+        font: { size: 11, color: css("--muted") },
+      },
     }),
     CONFIG,
   );
@@ -676,7 +742,12 @@ function renderStress() {
   const st = explore.stress;
   if (!st) return;
   const labels = st.map((r) => r.short);
-  const colors = { fixed: "--faint", guardrails: "--accent", vanguard: "--good", spenddown: "--warn" };
+  const colors = {
+    fixed: "--faint",
+    guardrails: "--accent",
+    vanguard: "--good",
+    spenddown: "--warn",
+  };
   const traces = RULE_KINDS.map((k) => ({
     type: "bar",
     orientation: "h",
@@ -697,7 +768,12 @@ function renderStress() {
       bargap: 0.25,
       margin: { l: 8, r: 36, t: 8, b: 36 },
       xaxis: { range: [0, 1.08], tickformat: ".0%", fixedrange: true },
-      yaxis: { autorange: "reversed", fixedrange: true, gridcolor: "rgba(0,0,0,0)", automargin: true },
+      yaxis: {
+        autorange: "reversed",
+        fixedrange: true,
+        gridcolor: "rgba(0,0,0,0)",
+        automargin: true,
+      },
       legend: { orientation: "h", x: 0, y: -0.14, traceorder: "normal" },
       dragmode: false,
     }),

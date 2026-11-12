@@ -71,9 +71,14 @@ export function cleanSaved(list) {
 
 /** The viewer's settings as found in storage, with anything odd put right. */
 export function cleanSettings(raw) {
-  const s = { ...DEFAULT_SETTINGS, ...(raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {}) };
+  const s = {
+    ...DEFAULT_SETTINGS,
+    ...(raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {}),
+  };
   s.seed = Number.isInteger(s.seed) && s.seed >= 0 ? s.seed % SEEDS : DEFAULT_SETTINGS.seed;
-  s.n_sims = Number.isInteger(s.n_sims) ? Math.min(Math.max(s.n_sims, SIMS.min), SIMS.max) : DEFAULT_SETTINGS.n_sims;
+  s.n_sims = Number.isInteger(s.n_sims)
+    ? Math.min(Math.max(s.n_sims, SIMS.min), SIMS.max)
+    : DEFAULT_SETTINGS.n_sims;
   if (typeof s.locale !== "string") s.locale = DEFAULT_SETTINGS.locale;
   return s;
 }
@@ -137,7 +142,11 @@ export function readFile(text) {
   const items = data?.format === FILE_FORMAT ? data.plans : Array.isArray(data) ? data : [data];
   const out = (items || [])
     .filter((x) => x && typeof x === "object")
-    .map((x) => (x.plan && typeof x.plan === "object" ? { name: x.name, plan: x.plan } : { name: x.name, plan: x }))
+    .map((x) =>
+      x.plan && typeof x.plan === "object"
+        ? { name: x.name, plan: x.plan }
+        : { name: x.name, plan: x },
+    )
     .filter((x) => Array.isArray(x.plan.people) || typeof x.plan.spending === "number");
   if (!out.length) throw new Error("No plans found in this file.");
   return out;
@@ -165,7 +174,8 @@ const concat = (...parts) => {
 };
 const toB64 = (bytes) => {
   let s = "";
-  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 };
 const fromB64 = (s) => {
@@ -173,7 +183,9 @@ const fromB64 = (s) => {
   return Uint8Array.from(bin, (c) => c.charCodeAt(0));
 };
 async function through(bytes, stream) {
-  return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer());
+  return new Uint8Array(
+    await new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer(),
+  );
 }
 
 /** Whether this browser can lock and unlock links: Web Crypto exists over https and on localhost only. */
@@ -184,9 +196,13 @@ export const isLocked = (code) => code[0] === "e";
 // The same password typed on two devices can come out as different Unicode ("é" as one character
 // or two): NFC makes them the same bytes.
 async function lockKey(password, salt, usage) {
-  const raw = await crypto.subtle.importKey("raw", encoder.encode(password.normalize("NFC")), "PBKDF2", false, [
-    "deriveKey",
-  ]);
+  const raw = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password.normalize("NFC")),
+    "PBKDF2",
+    false,
+    ["deriveKey"],
+  );
   return crypto.subtle.deriveKey(
     { name: "PBKDF2", hash: "SHA-256", salt, iterations: LOCK.iterations },
     raw,
@@ -251,7 +267,10 @@ export async function unpackPlan(code, password = "") {
   if (kind === "e") {
     if (!password) throw fail("locked", "This share link is locked with a password.");
     if (!canLock())
-      throw fail("locked", "This share link is locked with a password, which this browser can only unlock over https.");
+      throw fail(
+        "locked",
+        "This share link is locked with a password, which this browser can only unlock over https.",
+      );
     if (bytes[0] > LOCK.version)
       throw fail(
         "newer",
@@ -279,7 +298,8 @@ export async function unpackPlan(code, password = "") {
   }
   try {
     if (kind !== "z" && kind !== "j") throw new Error();
-    const json = kind === "z" ? await through(bytes, new DecompressionStream("deflate-raw")) : bytes;
+    const json =
+      kind === "z" ? await through(bytes, new DecompressionStream("deflate-raw")) : bytes;
     const d = JSON.parse(new TextDecoder().decode(json));
     if (!d || typeof d.p !== "object") throw new Error();
     return { name: typeof d.n === "string" ? d.n : "Shared plan", plan: d.p, run: cleanRun(d.r) };

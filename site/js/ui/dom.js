@@ -22,11 +22,14 @@ export const setPath = (obj, path, v) => {
   keys.reduce((o, k) => o[k], obj)[last] = v;
 };
 export const isPhone = () => window.matchMedia("(max-width: 960px)").matches;
-export const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+export const css = (name) =>
+  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 // Plotly reads a few HTML tags in its labels: names typed by people (or in a shared link) go in as text.
-export const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-export const byName = (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" });
+export const esc = (s) =>
+  String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+export const byName = (a, b) =>
+  a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" });
 
 /** Deep equality for plan values (numbers to 1e-9). */
 export function eq(a, b) {
@@ -35,6 +38,7 @@ export function eq(a, b) {
     const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
     return [...keys].every((k) => eq(a[k], b[k]));
   }
-  if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((x, i) => eq(x, b[i]));
+  if (Array.isArray(a) && Array.isArray(b))
+    return a.length === b.length && a.every((x, i) => eq(x, b[i]));
   return same(a, b);
 }

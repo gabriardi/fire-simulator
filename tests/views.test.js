@@ -3,7 +3,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { lasts, simulate, successRate } from "../site/js/engine.js";
-import { gridView, mainView, percentile, spendingLastingIn, stressView, sustainable } from "../site/js/views.js";
+import {
+  gridView,
+  mainView,
+  percentile,
+  spendingLastingIn,
+  stressView,
+  sustainable,
+} from "../site/js/views.js";
 import { annuityPlan, household } from "./helpers.js";
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
@@ -78,7 +85,9 @@ test("the grid agrees with a direct run on the same futures, and leaves out the 
   assert.ok(i >= 0 && j >= 0);
   assert.equal(g.success[i][j], lasts(plan, { n: 1000 }));
   // Guardrails between 40,000 and 65,000: the spending levels outside have no rate.
-  g.values.forEach((v, k) => assert.equal(g.success[i][k] == null, v < 40_000 || v > 65_000, `spending ${v}`));
+  g.values.forEach((v, k) =>
+    assert.equal(g.success[i][k] == null, v < 40_000 || v > 65_000, `spending ${v}`),
+  );
 });
 
 test("the stress test without a forced crash is the plain result, and a crash at the start only hurts", () => {

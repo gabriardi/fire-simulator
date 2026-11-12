@@ -85,7 +85,8 @@ export function switchTo(id) {
   const before = snapshot();
   const unsaved = edits().length > 0;
   useBase(id);
-  if (unsaved) toast(`Unsaved changes to “${before.base.name}” discarded.`, { undo: () => restore(before) });
+  if (unsaved)
+    toast(`Unsaved changes to “${before.base.name}” discarded.`, { undo: () => restore(before) });
 }
 export function revert() {
   const before = snapshot();
@@ -131,7 +132,10 @@ export function saveCurrent() {
 function suggestName() {
   const k = state.rule.kind;
   const rule = k === "vanguard" ? RULE_SHORT[k] : RULE_SHORT[k].toLowerCase(); // Vanguard is a name
-  const amount = state.rule.kind === "spenddown" ? `floor ${fmt.short(state.rule.floor)}` : fmt.short(state.spending);
+  const amount =
+    state.rule.kind === "spenddown"
+      ? `floor ${fmt.short(state.rule.floor)}`
+      : fmt.short(state.spending);
   return uniqueName(`Stop ${state.fire_year}, ${amount}, ${rule}`);
 }
 export function saveAsNew() {
@@ -228,7 +232,11 @@ const labelOf = (path) => {
   if (LIST_NAMES[path]) return LIST_NAMES[path];
   let best = null;
   for (const f of FIELDS)
-    if ((path === f.path || path.startsWith(`${f.path}.`)) && (!best || f.path.length > best.path.length)) best = f;
+    if (
+      (path === f.path || path.startsWith(`${f.path}.`)) &&
+      (!best || f.path.length > best.path.length)
+    )
+      best = f;
   return best?.label ?? path;
 };
 let optionsKey = "";
@@ -255,7 +263,8 @@ export function renderPlanBar() {
     const list = g.dataset.list;
     g.classList.toggle(
       "edited",
-      Boolean(g.querySelector(".field.edited")) || Boolean(list && !eq(state[list], base.values[list])),
+      Boolean(g.querySelector(".field.edited")) ||
+        Boolean(list && !eq(state[list], base.values[list])),
     );
   }
   const status = $("#plan-state");
@@ -263,7 +272,9 @@ export function renderPlanBar() {
   $("#plan-revert").hidden = !edited.length || !saved;
   saveBtn.hidden = !edited.length && saved;
   saveBtn.textContent = saved ? "Save" : "Save as…";
-  saveBtn.title = saved ? `Save the changes into “${base.name}” (${MOD_S})` : "Save these values as a plan";
+  saveBtn.title = saved
+    ? `Save the changes into “${base.name}” (${MOD_S})`
+    : "Save these values as a plan";
   if (edited.length) {
     status.className = "scenario-state dirty";
     status.textContent = `Edited: ${[...new Set(edited.map(labelOf))].join(", ")}`;
@@ -299,7 +310,8 @@ export function renderBackup() {
   const box = $("#backup");
   box.hidden = !canStore || !newer.length;
   if (box.hidden) return;
-  const day = (t) => new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium" }).format(new Date(t));
+  const day = (t) =>
+    new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium" }).format(new Date(t));
   $("#backup-text").textContent = exported
     ? `Saved changes since your last backup (${day(exported)}).`
     : "Your plans are only in this browser. Keep a backup file.";

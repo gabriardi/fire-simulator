@@ -135,7 +135,12 @@ export function numberField({
     unitEl.textContent = unitText();
     unitEl.hidden = !unitText();
     if (range) {
-      if (!holding && range.max !== "" && (v * scale > Number(range.max) || v * scale < Number(range.min))) anchor = v;
+      if (
+        !holding &&
+        range.max !== "" &&
+        (v * scale > Number(range.max) || v * scale < Number(range.min))
+      )
+        anchor = v;
       setRange();
       range.value = v * scale;
     }
@@ -179,13 +184,28 @@ export function textField({ path, label, what, help, oncommit, placeholder }) {
   syncers.push(() => {
     if (document.activeElement !== input) input.value = getPath(state, path) ?? "";
   });
-  const head = el("div", { class: "field-head" }, el("label", { for: id, text: label }), help ? helpBtn(help) : null);
+  const head = el(
+    "div",
+    { class: "field-head" },
+    el("label", { for: id, text: label }),
+    help ? helpBtn(help) : null,
+  );
   const node = el("div", { class: "field" }, head, el("div", { class: "input" }, input));
   FIELDS.push({ path, label: what ?? label, node, show: (v) => `“${v}”` });
   return node;
 }
 
-export function selectField({ path, label, options, hint, onchange, help, what, show, setting = false }) {
+export function selectField({
+  path,
+  label,
+  options,
+  hint,
+  onchange,
+  help,
+  what,
+  show,
+  setting = false,
+}) {
   const target = () => (setting ? settings : state);
   const id = `f-${path.replace(/\./g, "-")}`;
   const sel = el("select", { id, "aria-label": label });
@@ -209,10 +229,16 @@ export function selectField({ path, label, options, hint, onchange, help, what, 
     sel.value = String(show ? show.toKey(v) : (v ?? ""));
     if (hintEl) hintEl.textContent = typeof hint === "function" ? hint() : hint;
   });
-  const head = el("div", { class: "field-head" }, el("label", { for: id, text: label }), helpBtn(help ?? path));
+  const head = el(
+    "div",
+    { class: "field-head" },
+    el("label", { for: id, text: label }),
+    helpBtn(help ?? path),
+  );
   const node = el("div", { class: "field" }, head, el("div", { class: "input" }, sel), hintEl);
   if (!setting) {
-    const optionText = (v) => options().find(([o]) => o === String(show ? show.toKey(v) : (v ?? "")))?.[1];
+    const optionText = (v) =>
+      options().find(([o]) => o === String(show ? show.toKey(v) : (v ?? "")))?.[1];
     FIELDS.push({ path, label: what ?? label, node, show: show?.text ?? optionText });
   }
   return node;
@@ -231,7 +257,12 @@ export function checkField({ path, label, what, help }) {
   const node = el(
     "div",
     { class: "field check" },
-    el("div", { class: "field-head" }, el("label", { for: id }, box, el("span", { text: label })), helpBtn(help)),
+    el(
+      "div",
+      { class: "field-head" },
+      el("label", { for: id }, box, el("span", { text: label })),
+      helpBtn(help),
+    ),
   );
   FIELDS.push({ path, label: what ?? label, node, show: (v) => (v ? "yes" : "no") });
   return node;
@@ -240,14 +271,19 @@ export function checkField({ path, label, what, help }) {
 // A moment: a calendar year, an age of someone, or years after the FIRE start (or never).
 function describeWhen(w) {
   if (!w) return "never";
-  if (w.kind === "fire") return w.value === 0 ? "at the FIRE start" : `${w.value} years after the FIRE start`;
+  if (w.kind === "fire")
+    return w.value === 0 ? "at the FIRE start" : `${w.value} years after the FIRE start`;
   if (w.kind === "age") return `when ${personById(state, w.person).name} turns ${w.value}`;
   return `in ${w.value}`;
 }
 export function whenField({ path, label, what, never = false }) {
   const id = `f-${path.replace(/\./g, "-")}`;
   const sel = el("select", { id, "aria-label": `${label}: how` });
-  const input = el("input", { type: "text", inputmode: "numeric", "aria-label": `${label}: value` });
+  const input = el("input", {
+    type: "text",
+    inputmode: "numeric",
+    "aria-label": `${label}: value`,
+  });
   const unitEl = el("span", { class: "unit" });
   const valueBox = el("div", { class: "input" }, input, unitEl);
   const keyOf = (w) => (!w ? "never" : w.kind === "age" ? `age:${w.person}` : w.kind);
@@ -272,7 +308,11 @@ export function whenField({ path, label, what, never = false }) {
     else if (sel.value === "year") next = { kind: "year", value: year };
     else if (sel.value.startsWith("age:")) {
       const person = sel.value.slice(4);
-      next = { kind: "age", person, value: Math.max(0, year - personById(state, person).birth_year) };
+      next = {
+        kind: "age",
+        person,
+        value: Math.max(0, year - personById(state, person).birth_year),
+      };
     }
     setPath(state, path, next);
     invalid.delete(path);
@@ -313,10 +353,17 @@ export function whenField({ path, label, what, never = false }) {
     const line = getPath(state, path.split(".").slice(0, -1).join("."));
     const from = yearOf(state, line.from);
     const stopsFirst = path.endsWith(".to") && y <= from;
-    hintEl.textContent = stopsFirst ? `${y}: before it starts (${from}), so it never pays` : `${y} · ${ages(y)}`;
+    hintEl.textContent = stopsFirst
+      ? `${y}: before it starts (${from}), so it never pays`
+      : `${y} · ${ages(y)}`;
     hintEl.classList.toggle("warn", stopsFirst);
   });
-  const head = el("div", { class: "field-head" }, el("label", { for: id, text: label }), helpBtn("income.when"));
+  const head = el(
+    "div",
+    { class: "field-head" },
+    el("label", { for: id, text: label }),
+    helpBtn("income.when"),
+  );
   const node = el(
     "div",
     { class: "field" },
@@ -390,7 +437,8 @@ export function group(title, open, ...fields) {
   return d;
 }
 
-export const ages = (year) => state.people.map((x) => `${x.name} ${year - x.birth_year}`).join(" · ");
+export const ages = (year) =>
+  state.people.map((x) => `${x.name} ${year - x.birth_year}`).join(" · ");
 
 export function syncAll() {
   for (const s of syncers) s();

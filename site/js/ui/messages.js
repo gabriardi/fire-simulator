@@ -9,7 +9,13 @@ export function helpBtn(key) {
   if (!h) return null;
   return el(
     "button",
-    { type: "button", class: "help", "data-help": key, "aria-label": `Explain: ${h.title}`, title: "What is this?" },
+    {
+      type: "button",
+      class: "help",
+      "data-help": key,
+      "aria-label": `Explain: ${h.title}`,
+      title: "What is this?",
+    },
     "?",
   );
 }
@@ -36,7 +42,11 @@ export function openHelp(key) {
   $("#help-body").onscroll = null;
   openDialog(h.title, [
     entryNodes(h),
-    el("button", { type: "button", class: "btn guide-link", onclick: openGuide }, "Open the full guide"),
+    el(
+      "button",
+      { type: "button", class: "btn guide-link", onclick: openGuide },
+      "Open the full guide",
+    ),
   ]);
 }
 export function openGuide() {
@@ -51,7 +61,8 @@ export function openGuide() {
         type: "button",
         class: "toc-link",
         "data-target": id,
-        onclick: () => document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" }),
+        onclick: () =>
+          document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" }),
       },
       title,
     );
@@ -68,7 +79,9 @@ export function openGuide() {
           ...keys
             .map(helpEntry)
             .filter(Boolean)
-            .map((h) => el("article", { class: "guide-item" }, el("h4", { text: h.title }), entryNodes(h))),
+            .map((h) =>
+              el("article", { class: "guide-item" }, el("h4", { text: h.title }), entryNodes(h)),
+            ),
         ),
       ),
     );
@@ -144,7 +157,8 @@ export function wireToast() {
   const t = $("#toast");
   const hold = () => clearTimeout(toastTimer);
   const release = () => {
-    if (t.classList.contains("show") && Number(t.dataset.ms)) toastTimer = setTimeout(hideToast, Number(t.dataset.ms));
+    if (t.classList.contains("show") && Number(t.dataset.ms))
+      toastTimer = setTimeout(hideToast, Number(t.dataset.ms));
   };
   t.addEventListener("mouseenter", hold);
   t.addEventListener("focusin", hold);

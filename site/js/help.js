@@ -577,7 +577,16 @@ export const HELP = {
 };
 
 export const GUIDE = [
-  ["Basics", ["concept.todays-money", "concept.monte-carlo", "concept.sequence", "concept.swr", "concept.privacy"]],
+  [
+    "Basics",
+    [
+      "concept.todays-money",
+      "concept.monte-carlo",
+      "concept.sequence",
+      "concept.swr",
+      "concept.privacy",
+    ],
+  ],
   ["Plans", ["plans", "backup", "share", "files"]],
   ["Plan", ["fire_year", "spending", "end_person"]],
   [
@@ -601,12 +610,26 @@ export const GUIDE = [
   ["Household", ["currency", "people"]],
   [
     "Savings and portfolio",
-    ["portfolio", "cash", "contrib", "contrib_growth", "cash_interest", "cash_buffer_years", "portfolio_tax"],
+    [
+      "portfolio",
+      "cash",
+      "contrib",
+      "contrib_growth",
+      "cash_interest",
+      "cash_buffer_years",
+      "portfolio_tax",
+    ],
   ],
-  ["Retirement accounts", ["accounts", "account.contrib", "account.growth", "account.unlock_age", "account.tax"]],
+  [
+    "Retirement accounts",
+    ["accounts", "account.contrib", "account.growth", "account.unlock_age", "account.tax"],
+  ],
   ["Income, costs, events", ["income", "income.when", "income.indexed", "events"]],
   ["Markets", ["stock_return", "stock_vol", "inflation", "_tails"]],
-  ["Portfolio mix", ["stock_share", "tent_share", "tent_years", "bond_return", "bond_vol", "stock_bond_corr"]],
+  [
+    "Portfolio mix",
+    ["stock_share", "tent_share", "tent_years", "bond_return", "bond_vol", "stock_bond_corr"],
+  ],
   ["Stress test", ["_stress", "stress-custom"]],
   ["Simulation", ["n_sims", "seed", "start_year", "locale"]],
   [
@@ -622,6 +645,9 @@ export const GUIDE = [
       "result.compare",
     ],
   ],
-  ["Charts", ["chart.paths", "chart.spending", "chart.grid", "chart.safe", "chart.stress", "chart.dist"]],
+  [
+    "Charts",
+    ["chart.paths", "chart.spending", "chart.grid", "chart.safe", "chart.stress", "chart.dist"],
+  ],
   ["About", ["concept.about"]],
 ];

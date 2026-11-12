@@ -39,7 +39,12 @@ test("a new plan and the example are complete and simulate", () => {
 
 test("normalize fills what's missing and drops what doesn't belong", () => {
   const p = normalize(
-    { spending: 50_000, people: [{ name: "Ana", birth_year: 1980 }], evil: "<script>", rule: { kind: "nope" } },
+    {
+      spending: 50_000,
+      people: [{ name: "Ana", birth_year: 1980 }],
+      evil: "<script>",
+      rule: { kind: "nope" },
+    },
     { today, currency: "CHF" },
   );
   assert.equal(p.currency, "CHF");
@@ -62,7 +67,13 @@ test("normalize keeps values in bounds and references pointing at people who exi
       fat_tails_df: 1,
       stress_returns: [-2, "x", 0.1],
       accounts: [{ owner: "ghost", balance: -5, tax: 2, growth: "magic" }],
-      income: [{ amount: 1000, from: { kind: "age", person: "ghost", value: 67 }, to: { kind: "bogus", value: 2050 } }],
+      income: [
+        {
+          amount: 1000,
+          from: { kind: "age", person: "ghost", value: 67 },
+          to: { kind: "bogus", value: 2050 },
+        },
+      ],
       people_extra: 1,
     },
     { today },
@@ -112,7 +123,12 @@ test("differences: changed values by path, an added or removed item once", () =>
   b.income[0].from.value = 66;
   b.events.push({ id: "e", name: "Roof", year: 2040, amount: -30_000 });
   b.accounts.pop();
-  assert.deepEqual(differences(a, b).sort(), ["accounts.#", "events.#", "income.0.from.value", "spending"]);
+  assert.deepEqual(differences(a, b).sort(), [
+    "accounts.#",
+    "events.#",
+    "income.0.from.value",
+    "spending",
+  ]);
   assert.deepEqual(differences(a, structuredClone(a)), []);
   // A stop added where there was none.
   const c = structuredClone(a);
@@ -142,7 +158,12 @@ test("a share link carries the run it was shared with, as information", async ()
   const run = { seed: 7, n_sims: 50_000 };
   assert.deepEqual((await unpackPlan(await packPlan("A", plan, { run }))).run, run);
   assert.deepEqual(
-    (await unpackPlan(await packPlan("A", plan, { run, password: "long enough pw" }), "long enough pw")).run,
+    (
+      await unpackPlan(
+        await packPlan("A", plan, { run, password: "long enough pw" }),
+        "long enough pw",
+      )
+    ).run,
     run,
   );
   assert.equal((await unpackPlan(await packPlan("A", plan))).run, null); // links made before
@@ -190,7 +211,10 @@ test("a locked share link opens with its password only, and hides the plan's nam
   assert.ok(isLocked(code));
   assert.ok(!isLocked(await packPlan("Open", plan)));
   assert.notEqual(await packPlan("Secret “plan” ü", plan, { password }), code); // a fresh salt and iv each time
-  assert.doesNotMatch(Buffer.from(code.slice(1), "base64url").toString("latin1"), /Secret|pillar|balance/);
+  assert.doesNotMatch(
+    Buffer.from(code.slice(1), "base64url").toString("latin1"),
+    /Secret|pillar|balance/,
+  );
 
   const back = await unpackPlan(code, password);
   assert.equal(back.name, "Secret “plan” ü");
@@ -202,7 +226,10 @@ test("a locked share link opens with its password only, and hides the plan's nam
   await assert.rejects(unpackPlan(code.slice(0, 30), password), (e) => code_of(e) === "damaged");
   const newer = Buffer.from(code.slice(1), "base64url");
   newer[0] = 9;
-  await assert.rejects(unpackPlan(`e${newer.toString("base64url")}`, password), (e) => code_of(e) === "newer");
+  await assert.rejects(
+    unpackPlan(`e${newer.toString("base64url")}`, password),
+    (e) => code_of(e) === "newer",
+  );
 
   // "é" typed as one character or as e + accent is the same password.
   const accented = await packPlan("x", plan, { password: "café au lait" });
@@ -269,7 +296,11 @@ test("typed lists of numbers: where the decimal mark is a comma, it isn't a sepa
 test("settings from storage: odd values put right, the rest kept", () => {
   assert.deepEqual(cleanSettings(null), { seed: 42, n_sims: 10_000, locale: "" });
   assert.deepEqual(cleanSettings([1, 2]), { seed: 42, n_sims: 10_000, locale: "" });
-  assert.deepEqual(cleanSettings({ seed: -5, n_sims: 123_456, locale: 5 }), { seed: 42, n_sims: 50_000, locale: "" });
+  assert.deepEqual(cleanSettings({ seed: -5, n_sims: 123_456, locale: 5 }), {
+    seed: 42,
+    n_sims: 50_000,
+    locale: "",
+  });
   assert.deepEqual(cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH" }), {
     seed: 7,
     n_sims: 500,

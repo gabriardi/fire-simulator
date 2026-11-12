@@ -29,7 +29,8 @@ import { changed } from "./run.js";
 import { fmt, realOf, refreshFormat, settings, state } from "./state.js";
 
 const RULE_HINTS = {
-  fixed: "The same real amount every year, whatever the markets do. The classic safe withdrawal rate.",
+  fixed:
+    "The same real amount every year, whatever the markets do. The classic safe withdrawal rate.",
   guardrails:
     "Guyton & Klinger: cut spending when the withdrawal rate drifts above where it started by more than the band, raise it when it drifts below. Never below the floor or above the ceiling.",
   vanguard:
@@ -64,7 +65,13 @@ function ruleGroup() {
   );
   const guard = row2(
     numberField({ path: "rule.band", label: "Guardrail band", kind: "pct", min: 0.001, max: 0.99 }),
-    numberField({ path: "rule.adjust", label: "Cut / raise by", kind: "pct", min: 0.001, max: 0.99 }),
+    numberField({
+      path: "rule.adjust",
+      label: "Cut / raise by",
+      kind: "pct",
+      min: 0.001,
+      max: 0.99,
+    }),
   );
   const vang = row2(
     numberField({ path: "rule.up", label: "Max raise / yr", kind: "pct", min: 0, max: 0.99 }),
@@ -106,11 +113,23 @@ function ruleGroup() {
       }),
     ),
   );
-  const kindField = el("div", { class: "field" }, seg, el("div", { class: "hint-row" }, hintEl, ruleHelp));
-  FIELDS.push({ path: "rule.kind", label: "Spending rule", show: (k) => RULE_SHORT[k], node: kindField });
+  const kindField = el(
+    "div",
+    { class: "field" },
+    seg,
+    el("div", { class: "hint-row" }, hintEl, ruleHelp),
+  );
+  FIELDS.push({
+    path: "rule.kind",
+    label: "Spending rule",
+    show: (k) => RULE_SHORT[k],
+    node: kindField,
+  });
   syncers.push(() => {
     const k = state.rule.kind;
-    seg.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.kind === k)));
+    seg
+      .querySelectorAll("button")
+      .forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.kind === k)));
     hintEl.textContent = RULE_HINTS[k];
     ruleHelp.dataset.help = `rule.${k}`;
     ruleHelp.setAttribute("aria-label", `Explain: ${helpEntry(`rule.${k}`).title}`);
@@ -208,7 +227,11 @@ const mixHint = (w) => {
 const moneySlider = (anchor) => {
   const a = anchor > 0 ? anchor : 1000;
   const step = niceStep((a * 2.5 - a / 2.5) / 250);
-  return { min: Math.max(step, Math.floor(a / 2.5 / step) * step), max: Math.ceil((a * 2.5) / step) * step, step };
+  return {
+    min: Math.max(step, Math.floor(a / 2.5 / step) * step),
+    max: Math.ceil((a * 2.5) / step) * step,
+    step,
+  };
 };
 
 // Guardrails and Vanguard need the spending between the rule's floor and ceiling. A band nobody set
@@ -220,7 +243,8 @@ const bandIsAuto = (spending) => {
   return same(state.rule.floor, b.floor) && same(state.rule.ceiling, b.ceiling);
 };
 const bandHolds = () => ["guardrails", "vanguard"].includes(state.rule.kind);
-const bandByHand = () => bandHolds() && !bandIsAuto(state.spending) && state.rule.floor < state.rule.ceiling;
+const bandByHand = () =>
+  bandHolds() && !bandIsAuto(state.spending) && state.rule.floor < state.rule.ceiling;
 export function followBand(v, prev) {
   if (state.rule.kind !== "spenddown" && bandIsAuto(prev)) Object.assign(state.rule, bandAround(v));
 }
@@ -230,7 +254,9 @@ const spendingSlider = (anchor) => {
   const step = niceStep((ceiling - floor) / 200);
   const min = Math.ceil(floor / step) * step;
   const max = Math.floor(ceiling / step) * step;
-  return max > min ? { min, max, step } : { min: floor, max: ceiling, step: (ceiling - floor) / 200 };
+  return max > min
+    ? { min, max, step }
+    : { min: floor, max: ceiling, step: (ceiling - floor) / 200 };
 };
 
 function peopleGroup() {
@@ -242,7 +268,12 @@ function peopleGroup() {
         removeLabel: `Remove ${x.name}`,
       },
       row2(
-        textField({ path: `people.${i}.name`, label: "Name", what: `Person ${i + 1}'s name`, oncommit: rebuild }),
+        textField({
+          path: `people.${i}.name`,
+          label: "Name",
+          what: `Person ${i + 1}'s name`,
+          oncommit: rebuild,
+        }),
         numberField({
           path: `people.${i}.birth_year`,
           label: "Born",
@@ -263,7 +294,9 @@ function peopleGroup() {
       path: "currency",
       label: "Currency",
       options: () => {
-        const list = CURRENCIES.includes(state.currency) ? CURRENCIES : [state.currency, ...CURRENCIES];
+        const list = CURRENCIES.includes(state.currency)
+          ? CURRENCIES
+          : [state.currency, ...CURRENCIES];
         return list.map((c) => [c, `${c} · ${currencyName(c, fmt.locale)}`]);
       },
       onchange: (v) => {
@@ -300,7 +333,13 @@ function accountsGroup() {
       },
       row2(
         textField({ path: `${P}.name`, label: "Name", what: "Account name", oncommit: rebuild }),
-        selectField({ path: `${P}.owner`, label: "Owner", what: `${a.name} owner`, help: "accounts", options: owners }),
+        selectField({
+          path: `${P}.owner`,
+          label: "Owner",
+          what: `${a.name} owner`,
+          help: "accounts",
+          options: owners,
+        }),
       ),
       row2(
         numberField({
@@ -368,7 +407,11 @@ function accountsGroup() {
       helpBtn("accounts"),
     ),
     ...cards,
-    addButtons(["Add account", () => addItem("accounts", newAccount(state)), state.accounts.length >= LIMITS.accounts]),
+    addButtons([
+      "Add account",
+      () => addItem("accounts", newAccount(state)),
+      state.accounts.length >= LIMITS.accounts,
+    ]),
   );
 }
 
@@ -461,11 +504,18 @@ function eventsGroup() {
     el(
       "div",
       { class: "hint-row" },
-      el("div", { class: "hint", text: "An inheritance, a house sale, a new roof: a single amount in a single year." }),
+      el("div", {
+        class: "hint",
+        text: "An inheritance, a house sale, a new roof: a single amount in a single year.",
+      }),
       helpBtn("events"),
     ),
     ...cards,
-    addButtons(["Add event", () => addItem("events", newEvent(state)), state.events.length >= LIMITS.events]),
+    addButtons([
+      "Add event",
+      () => addItem("events", newEvent(state)),
+      state.events.length >= LIMITS.events,
+    ]),
   );
 }
 
@@ -512,7 +562,9 @@ export function buildForm() {
           label: "Must last until",
           options: () => state.people.map((x) => [x.id, x.name]),
           hint: () =>
-            state.people.length > 1 && state.end_person !== youngest.id ? `${youngest.name} is the youngest.` : "",
+            state.people.length > 1 && state.end_person !== youngest.id
+              ? `${youngest.name} is the youngest.`
+              : "",
         }),
         numberField({
           path: "end_age",
@@ -628,7 +680,12 @@ export function buildForm() {
         show: {
           toKey: (v) => (v == null ? "" : String(v)),
           text: (v) =>
-            ({ "": "normal", 6: "fat tails (t, 6)", 5: "fat tails (t, 5)", 4: "very fat tails (t, 4)" })[v ?? ""],
+            ({
+              "": "normal",
+              6: "fat tails (t, 6)",
+              5: "fat tails (t, 5)",
+              4: "very fat tails (t, 4)",
+            })[v ?? ""],
         },
         hint: "Fat tails make −40% years about 8× more frequent, with calmer ordinary years.",
         onchange: (v) => {
@@ -710,7 +767,13 @@ export function buildForm() {
       "Simulation",
       false,
       row2(
-        numberField({ path: "start_year", label: "Balances as of", kind: "year", min: 1900, max: 2200 }),
+        numberField({
+          path: "start_year",
+          label: "Balances as of",
+          kind: "year",
+          min: 1900,
+          max: 2200,
+        }),
         numberField({
           path: "start_month",
           label: "… month (1–12)",
@@ -817,7 +880,9 @@ function removePerson(i) {
     nAcc && `${nAcc} account${nAcc > 1 ? "s" : ""}`,
     nInc && `${nInc} income line${nInc > 1 ? "s" : ""}`,
   ].filter(Boolean);
-  toast(`Removed ${gone.name}${also.length ? `, with ${also.join(" and ")}` : ""}.`, { undo: () => restore(before) });
+  toast(`Removed ${gone.name}${also.length ? `, with ${also.join(" and ")}` : ""}.`, {
+    undo: () => restore(before),
+  });
 }
 
 export function newSeed() {

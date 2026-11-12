@@ -25,8 +25,16 @@ export const PERCENTILES = [5, 10, 25, 50, 75, 90, 95];
 export const STRESS_SCENARIOS = [
   { label: "No forced crash", short: "No forced crash", returns: [] },
   { label: "2008-style: −40% in the first year", short: "2008: −40% first year", returns: [-0.4] },
-  { label: "2000–2002-style: −15%, −20%, −25%", short: "2000–02: −15/−20/−25%", returns: [-0.15, -0.2, -0.25] },
-  { label: "Lost decade: 10 years at 0% real", short: "Lost decade: 0% × 10 yrs", returns: Array(10).fill(0) },
+  {
+    label: "2000–2002-style: −15%, −20%, −25%",
+    short: "2000–02: −15/−20/−25%",
+    returns: [-0.15, -0.2, -0.25],
+  },
+  {
+    label: "Lost decade: 10 years at 0% real",
+    short: "Lost decade: 0% × 10 yrs",
+    returns: Array(10).fill(0),
+  },
 ];
 
 /** numpy's default (linear) percentile of an ascending array. */
@@ -45,7 +53,11 @@ const round = (v) => (Number.isFinite(v) ? Math.round(v) : null);
 /** A flexible rule only makes sense when it starts between its floor and ceiling (the spend-down
  * sets its own starting spending). */
 export function inBand(plan, kind, spending = plan.spending) {
-  return kind === "fixed" || kind === "spenddown" || (plan.rule.floor <= spending && spending <= plan.rule.ceiling);
+  return (
+    kind === "fixed" ||
+    kind === "spenddown" ||
+    (plan.rule.floor <= spending && spending <= plan.rule.ceiling)
+  );
 }
 
 /** The FIRE years around the plan's, as far as they make sense. */
@@ -62,7 +74,8 @@ export function niceStep(x) {
   const e = 10 ** Math.floor(Math.log10(x));
   let best = e;
   for (const m of [1, 2, 2.5, 5, 10])
-    if (Math.abs(Math.log(m * e) - Math.log(x)) < Math.abs(Math.log(best) - Math.log(x))) best = m * e;
+    if (Math.abs(Math.log(m * e) - Math.log(x)) < Math.abs(Math.log(best) - Math.log(x)))
+      best = m * e;
   return best;
 }
 
@@ -108,7 +121,11 @@ export function milestones(plan) {
   };
   for (const a of plan.accounts) {
     if (a.balance > 0 || a.contrib > 0)
-      add(unlockYear(plan, a), { type: "unlock", name: a.name, owner: personById(plan, a.owner).name });
+      add(unlockYear(plan, a), {
+        type: "unlock",
+        name: a.name,
+        owner: personById(plan, a.owner).name,
+      });
   }
   for (const s of plan.income) {
     const from = yearOf(plan, s.from);
@@ -117,7 +134,8 @@ export function milestones(plan) {
     if (to != null && to > Math.max(from, plan.fire_year))
       add(to, { type: "income-end", name: s.name, amount: s.amount });
   }
-  for (const e of plan.events) if (e.amount) add(e.year, { type: "event", name: e.name, amount: e.amount });
+  for (const e of plan.events)
+    if (e.amount) add(e.year, { type: "event", name: e.name, amount: e.amount });
   return [...marks].sort((a, b) => a[0] - b[0]).map(([year, items]) => ({ year, items }));
 }
 
@@ -153,7 +171,11 @@ export function mainView(plan, nPaths = 120) {
   const rankOf = new Map(order.map((i, r) => [i, r / Math.max(order.length - 1, 1)]));
   const failed = (i) => !Number.isNaN(res.fail[i]);
   const row = (arr, i) => Array.from(arr.subarray(i * Y, (i + 1) * Y), round);
-  const paths = chosen.map((i) => ({ values: row(res.total, i), failed: failed(i), rank: rankOf.get(i) }));
+  const paths = chosen.map((i) => ({
+    values: row(res.total, i),
+    failed: failed(i),
+    rank: rankOf.get(i),
+  }));
 
   const failYears = Array.from(res.fail).filter((f) => !Number.isNaN(f));
   const lastYear = years[Y - 1];
@@ -194,7 +216,11 @@ export function mainView(plan, nPaths = 120) {
   };
   if (res.startAmount) {
     const s = sorted(res.startAmount);
-    out.summary.first_year = { p10: percentile(s, 10), p50: percentile(s, 50), p90: percentile(s, 90) };
+    out.summary.first_year = {
+      p10: percentile(s, 10),
+      p50: percentile(s, 50),
+      p90: percentile(s, 90),
+    };
   }
 
   if (kind !== "fixed") {
@@ -214,7 +240,9 @@ export function mainView(plan, nPaths = 120) {
       years: years.slice(i0),
       percentiles: sp,
       paths: chosen.slice(0, 60).map((i) => ({
-        values: Array.from(res.spending.subarray(i * Y + i0, i * Y + i0 + L), (v) => (v > 0 ? Math.round(v) : null)),
+        values: Array.from(res.spending.subarray(i * Y + i0, i * Y + i0 + L), (v) =>
+          v > 0 ? Math.round(v) : null,
+        ),
         failed: failed(i),
       })),
       floor: plan.rule.floor,
@@ -225,7 +253,9 @@ export function mainView(plan, nPaths = 120) {
     Object.assign(out.summary, {
       avg_spending_median: lasting.length ? percentile(means, 50) : 0,
       lowest_p10: lasting.length ? percentile(mins, 10) : 0,
-      floor_share: lasting.length ? mins.filter((m) => m <= plan.rule.floor + 1).length / lasting.length : 0,
+      floor_share: lasting.length
+        ? mins.filter((m) => m <= plan.rule.floor + 1).length / lasting.length
+        : 0,
     });
   }
 
@@ -262,7 +292,8 @@ export function gridView(plan) {
   const fireYears = nearYears(plan);
   const success = fireYears.map((fy) =>
     values.map((v) => {
-      if (byFloor) return v > plan.rule.ceiling ? null : lasts(plan, { n, fire_year: fy, rule: { floor: v } });
+      if (byFloor)
+        return v > plan.rule.ceiling ? null : lasts(plan, { n, fire_year: fy, rule: { floor: v } });
       if (!inBand(plan, kind, v)) return null;
       return lasts(plan, { n, fire_year: fy, spending: v });
     }),
@@ -294,7 +325,8 @@ export function safeView(plan) {
   return nearYears(plan).map((fy) => {
     const { caps, atFire } = sustainable(plan, fy, n, lo, hi);
     const row = { fire_year: fy, median_start: median(atFire) };
-    for (const target of [0.9, 0.95]) row[String(Math.round(target * 100))] = spendingLastingIn(caps, target, lo);
+    for (const target of [0.9, 0.95])
+      row[String(Math.round(target * 100))] = spendingLastingIn(caps, target, lo);
     return row;
   });
 }
@@ -342,7 +374,10 @@ export function stressView(plan) {
     label: s.label,
     short: s.short,
     rates: Object.fromEntries(
-      RULE_KINDS.map((k) => [k, inBand(plan, k) ? lasts(plan, { n, kind: k, stress_returns: s.returns }) : null]),
+      RULE_KINDS.map((k) => [
+        k,
+        inBand(plan, k) ? lasts(plan, { n, kind: k, stress_returns: s.returns }) : null,
+      ]),
     ),
   }));
 }
