@@ -3,3 +3,6 @@
 
 # Every file formatted by Prettier, and nothing else
 dd01fc6da7a938c7779e34b7c2af62d1dd33aad5
+
+# Every file reformatted at 100 columns, and nothing else
+db4b90b5bc75337773e9bfd882a1e9332f1a6d30
