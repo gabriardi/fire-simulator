@@ -5,7 +5,8 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 import { RULE_KINDS } from "../site/js/engine.js";
-import { GUIDE, HELP } from "../site/js/help.js";
+import { ALIASES, GUIDE } from "../site/js/help.js";
+import HELP from "../site/js/locales/en/help.js";
 import { SETTINGS_KEY } from "../site/js/store.js";
 
 const ROOT = new URL("../site/", import.meta.url); // what is deployed
@@ -68,6 +69,25 @@ test("everything the page needs offline is in the service worker's list", () => 
   assert.deepEqual(missing, [], "add these to SHELL in sw.js, or the app won't work offline");
 });
 
+test("the workers load only the model: no page code, no catalog of texts", () => {
+  // They show nothing, and the heavier ones restart whenever the plan changes while they run:
+  // each module more is one more file to fetch, one after the other, before they can start.
+  const loaded = modulesFrom("js/worker.js");
+  assert.ok(loaded.includes("js/engine.js"), "the worker's modules were found");
+  const extra = loaded.filter(
+    (f) => f.startsWith("js/ui/") || f === "js/i18n.js" || f.startsWith("js/locales/"),
+  );
+  assert.deepEqual(extra, []);
+});
+
+test("the code uses no regular-expression syntax a supported browser lacks", () => {
+  // A lookbehind, (?<=…) or (?<!…), is in Safari only from 16.4: before, the whole module, and
+  // with it the page, fails to load. (CONTRIBUTING.md lists the browsers.)
+  const files = [...modulesFrom("js/app.js"), "sw.js", "js/ui/theme.js"];
+  const found = files.filter((f) => /\(\?<[=!]/.test(read(f)));
+  assert.deepEqual(found, []);
+});
+
 test("every file in the service worker's list exists", () => {
   // One missing file fails the whole install: the app then doesn't work offline at all.
   const missing = SHELL.filter((f) => f !== "./" && !exists(f));
@@ -117,7 +137,7 @@ test("the chart library is the same version everywhere", () => {
   );
 });
 
-const entry = (key) => (HELP[key]?.alias ? HELP[HELP[key].alias] : HELP[key]);
+const entry = (key) => HELP[ALIASES[key] ?? key];
 
 /** The source of each call's argument, an object literal: `fn({ ... })`. */
 function callArgs(src, fn) {
@@ -158,15 +178,17 @@ test("every ? has an explanation, and the guide shows all of them", () => {
   }
   assert.ok(fields > 40, `the form's fields were found (${fields})`);
   for (const key of keys) if (!entry(key)) problems.push(`"${key}" has no entry in HELP`);
-  for (const [key, h] of Object.entries(HELP))
-    if (h.alias && !HELP[h.alias]) problems.push(`"${key}" is an alias of a missing "${h.alias}"`);
+  for (const [key, to] of Object.entries(ALIASES)) {
+    if (!HELP[to]) problems.push(`"${key}" is an alias of a missing "${to}"`);
+    if (HELP[key]) problems.push(`"${key}" has an entry of its own and an alias`);
+  }
 
   const inGuide = GUIDE.flatMap(([, list]) => list);
   for (const key of inGuide)
     if (!entry(key)) problems.push(`the guide lists "${key}", which has no entry`);
   if (new Set(inGuide).size !== inGuide.length) problems.push("the guide lists an entry twice");
   for (const key of Object.keys(HELP))
-    if (!HELP[key].alias && !inGuide.includes(key)) problems.push(`"${key}" isn't in the guide`);
+    if (!inGuide.includes(key)) problems.push(`"${key}" isn't in the guide`);
   assert.deepEqual(problems, []);
 });
 

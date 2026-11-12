@@ -5,7 +5,6 @@
  */
 import {
   RULE_KINDS,
-  RULE_NAMES,
   endYear,
   lasts,
   makeRng,
@@ -17,25 +16,18 @@ import {
   unlockYear,
   yearOf,
 } from "./engine.js";
-import { bandAround, bandFollows } from "./plan.js";
+import { bandAround, bandFollows } from "./band.js";
 
 export const PERCENTILES = [5, 10, 25, 50, 75, 90, 95];
 
 // Crashes forced into the first FIRE years (real returns), everything after them random: the bad
-// start is what breaks a plan, not a crash 25 years in.
+// start is what breaks a plan, not a crash 25 years in. Their names are the page's
+// (`stress.label.*`, `stress.short.*` in the messages).
 export const STRESS_SCENARIOS = [
-  { label: "No forced crash", short: "No forced crash", returns: [] },
-  { label: "2008-style: −40% in the first year", short: "2008: −40% first year", returns: [-0.4] },
-  {
-    label: "2000–2002-style: −15%, −20%, −25%",
-    short: "2000–02: −15/−20/−25%",
-    returns: [-0.15, -0.2, -0.25],
-  },
-  {
-    label: "Lost decade: 10 years at 0% real",
-    short: "Lost decade: 0% × 10 yrs",
-    returns: Array(10).fill(0),
-  },
+  { id: "none", returns: [] },
+  { id: "2008", returns: [-0.4] },
+  { id: "2000", returns: [-0.15, -0.2, -0.25] },
+  { id: "lost-decade", returns: Array(10).fill(0) },
 ];
 
 /** numpy's default (linear) percentile of an ascending array. */
@@ -195,7 +187,7 @@ export function mainView(plan, nPaths = 120) {
     fire_index: i0,
     people: plan.people.map((x) => ({ name: x.name, birth_year: x.birth_year })),
     milestones: milestones(plan),
-    rule: RULE_NAMES[kind],
+    rule: kind,
     n_sims: n,
     percentiles,
     paths,
@@ -264,9 +256,9 @@ export function mainView(plan, nPaths = 120) {
   // the big number.
   const nCmp = Math.min(n, 20_000);
   out.compare = RULE_KINDS.map((k) => {
-    if (!inBand(plan, k)) return { kind: k, name: RULE_NAMES[k], success: null };
+    if (!inBand(plan, k)) return { kind: k, success: null };
     const r = k === kind ? res : simulate(plan, { n: nCmp, kind: k });
-    const row2 = { kind: k, name: RULE_NAMES[k], success: successRate(r) };
+    const row2 = { kind: k, success: successRate(r) };
     if (k !== "fixed") {
       const m = [];
       for (let i = 0; i < r.n; i++) if (Number.isNaN(r.fail[i])) m.push(r.spendMean[i]);
@@ -393,8 +385,7 @@ export function spendingLastingIn(caps, target, lo) {
 export function stressView(plan) {
   const n = Math.min(plan.n_sims, 20_000);
   return STRESS_SCENARIOS.map((s) => ({
-    label: s.label,
-    short: s.short,
+    id: s.id,
     rates: Object.fromEntries(
       RULE_KINDS.map((k) => [
         k,

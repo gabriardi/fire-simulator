@@ -30,20 +30,8 @@
  * a run of n. So every view compares plans on the same markets.
  */
 
+/** The spending rules. Their names are the page's (`rule.name.*`, `rule.short.*` in the messages). */
 export const RULE_KINDS = ["fixed", "guardrails", "vanguard", "spenddown"];
-export const RULE_NAMES = {
-  fixed: "Fixed",
-  guardrails: "Guardrails",
-  vanguard: "Vanguard dynamic",
-  spenddown: "Spend-down",
-};
-/** Shorter, where space is tight: the rule buttons, the stress test's legend, suggested names. */
-export const RULE_SHORT = {
-  fixed: "Fixed",
-  guardrails: "Guardrails",
-  vanguard: "Vanguard",
-  spenddown: "Spend-down",
-};
 
 export const real = (nominal, inflation) => (1 + nominal) / (1 + inflation) - 1;
 

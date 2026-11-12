@@ -1,6 +1,7 @@
 // Setting up a new plan: the essentials in one dialog; everything else starts from the defaults.
 import { endYear } from "../engine.js";
 import { CURRENCIES, currencyName, makeFormat } from "../format.js";
+import { t } from "../i18n.js";
 import {
   DEFAULT_CURRENCY,
   LIMITS,
@@ -18,7 +19,7 @@ import { fmt, settings, state, today } from "./state.js";
 export function openSetup() {
   const now = today();
   const y = now.getFullYear();
-  const people = [{ name: "Me", born: y - 35, pension: "", age: 67 }];
+  const people = [{ name: t("plan.me"), born: y - 35, pension: "", age: 67 }];
   const money = {
     currency: state?.currency ?? DEFAULT_CURRENCY,
     portfolio: "",
@@ -26,7 +27,7 @@ export function openSetup() {
     contrib: "",
     spending: "",
     fire: String(y + 15),
-    name: uniqueName("My plan"),
+    name: uniqueName(t("setup.defaultName")),
   };
   const wrap = $("#setup-fields");
   const f = () => makeFormat(settings.locale, money.currency);
@@ -62,20 +63,20 @@ export function openSetup() {
       el(
         "div",
         { class: "setup-person" },
-        field("Name", text(p, "name", { maxlength: 40 })),
-        field("Born", text(p, "born", { inputmode: "numeric" })),
+        field(t("form.name"), text(p, "name", { maxlength: 40 })),
+        field(t("form.person.born"), text(p, "born", { inputmode: "numeric" })),
         field(
-          "State pension / yr",
-          text(p, "pension", { inputmode: "decimal", placeholder: "optional" }),
+          t("setup.pension"),
+          text(p, "pension", { inputmode: "decimal", placeholder: t("setup.optional") }),
         ),
-        field("from age", text(p, "age", { inputmode: "numeric" })),
+        field(t("setup.pensionAge"), text(p, "age", { inputmode: "numeric" })),
         people.length > 1
           ? el(
               "button",
               {
                 type: "button",
                 class: "btn quiet small",
-                "aria-label": `Remove ${p.name}`,
+                "aria-label": t("item.removeNamed", { name: p.name }),
                 onclick: () => {
                   people.splice(i, 1);
                   render();
@@ -90,10 +91,10 @@ export function openSetup() {
       el(
         "div",
         { class: "setup-grid" },
-        field("Plan name", text(money, "name", { maxlength: 60 })),
-        field("Currency", cur),
+        field(t("setup.name"), text(money, "name", { maxlength: 60 })),
+        field(t("form.currency"), cur),
       ),
-      el("h3", { text: "Who's in the household" }),
+      el("h3", { text: t("setup.household") }),
       ...rows,
       el(
         "button",
@@ -102,10 +103,10 @@ export function openSetup() {
           class: "btn small",
           disabled: people.length >= LIMITS.people,
           title:
-            people.length >= LIMITS.people ? `A plan holds up to ${LIMITS.people} people.` : null,
+            people.length >= LIMITS.people ? t("form.full.people", { n: LIMITS.people }) : null,
           onclick: () => {
             people.push({
-              name: `Person ${people.length + 1}`,
+              name: t("plan.person", { n: people.length + 1 }),
               born: String(y - 35),
               pension: "",
               age: 67,
@@ -113,36 +114,32 @@ export function openSetup() {
             render();
           },
         },
-        "Add person",
+        t("form.add.person"),
       ),
-      el("h3", { text: "Money" }),
+      el("h3", { text: t("setup.money") }),
       el(
         "div",
         { class: "setup-grid" },
         field(
-          `Invested today (${money.currency})`,
+          t("setup.portfolio.in", { currency: money.currency }),
           text(money, "portfolio", { inputmode: "decimal", placeholder: "0" }),
-          "funds, shares: what you could sell",
+          t("setup.portfolio.hint"),
         ),
         field(
-          `Cash today (${money.currency})`,
+          t("setup.cash.in", { currency: money.currency }),
           text(money, "cash", { inputmode: "decimal", placeholder: "0" }),
         ),
         field(
-          `Saved per year (${money.currency})`,
+          t("setup.contrib.in", { currency: money.currency }),
           text(money, "contrib", { inputmode: "decimal", placeholder: "0" }),
-          "until you stop working",
+          t("setup.contrib.hint"),
         ),
         field(
-          `Spending per year (${money.currency})`,
+          t("setup.spending.in", { currency: money.currency }),
           text(money, "spending", { inputmode: "decimal" }),
-          "once you stop, today's money, taxes included",
+          t("setup.spending.hint"),
         ),
-        field(
-          "Stop working in",
-          text(money, "fire", { inputmode: "numeric" }),
-          "the FIRE start, a year",
-        ),
+        field(t("setup.fire"), text(money, "fire", { inputmode: "numeric" }), t("setup.fire.hint")),
       ),
     );
   };
@@ -153,32 +150,31 @@ export function openSetup() {
     const F = f();
     const amount = (s, label, required = false) => {
       if (!String(s).trim()) {
-        if (required) throw new Error(`${label}: enter an amount.`);
+        if (required) throw new Error(t("setup.error.noAmount", { label }));
         return 0;
       }
       const v = F.parse(s, "money");
-      if (!(v >= 0)) throw new Error(`${label}: “${s}” isn't an amount.`);
+      if (!(v >= 0)) throw new Error(t("setup.error.notAmount", { label, text: s }));
       return v;
     };
     try {
       const plan = blankPlan({ currency: money.currency, today: now });
       plan.people = people.map((p, i) => {
         const born = Math.round(F.parse(p.born, "num"));
+        const name = p.name.trim() || t("plan.person", { n: i + 1 });
         if (!(born >= 1900 && born <= y))
-          throw new Error(
-            `${p.name || `Person ${i + 1}`}: the birth year should be between 1900 and ${y}.`,
-          );
-        return { id: uid(), name: p.name.trim() || `Person ${i + 1}`, birth_year: born };
+          throw new Error(t("setup.error.born", { name: p.name || name, from: 1900, to: y }));
+        return { id: uid(), name, birth_year: born };
       });
       plan.income = people.flatMap((p, i) => {
-        const v = amount(p.pension, `${plan.people[i].name}'s state pension`);
+        const who = plan.people[i].name;
+        const v = amount(p.pension, t("setup.pensionOf", { name: who }));
         const age = Math.round(F.parse(p.age, "num"));
         if (!v) return [];
         if (!(age >= 40 && age <= 90))
-          throw new Error(
-            `${plan.people[i].name}'s state pension: the age should be between 40 and 90.`,
-          );
-        const name = people.length > 1 ? `State pension (${plan.people[i].name})` : "State pension";
+          throw new Error(t("setup.error.pensionAge", { name: who, from: 40, to: 90 }));
+        const name =
+          people.length > 1 ? t("plan.statePensionOf", { name: who }) : t("plan.statePension");
         return [
           {
             id: uid(),
@@ -191,24 +187,22 @@ export function openSetup() {
         ];
       });
       plan.end_person = [...plan.people].sort((a, b) => b.birth_year - a.birth_year)[0].id;
-      plan.portfolio = amount(money.portfolio, "Invested today");
-      plan.cash = amount(money.cash, "Cash today");
-      plan.contrib = amount(money.contrib, "Saved per year");
-      plan.spending = amount(money.spending, "Spending per year", true);
-      if (!(plan.spending > 0)) throw new Error("Spending per year: it has to be more than 0.");
+      plan.portfolio = amount(money.portfolio, t("setup.portfolio"));
+      plan.cash = amount(money.cash, t("setup.cash"));
+      plan.contrib = amount(money.contrib, t("setup.contrib"));
+      plan.spending = amount(money.spending, t("setup.spending"), true);
+      if (!(plan.spending > 0)) throw new Error(t("setup.error.spending"));
       plan.fire_year = Math.round(F.parse(money.fire, "num"));
       if (!(plan.fire_year >= y && plan.fire_year < endYear(plan)))
-        throw new Error(`Stop working in: a year from ${y} on.`);
+        throw new Error(t("setup.error.fire", { year: y }));
       plan.rule = { ...RULE_DEFAULTS, ...bandAround(plan.spending) };
-      const name = money.name.trim() || "My plan";
+      const name = money.name.trim() || t("setup.defaultName");
       const msg = nameProblem(name);
       if (msg) throw new Error(msg);
       $("#setup-dialog").close();
       const p = addPlan(name, normalize(plan, { currency: plan.currency, today: now }));
       switchTo(p.id);
-      toast(
-        `Created “${p.name}”. Add retirement accounts, income and one-off events in the panel.`,
-      );
+      toast(t("setup.created", { name: p.name }));
     } catch (err) {
       $("#setup-error").textContent = err.message;
     }

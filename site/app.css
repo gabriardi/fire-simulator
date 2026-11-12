@@ -934,7 +934,7 @@ h3 .help {
   font-variant-numeric: tabular-nums;
 }
 .help-entry .ex::before {
-  content: "Example  ";
+  content: attr(data-label) "  "; /* "Example", in the page's language (js/ui/messages.js) */
   font-weight: 650;
   color: var(--ink);
 }

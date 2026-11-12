@@ -1,5 +1,6 @@
 // Share links: making one (locked with a password, if wanted), opening one, and the note when
 // the sharer's seed or number of futures differ from the viewer's.
+import { andList, t } from "../i18n.js";
 import { fromNewer, normalize } from "../plan.js";
 import * as store from "../store.js";
 import { $, clone, eq } from "./dom.js";
@@ -41,12 +42,12 @@ export async function openShare() {
     clearTimeout(timer);
     note.classList.toggle("warn", short);
     note.textContent = !password
-      ? "Without one, anyone with the link can open it."
+      ? t("share.open")
       : short
-        ? `At least ${MIN_PASSWORD} characters. A few unrelated words are best.`
-        : "The link opens only with this password, which isn't in the link: send it separately, not in the same message.";
+        ? t("share.short", { n: MIN_PASSWORD })
+        : t("share.locked");
     // Never a link without the lock while a password is being typed: it could be sent by mistake.
-    show("", short ? "Finish the password first" : password ? "Locking…" : "");
+    show("", short ? t("share.finish") : password ? t("share.locking") : "");
     if (short) return;
     timer = setTimeout(
       async () => {
@@ -66,15 +67,17 @@ export async function openShare() {
   nativeBtn.hidden = typeof navigator.share !== "function";
   // A share sheet often puts the title in the message: a locked plan's name stays out of it.
   nativeBtn.onclick = () =>
-    navigator.share({ title: locked ? "FIRE plan" : `FIRE plan: ${name}`, url }).catch(() => {});
+    navigator
+      .share({ title: locked ? t("share.title") : t("share.title.named", { name }), url })
+      .catch(() => {});
   copyBtn.onclick = async () => {
     try {
       await navigator.clipboard.writeText(url);
-      toast("Link copied.");
+      toast(t("share.copied"));
     } catch {
       input.select();
       document.execCommand?.("copy");
-      toast("Link selected: copy it from the box.");
+      toast(t("share.selected"));
     }
   };
   pw.value = "";
@@ -91,11 +94,7 @@ export async function openShare() {
 function unlockShared(code) {
   return new Promise((resolve, reject) => {
     if (!store.canLock()) {
-      reject(
-        new Error(
-          "This share link is locked with a password, which this browser can only unlock over https.",
-        ),
-      );
+      reject(new Error(t("link.lockedHttps")));
       return;
     }
     const d = $("#unlock-dialog");
@@ -122,12 +121,12 @@ function unlockShared(code) {
       e.preventDefault();
       if (ok.disabled) return;
       if (!input.value) {
-        problem("Type the password you were given.");
+        problem(t("unlock.empty"));
         input.focus();
         return;
       }
       ok.disabled = true;
-      ok.textContent = "Unlocking…";
+      ok.textContent = t("unlock.working");
       try {
         done(resolve, await store.unpackPlan(code, input.value));
       } catch (err) {
@@ -139,7 +138,7 @@ function unlockShared(code) {
         }
       } finally {
         ok.disabled = false;
-        ok.textContent = "Open it";
+        ok.textContent = t("unlock.ok");
       }
     };
     d.showModal();
@@ -150,8 +149,10 @@ function unlockShared(code) {
 // A link opened while an older copy of the page is still open (a tab left from last week, an
 // installed app offline) can't read a newer plan without losing what it doesn't know: reloading
 // fetches the new version.
-export const NEWER =
-  "This plan was made by a newer version of the simulator: reload the page to update it";
+export const NEWER = {
+  link: t("newer.link"),
+  file: t("newer.file"),
+};
 
 // Links open one at a time, in the order they came: one arriving while another still asks its
 // question (or its password) waits its turn, instead of taking that dialog over.
@@ -175,12 +176,12 @@ async function openCode(code) {
   if (!shared) return;
   if (fromNewer(shared.plan)) {
     history.replaceState(null, "", `${location.pathname}${location.search}#plan=${code}`); // a reload opens it
-    toast(`${NEWER}, and the link opens.`, { error: true });
+    toast(NEWER.link, { error: true });
     return;
   }
   const plan = normalize(shared.plan, { currency: state.currency });
   const name =
-    (typeof shared.name === "string" && shared.name.trim().slice(0, 50)) || "Shared plan";
+    (typeof shared.name === "string" && shared.name.trim().slice(0, 50)) || t("link.untitled");
   // Opened before (a bookmarked link, or the sharer's own browser): go to that copy, no new one.
   // Looked for again after the question: the same link may have opened in another tab meanwhile.
   const twin = () => plans.find((x) => eq(x.plan, plan));
@@ -192,10 +193,10 @@ async function openCode(code) {
   const yes =
     locked ||
     (await confirmBox({
-      title: "Open a shared plan?",
-      text: `Someone shared “${name}” with you. It opens as a new plan in this browser; your own plans stay as they are.`,
-      ok: "Open it",
-      cancel: "Not now",
+      title: t("open.title"),
+      text: t("open.text", { name }),
+      ok: t("open.ok"),
+      cancel: t("open.cancel"),
     }));
   if (!yes) return;
   if (twin()) {
@@ -210,7 +211,7 @@ function openTwin(twin, run) {
   const unsaved = edits().length > 0;
   noteRun(twin, run);
   switchTo(twin.id);
-  if (!unsaved) toast(`Already saved here as “${twin.name}”: opened it.`);
+  if (!unsaved) toast(t("open.twin", { name: twin.name }));
 }
 
 // A share link says which seed and how many futures the sharer used. Different ones here give
@@ -229,14 +230,14 @@ export function renderShared() {
   if (box.hidden) return;
   const seed = run.seed !== settings.seed;
   const n = run.n_sims !== settings.n_sims;
-  const theirs = [seed && `seed ${run.seed}`, n && `${fmt.num(run.n_sims)} futures`]
-    .filter(Boolean)
-    .join(" and ");
-  const yours = [seed && `seed ${settings.seed}`, n && `${fmt.num(settings.n_sims)} futures`]
-    .filter(Boolean)
-    .join(" and ");
-  $("#shared-text").textContent =
-    `Shared with ${theirs}. With your ${yours}, the numbers can differ a little.`;
+  const what = (r) =>
+    andList(
+      [
+        seed && t("shared.seed", { seed: r.seed }),
+        n && t("shared.futures", { n: fmt.num(r.n_sims) }),
+      ].filter(Boolean),
+    );
+  $("#shared-text").textContent = t("shared.text", { theirs: what(run), yours: what(settings) });
 }
 export function forgetRun() {
   const p = planById(base.id);
@@ -253,7 +254,5 @@ export function useSharedRun() {
   store.saveSettings(settings);
   forgetRun();
   changed();
-  toast(
-    `Now on seed ${run.seed} and ${fmt.num(run.n_sims)} futures, as shared. Change them under Simulation.`,
-  );
+  toast(t("shared.used", { seed: run.seed, n: fmt.num(run.n_sims) }));
 }

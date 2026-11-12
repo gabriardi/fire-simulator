@@ -9,5 +9,5 @@
 - [ ] The tests pass: `node --test "tests/*.test.js"`
 - [ ] `npm run lint` reports nothing, and the code is formatted: `npm run format`
 - [ ] I tried it in the page, as in [Before a pull request](https://github.com/gabriardi/fire-simulator/blob/main/CONTRIBUTING.md#before-a-pull-request)
-- [ ] If it touches the model, the plan format or the modules: the [notes for changes](https://github.com/gabriardi/fire-simulator/blob/main/CONTRIBUTING.md#notes-for-changes) are followed
+- [ ] If it touches the model, the plan format, the modules or a text: the [notes for changes](https://github.com/gabriardi/fire-simulator/blob/main/CONTRIBUTING.md#notes-for-changes) are followed
 - [ ] Nothing in this pull request (tests, screenshots, examples) comes from anyone's real finances

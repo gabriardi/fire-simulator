@@ -38,7 +38,7 @@ branch are what gets fixed.
   version of the site isn't opened: the page asks for a reload.
 - **Names are text.** Plan, person and account names are put on the page as text, never as HTML,
   and escaped in the chart labels. The only HTML the page inserts is its own help text
-  (`site/js/help.js`).
+  (`site/js/locales/en/help.js`).
 - **Share links stay out of requests.** The plan is after the `#`, which browsers don't send to
   the server, and the page removes it from the address bar once opened.
 - **The service worker** answers only the site's own `GET` requests, and keeps only the site's

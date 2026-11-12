@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Privacy · When can I stop?</title>
+    <title data-i18n="privacy.title">Privacy · When can I stop?</title>
     <meta
       name="description"
+      data-i18n-content="privacy.description"
       content="What When can I stop? keeps on your device, what its host receives, who runs it, and how to reach them. No account, no cookies, no analytics, no tracking."
     />
     <link rel="canonical" href="https://whencanistop.fyi/privacy" />
@@ -20,19 +21,19 @@
     <!-- A copy of your own: you're the one running it, so this notice has to name you, your contact
      and your host, and the canonical link above your address. -->
     <main class="doc">
-      <a class="back" href="./">← When can I stop?</a>
-      <h1>Privacy</h1>
-      <p class="updated">Last updated 12 November 2026</p>
+      <a class="back" href="./" data-i18n="privacy.back">← When can I stop?</a>
+      <h1 data-i18n="privacy.h1">Privacy</h1>
+      <p class="updated" data-i18n="privacy.updated">Last updated 12 November 2026</p>
 
-      <p class="summary">
+      <p class="summary" data-i18n="privacy.summary">
         <b>In short:</b> what you type into When can I stop? stays on your device. There is no
         account, no cookie, no analytics and no tracking, and the page loads nothing from other
         sites. The only data that reaches anyone is what every browser sends to fetch a web page,
         and it never contains your plans.
       </p>
 
-      <h2>Who runs this site</h2>
-      <p>
+      <h2 data-i18n="privacy.who">Who runs this site</h2>
+      <p data-i18n="privacy.who.text">
         whencanistop.fyi is run by Gabriele Ardizzone, in Switzerland, as a free, non-commercial
         project. For anything about privacy, write to
         <a href="mailto:privacy@whencanistop.fyi">privacy@whencanistop.fyi</a>; for anything else,
@@ -41,45 +42,49 @@
         (Apple), only to answer you, and deleted when they're no longer needed.
       </p>
 
-      <h2>What stays on your device</h2>
-      <p>
+      <h2 data-i18n="privacy.device">What stays on your device</h2>
+      <p data-i18n="privacy.device.text">
         The simulation runs in your browser. The page keeps these in the browser's local storage, on
         your device only, and never sends them anywhere:
       </p>
       <ul>
-        <li>your saved plans, and the plan on screen with its unsaved changes;</li>
-        <li>
+        <li data-i18n="privacy.device.storage">
+          your saved plans, and the plan on screen with its unsaved changes;
+        </li>
+        <li data-i18n="privacy.device.settings">
           your settings: the random seed, the number of simulated futures, the number format, the
           theme, which sections of the form are open, and whether you closed the welcome note;
         </li>
-        <li>when you last exported your plans, for the reminder to keep a backup.</li>
+        <li data-i18n="privacy.device.exported">
+          when you last exported your plans, for the reminder to keep a backup.
+        </li>
       </ul>
-      <p>
+      <p data-i18n="privacy.device.why">
         They're there for what you ask the page to do: keep your plans, and carry on where you left
         off. They stay until you delete them, in the page or by clearing this site's data in your
         browser's settings.
       </p>
-      <p>
+      <p data-i18n="privacy.device.offline">
         Once the site has loaded, a service worker also keeps a copy of the site's own files, so
         that it works offline. It holds nothing about you. The site sets no cookies.
       </p>
 
-      <h2>Files and share links</h2>
-      <p>
+      <h2 data-i18n="privacy.files">Files and share links</h2>
+      <p data-i18n="privacy.files.text">
         <b>Export plans</b> saves a file on your device. A <b>share link</b> carries one plan inside
         the link itself, after the "#", which browsers never send to a server: the link goes only
         where you send it. Anyone who has it can open the plan, unless you lock it with a password.
       </p>
 
-      <h2>What the host receives</h2>
-      <p>
+      <h2 data-i18n="privacy.host">What the host receives</h2>
+      <p data-i18n="privacy.host.text">
         The site is hosted by Cloudflare (Cloudflare, Inc., USA). Like any web host, Cloudflare
         receives what your browser sends to fetch each file: your IP address, which file was asked
         for, when, and browser details (the user agent). Besides opening the page, your browser asks
         for the site's files again while it's open, from time to time, to check for a new version.
       </p>
       <ul>
-        <li>
+        <li data-i18n="privacy.host.cloudflare">
           Cloudflare uses this to deliver the site and to protect it from attacks, and keeps it in
           its logs, as its
           <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener"
@@ -87,46 +92,46 @@
           >
           describes.
         </li>
-        <li>
+        <li data-i18n="privacy.host.logs">
           This site also has Cloudflare's Workers Logs turned on, to find problems. Whatever they
           record about a request is kept for 3 days, can be read only in the site's Cloudflare
           account, and isn't used for anything else.
         </li>
       </ul>
-      <p>
+      <p data-i18n="privacy.host.transfers">
         Cloudflare does this on the operator's behalf, under its data processing addendum. It has
         data centres around the world and is based in the USA. Transfers rely on Cloudflare's
         certification under the EU-U.S. and the Swiss-U.S. Data Privacy Framework, and on the EU
         standard contractual clauses in its data processing addendum, which also cover data
         protected by Swiss law.
       </p>
-      <p>
+      <p data-i18n="privacy.host.basis">
         For visitors protected by the GDPR, the legal basis is the operator's legitimate interest in
         a secure, working website (Article 6(1)(f) GDPR).
       </p>
 
-      <h2>Links to other sites</h2>
-      <p>
+      <h2 data-i18n="privacy.links">Links to other sites</h2>
+      <p data-i18n="privacy.links.text">
         The page links to GitHub, for the code, and to Buy Me a Coffee. Nothing is loaded from them
         unless you click a link; once you're there, their own privacy policies apply.
       </p>
 
-      <h2>Your rights</h2>
-      <p>
+      <h2 data-i18n="privacy.rights">Your rights</h2>
+      <p data-i18n="privacy.rights.text">
         You can ask what data about you the operator has, have it corrected or deleted, or object to
         its use: write to
         <a href="mailto:privacy@whencanistop.fyi">privacy@whencanistop.fyi</a>. In practice the
         operator has nothing about you beyond those few days of request logs.
       </p>
-      <p>
+      <p data-i18n="privacy.rights.complain">
         You can also complain to a data protection authority: in Switzerland, the
         <a href="https://www.edoeb.admin.ch/en" target="_blank" rel="noopener"
           >Federal Data Protection and Information Commissioner (FDPIC)</a
         >; in the EU or the EEA, the authority where you live.
       </p>
 
-      <h2>No advice, no warranty</h2>
-      <p>
+      <h2 data-i18n="privacy.advice">No advice, no warranty</h2>
+      <p data-i18n="privacy.advice.text">
         When can I stop? is a tool for thinking about a plan. It is not financial advice and not a
         forecast. It is free, and provided as it is, without any warranty (<a
           href="https://github.com/gabriardi/fire-simulator/blob/main/LICENSE"
@@ -136,8 +141,8 @@
         >). What you decide about your money is up to you.
       </p>
 
-      <h2>Changes</h2>
-      <p>
+      <h2 data-i18n="privacy.changes">Changes</h2>
+      <p data-i18n="privacy.changes.text">
         A new version of this notice is published here, with its date. Every earlier version is in
         the
         <a
@@ -148,7 +153,9 @@
         >.
       </p>
 
-      <footer class="site-foot"><a href="./">Back to When can I stop?</a></footer>
+      <footer class="site-foot">
+        <a href="./" data-i18n="privacy.backLink">Back to When can I stop?</a>
+      </footer>
     </main>
   </body>
 </html>

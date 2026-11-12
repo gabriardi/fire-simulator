@@ -2,7 +2,7 @@
 //
 // The values on screen always start from a saved plan (`base`); whatever differs from it is an
 // unsaved change, kept in this browser so a reload carries on where it was.
-import { RULE_SHORT } from "../engine.js";
+import { t } from "../i18n.js";
 import { counterpart, differences, examplePlan, uid } from "../plan.js";
 import * as store from "../store.js";
 import { $, byName, clone, el, eq, getPath } from "./dom.js";
@@ -29,13 +29,16 @@ import {
 
 let keepAsked = false;
 
+// What the plan lists as edited when a list itself changed: an item added, removed or moved.
 const LIST_NAMES = {
-  "people.#": "Household members",
-  "accounts.#": "Retirement accounts",
-  "income.#": "Income and costs",
-  "events.#": "One-off events",
+  "people.#": t("plans.edited.people"),
+  "accounts.#": t("plans.edited.accounts"),
+  "income.#": t("plans.edited.income"),
+  "events.#": t("plans.edited.events"),
 };
-const MOD_S = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "⌘S" : "Ctrl+S";
+const MOD_S = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
+  ? t("plans.saveKey.mac")
+  : t("plans.saveKey");
 export const edits = () => differences(base.values, state);
 
 export function persistPlans() {
@@ -51,9 +54,7 @@ export function persistSession() {
 }
 export function storageProblem() {
   setCanStore(false);
-  showNotice(
-    "This browser isn't keeping what the page saves (a private window, or storage blocked or full): your plans will be lost when you close it. Use ⋯ → Export plans to keep a copy.",
-  );
+  showNotice(t("plans.noStorage"));
 }
 
 // Undo brings back what was on screen, never an older list of saved plans: a save made after the
@@ -86,12 +87,12 @@ export function switchTo(id) {
   const unsaved = edits().length > 0;
   useBase(id);
   if (unsaved)
-    toast(`Unsaved changes to “${before.base.name}” discarded.`, { undo: () => restore(before) });
+    toast(t("plans.discarded", { name: before.base.name }), { undo: () => restore(before) });
 }
 export function revert() {
   const before = snapshot();
   useBase(base.id);
-  toast("Changes reverted.", { undo: () => restore(before) });
+  toast(t("plans.reverted"), { undo: () => restore(before) });
 }
 export function addPlan(name, plan, extra = {}) {
   const p = { id: uid(), name, plan: clone(plan), updated: Date.now(), ...extra };
@@ -107,7 +108,7 @@ export function uniqueName(name) {
 
 export function canSave() {
   if (invalid.size) {
-    toast("Some fields aren't valid yet: fix the red ones first.", { error: true });
+    toast(t("plans.invalid"), { error: true });
     return false;
   }
   return true;
@@ -127,39 +128,40 @@ export function saveCurrent() {
   base.values = clone(state);
   persistSession();
   renderPlanBar();
-  toast(`Saved “${p.name}”.`);
+  toast(t("plans.saved", { name: p.name }));
 }
 function suggestName() {
   const k = state.rule.kind;
-  const rule = k === "vanguard" ? RULE_SHORT[k] : RULE_SHORT[k].toLowerCase(); // Vanguard is a name
   const amount =
-    state.rule.kind === "spenddown"
-      ? `floor ${fmt.short(state.rule.floor)}`
+    k === "spenddown"
+      ? t("plans.suggest.floor", { amount: fmt.short(state.rule.floor) })
       : fmt.short(state.spending);
-  return uniqueName(`Stop ${state.fire_year}, ${amount}, ${rule}`);
+  return uniqueName(
+    t("plans.suggest", { year: state.fire_year, amount, rule: t(`rule.inName.${k}`) }),
+  );
 }
 export function saveAsNew() {
   if (!canSave()) return;
   askName({
-    title: "Save as a copy",
-    text: planById(base.id) ? `“${base.name}” stays as it was saved.` : "",
+    title: t("plans.saveAs"),
+    text: planById(base.id) ? t("plans.saveAs.text", { name: base.name }) : "",
     value: suggestName(),
-    ok: "Save",
+    ok: t("plans.save"),
     submit: (name) => {
       const p = addPlan(name, state);
       setBase({ id: p.id, name: p.name, values: clone(state) });
       persistSession();
       renderPlanBar();
-      toast(`Saved as “${p.name}”.`);
+      toast(t("plans.savedAs", { name: p.name }));
     },
   });
 }
 export function renamePlan() {
   const p = planById(base.id);
   askName({
-    title: "Rename plan",
+    title: t("plans.rename"),
     value: p.name,
-    ok: "Rename",
+    ok: t("plans.rename.ok"),
     exceptId: p.id,
     submit: (name) => {
       p.name = name;
@@ -176,11 +178,11 @@ export function deletePlan() {
   // Never an empty list: the example comes back, until it's needed no more.
   const stand_in = plans.length
     ? null
-    : addPlan("Example", examplePlan({ currency: state.currency }), { example: true });
+    : addPlan(t("plans.example"), examplePlan({ currency: state.currency }), { example: true });
   const next = [...plans].sort((a, b) => (b.updated ?? 0) - (a.updated ?? 0))[0];
   persistPlans();
   useBase(next.id);
-  toast(`Deleted “${p.name}”.`, {
+  toast(t("plans.deleted", { name: p.name }), {
     undo: () => {
       if (!planById(p.id)) plans.push(p);
       const ex = stand_in && planById(stand_in.id);
@@ -192,11 +194,11 @@ export function deletePlan() {
 }
 
 export function nameProblem(name, exceptId = null) {
-  if (!name) return "Give the plan a name.";
-  if (name.length > 60) return "Keep the name under 60 characters.";
+  if (!name) return t("plans.name.empty");
+  if (name.length > 60) return t("plans.name.long", { n: 60 });
   const key = name.toLocaleLowerCase();
   const twin = plans.find((x) => x.id !== exceptId && x.name.toLocaleLowerCase() === key);
-  return twin ? `There is already a plan called “${twin.name}”.` : "";
+  return twin ? t("plans.name.taken", { name: twin.name }) : "";
 }
 function askName({ title, text = "", value = "", ok, exceptId = null, submit }) {
   const d = $("#name-dialog");
@@ -248,7 +250,10 @@ export function renderPlanBar() {
   if (key !== optionsKey) {
     optionsKey = key;
     const opts = [...plans].sort(byName).map((x) => el("option", { value: x.id, text: x.name }));
-    if (!saved) opts.unshift(el("option", { value: base.id, text: `${base.name} (not saved)` }));
+    if (!saved)
+      opts.unshift(
+        el("option", { value: base.id, text: t("plans.notSaved", { name: base.name }) }),
+      );
     sel.replaceChildren(...opts);
     sel.value = base.id;
   }
@@ -274,21 +279,27 @@ export function renderPlanBar() {
   const saveBtn = $("#plan-save");
   $("#plan-revert").hidden = !edited.length || !saved;
   saveBtn.hidden = !edited.length && saved;
-  saveBtn.textContent = saved ? "Save" : "Save as…";
+  saveBtn.textContent = saved ? t("plans.save") : t("plans.saveNew");
   saveBtn.title = saved
-    ? `Save the changes into “${base.name}” (${MOD_S})`
-    : "Save these values as a plan";
+    ? t("plans.save.title", { name: base.name, key: MOD_S })
+    : t("plans.saveNew.title");
   if (edited.length) {
     status.className = "scenario-state dirty";
-    status.textContent = `Edited: ${[...new Set(edited.map(labelOf))].join(", ")}`;
+    status.textContent = t("plans.edited", { what: [...new Set(edited.map(labelOf))].join(", ") });
   } else if (!saved) {
     status.className = "scenario-state dirty";
-    status.textContent = "This plan was deleted in another tab: save it to keep it.";
+    status.textContent = t("plans.deletedElsewhere");
   } else {
     status.className = "scenario-state";
+    const when = (ms) =>
+      new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium", timeStyle: "short" }).format(
+        new Date(ms),
+      );
     status.textContent = saved.example
-      ? "Made-up numbers. Change anything, or set up your own plan (⋯ → New plan)."
-      : `Saved in this browser${saved.updated ? `, ${new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(saved.updated))}` : ""}.`;
+      ? t("plans.example.state")
+      : saved.updated
+        ? t("plans.savedHere.when", { when: when(saved.updated) })
+        : t("plans.savedHere");
   }
   status.title = status.textContent;
   const menu = $("#plan-menu");
@@ -297,8 +308,14 @@ export function renderPlanBar() {
   menu.querySelector("[data-act=export]").disabled = !plans.length;
   const pill = $("#plan-pill");
   pill.replaceChildren(el("span", { class: "pill-name", text: base.name }));
-  if (edited.length) pill.append(el("span", { class: "pill-edited", text: "edited" }));
-  pill.setAttribute("aria-label", `Plan: ${base.name}${edited.length ? ", edited" : ""}`);
+  if (edited.length)
+    pill.append(el("span", { class: "pill-edited", text: t("plans.pill.edited") }));
+  pill.setAttribute(
+    "aria-label",
+    edited.length
+      ? t("plans.pill.editedLabel", { name: base.name })
+      : t("plans.pill.label", { name: base.name }),
+  );
   $("#welcome").classList.toggle("hidden", !(saved?.example && !settings.welcomeClosed));
   renderBackup();
   renderShared();
@@ -313,9 +330,9 @@ export function renderBackup() {
   const box = $("#backup");
   box.hidden = !canStore || !newer.length;
   if (box.hidden) return;
-  const day = (t) =>
-    new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium" }).format(new Date(t));
+  const day = (ms) =>
+    new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium" }).format(new Date(ms));
   $("#backup-text").textContent = exported
-    ? `Saved changes since your last backup (${day(exported)}).`
-    : "Your plans are only in this browser. Keep a backup file.";
+    ? t("plans.backup.since", { day: day(exported) })
+    : t("plans.backup.never");
 }

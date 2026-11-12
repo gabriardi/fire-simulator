@@ -2,6 +2,7 @@
  * Numbers on screen: in the viewer's number format (or one they pick) and the plan's currency.
  * Also the reverse, reading what someone typed, which in many locales means "1.234,5".
  */
+import { t } from "./i18n.js";
 
 export const CURRENCIES = [
   "USD",
@@ -33,7 +34,7 @@ export const CURRENCIES = [
 
 // Number formats to pick from, each shown the way this browser writes it.
 export const LOCALES = [
-  ["", "Browser default"],
+  ["", t("format.browserDefault")],
   ...[
     "en-US",
     "en-GB",
@@ -100,24 +101,24 @@ export function makeFormat(locale, currency) {
 
   /** A typed number, or NaN. `kind` "pct" also accepts either decimal mark; money takes k/M. */
   function parse(s, kind = "num") {
-    let t = String(s)
+    let x = String(s)
       .trim()
       .replace(/[\s\u00a0\u202f'’]/g, "")
       .replace(/[−–]/g, "-");
-    if (!t || t === "-") return NaN;
+    if (!x || x === "-") return NaN;
     let mult = 1;
-    const m = /^(.*?)([kKmM])$/.exec(t);
+    const m = /^(.*?)([kKmM])$/.exec(x);
     if (m && kind === "money") {
-      t = m[1];
+      x = m[1];
       mult = /[kK]/.test(m[2]) ? 1e3 : 1e6;
     }
-    if (kind === "pct") t = t.replace(",", ".");
+    if (kind === "pct") x = x.replace(",", ".");
     else {
-      if (group === "." || group === ",") t = t.split(group).join("");
-      if (decimal !== ".") t = t.replace(decimal, ".");
+      if (group === "." || group === ",") x = x.split(group).join("");
+      if (decimal !== ".") x = x.replace(decimal, ".");
     }
-    if (!/^-?(\d+\.?\d*|\.\d+)$/.test(t)) return NaN;
-    return Number(t) * mult;
+    if (!/^-?(\d+\.?\d*|\.\d+)$/.test(x)) return NaN;
+    return Number(x) * mult;
   }
 
   // Commas, semicolons or spaces separate a list. Where the decimal mark is a comma, a comma right

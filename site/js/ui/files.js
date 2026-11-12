@@ -1,4 +1,5 @@
 // Export and import: every plan in one file, the backup and the way to another device.
+import { t } from "../i18n.js";
 import { fromNewer, normalize } from "../plan.js";
 import * as store from "../store.js";
 import { el } from "./dom.js";
@@ -21,9 +22,8 @@ export function exportPlans() {
   setExported(Date.now());
   store.saveExported(exported);
   renderPlanBar();
-  toast(
-    `Exported ${plans.length} plan${plans.length > 1 ? "s" : ""}.${edits().length ? " Unsaved changes aren't in the file: save them first." : ""}`,
-  );
+  const n = plans.length;
+  toast(edits().length ? t("files.exported.unsaved", { n }) : t("files.exported", { n }));
 }
 export async function importPlans(file) {
   let items;
@@ -34,16 +34,16 @@ export async function importPlans(file) {
     return;
   }
   if (items.some((x) => fromNewer(x.plan))) {
-    toast(`${NEWER}, then import the file again.`, { error: true });
+    toast(NEWER.file, { error: true });
     return;
   }
   const added = items.map((x) =>
     addPlan(
-      uniqueName(str(x.name) || "Imported plan"),
+      uniqueName(str(x.name) || t("files.untitled")),
       normalize(x.plan, { currency: state.currency }),
     ),
   );
   switchTo(added[0].id);
-  toast(`Imported ${added.length} plan${added.length > 1 ? "s" : ""}.`);
+  toast(t("files.imported", { n: added.length }));
 }
 const str = (v) => (typeof v === "string" ? v.trim().slice(0, 50) : "");

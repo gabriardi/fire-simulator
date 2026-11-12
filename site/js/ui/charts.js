@@ -1,5 +1,6 @@
 // The charts, drawn with Plotly from what the workers return, and the headline numbers above them.
-import { RULE_KINDS, RULE_SHORT, personById } from "../engine.js";
+import { RULE_KINDS, personById } from "../engine.js";
+import { t, tParts } from "../i18n.js";
 import { $, css, el, esc, isPhone } from "./dom.js";
 import { followBand } from "./form.js";
 import { helpBtn } from "./messages.js";
@@ -13,8 +14,8 @@ export const setUnit = (u) => {
 };
 
 const VIRIDIS = ["#440154", "#414487", "#2a788e", "#22a884", "#7ad151", "#fde725"];
-function viridis(t) {
-  const x = Math.min(Math.max(t, 0), 1) * (VIRIDIS.length - 1);
+function viridis(v) {
+  const x = Math.min(Math.max(v, 0), 1) * (VIRIDIS.length - 1);
   const i = Math.min(Math.floor(x), VIRIDIS.length - 2);
   const f = x - i;
   const a = VIRIDIS[i].match(/\w\w/g).map((h) => parseInt(h, 16));
@@ -98,7 +99,9 @@ function yearTicks(years, people, plotWidth, room) {
   const names = shortNames(people);
   const rowsAt = (y) => {
     const parts = people.map((x, i) =>
-      people.length > 1 ? `${names[i]} ${y - x.birth_year}` : `age ${y - x.birth_year}`,
+      people.length > 1
+        ? `${names[i]} ${y - x.birth_year}`
+        : t("chart.age", { age: y - x.birth_year }),
     );
     const rows = [];
     for (let i = 0; i < parts.length; i += 2) rows.push(parts.slice(i, i + 2).join(" · "));
@@ -128,10 +131,10 @@ function milestoneLabel(m) {
   const parts = [];
   const unlocks = {};
   for (const it of m.items) {
-    if (it.type === "fire") parts.push("FIRE start");
+    if (it.type === "fire") parts.push(t("chart.fireStart"));
     else if (it.type === "unlock") (unlocks[it.owner] ??= []).push(it.name);
     else if (it.type === "income") parts.push(`${it.name} ${signed(it.amount)}`);
-    else if (it.type === "income-end") parts.push(`${it.name} ends`);
+    else if (it.type === "income-end") parts.push(t("chart.ends", { name: it.name }));
     else if (it.type === "event") parts.push(`${it.name} ${signed(it.amount)}`);
   }
   for (const [owner, names] of Object.entries(unlocks)) parts.push(`${owner}: ${names.join(", ")}`);
@@ -174,7 +177,11 @@ export function renderPaths() {
   const ink = css("--ink");
   const bad = css("--bad");
   const show = (v) =>
-    v == null ? "–" : byYears ? `${v.toFixed(1).replace(".", fmt.decimal)} years` : fmt.short(v);
+    v == null
+      ? "–"
+      : byYears
+        ? t("chart.years", { value: v.toFixed(1).replace(".", fmt.decimal) })
+        : fmt.short(v);
   const ages = d.years.map((y) =>
     esc(d.people.map((x) => `${x.name} ${y - x.birth_year}`).join(", ")),
   );
@@ -195,7 +202,7 @@ export function renderPaths() {
       customdata: P[lo].map(show),
       mode: "lines",
       line: { width: 0 },
-      hovertemplate: `${lo}th: %{customdata}<extra></extra>`,
+      hovertemplate: `${t("chart.pctl.hover", { q: lo })}<extra></extra>`,
       showlegend: false,
     },
     {
@@ -207,17 +214,17 @@ export function renderPaths() {
       fill: "tonexty",
       fillcolor: alpha(ink.startsWith("#") ? ink : "#17212b", a),
       name,
-      hovertemplate: `${hi}th: %{customdata}<extra></extra>`,
+      hovertemplate: `${t("chart.pctl.hover", { q: hi })}<extra></extra>`,
     },
   ];
-  traces.push(...band("10", "90", 0.08, "80% of futures"));
-  traces.push(...band("25", "75", 0.1, "50% of futures"));
+  traces.push(...band("10", "90", 0.08, t("chart.paths.band80")));
+  traces.push(...band("25", "75", 0.1, t("chart.paths.band50")));
   traces.push({
     x: d.years,
     y: P["10"],
     mode: "lines",
     line: { color: ink, width: 1.3, dash: "dash" },
-    name: "10th percentile",
+    name: t("chart.p10"),
     hoverinfo: "skip",
   });
   traces.push({
@@ -226,8 +233,8 @@ export function renderPaths() {
     customdata: P["50"].map((v, i) => [show(v), ages[i]]),
     mode: "lines",
     line: { color: ink, width: 2.6 },
-    name: "median",
-    hovertemplate: `median: %{customdata[0]}<br><span style="font-size:11px">%{customdata[1]}</span><extra></extra>`,
+    name: t("chart.median"),
+    hovertemplate: `${t("chart.median.hover", { value: "%{customdata[0]}" })}<br><span style="font-size:11px">%{customdata[1]}</span><extra></extra>`,
   });
   // Scale to the middle of the futures: the richest grow without limit and would squash the part
   // of the chart that matters (the lower half, where futures fail). The median stays in view, and
@@ -261,7 +268,9 @@ export function renderPaths() {
         range: [-0.03 * ymax, ymax],
         tickformat: byYears ? "" : "~s",
         title: {
-          text: byYears ? "Years of spending" : `Wealth (${state.currency}, today's)`,
+          text: byYears
+            ? t("chart.paths.axisYears")
+            : t("chart.paths.axisMoney", { currency: state.currency }),
           font: { size: 11, color: css("--muted") },
         },
       },
@@ -304,7 +313,7 @@ function renderSpending() {
     mode: "lines",
     line: { width: 0 },
     showlegend: false,
-    hovertemplate: "10th: %{customdata}<extra></extra>",
+    hovertemplate: `${t("chart.pctl.hover", { q: 10 })}<extra></extra>`,
   });
   traces.push({
     x: s.years,
@@ -314,8 +323,8 @@ function renderSpending() {
     line: { width: 0 },
     fill: "tonexty",
     fillcolor: alpha(accent, 0.14),
-    name: "80% of lasting futures",
-    hovertemplate: "90th: %{customdata}<extra></extra>",
+    name: t("chart.spending.band"),
+    hovertemplate: `${t("chart.pctl.hover", { q: 90 })}<extra></extra>`,
   });
   traces.push({
     x: s.years,
@@ -323,8 +332,8 @@ function renderSpending() {
     customdata: cd(s.percentiles["50"]),
     mode: "lines",
     line: { color: accent, width: 2.6 },
-    name: "median",
-    hovertemplate: "median: %{customdata}<extra></extra>",
+    name: t("chart.median"),
+    hovertemplate: `${t("chart.median.hover", { value: "%{customdata}" })}<extra></extra>`,
   });
   const flat = (v, name, dash) => ({
     x: [s.years[0], s.years[s.years.length - 1]],
@@ -335,8 +344,8 @@ function renderSpending() {
     hoverinfo: "skip",
   });
   const start = sim.summary.first_year ? null : state.spending;
-  if (start != null) traces.push(flat(start, "starting spending", "dash"));
-  traces.push(flat(s.floor, "floor / ceiling", "dot"), {
+  if (start != null) traces.push(flat(start, t("chart.spending.start"), "dash"));
+  traces.push(flat(s.floor, t("chart.spending.floorCeiling"), "dot"), {
     ...flat(s.ceiling, "", "dot"),
     showlegend: false,
   });
@@ -378,7 +387,7 @@ function renderDist() {
         customdata: centers.map((c) => fmt.short(c)),
         type: "bar",
         marker: { color: alpha(accent, 0.75) },
-        hovertemplate: "%{customdata}: %{y:.1%} of futures<extra></extra>",
+        hovertemplate: `${t("chart.start.hover")}<extra></extra>`,
       },
     ],
     layout({
@@ -386,7 +395,7 @@ function renderDist() {
       xaxis: {
         tickformat: "~s",
         title: {
-          text: `${state.currency} in ${state.fire_year}, today's`,
+          text: t("chart.start.axis", { currency: state.currency, year: state.fire_year }),
           font: { size: 11, color: css("--muted") },
         },
       },
@@ -407,7 +416,7 @@ function renderDist() {
           x: median,
           y: 1,
           yref: "paper",
-          text: `median ${esc(fmt.short(median))}`,
+          text: esc(t("chart.start.median", { value: fmt.short(median) })),
           showarrow: false,
           xanchor: "left",
           xshift: 4,
@@ -427,14 +436,14 @@ function renderDist() {
         y: f.counts.map((c) => c / d.n_sims),
         type: "bar",
         marker: { color: alpha(css("--bad"), 0.8) },
-        hovertemplate: "%{x}: %{y:.2%} of futures run out<extra></extra>",
+        hovertemplate: `${t("chart.fail.hover")}<extra></extra>`,
       },
     ],
     layout({
       bargap: 0.1,
       xaxis: {
         title: {
-          text: `${fmt.pct(1 - d.summary.success)} of futures run out`,
+          text: t("chart.fail.axis", { pct: fmt.pct(1 - d.summary.success) }),
           font: { size: 11, color: css("--muted") },
         },
       },
@@ -458,15 +467,22 @@ function renderHero() {
   const big = $("#k-success");
   big.textContent = fmt.pct(s.success);
   big.className = `big ${s.success >= 0.9 ? "good" : s.success >= 0.75 ? "warn" : "bad"}`;
-  const rule = sim.rule === "Fixed" ? "fixed spending" : sim.rule.toLowerCase();
   const first = s.first_year;
   $("#k-what").textContent = first
-    ? `of ${fmt.num(sim.n_sims)} simulated futures, spending down from ${state.fire_year}: typically ${fmt.money(first.p50)} in the first year, never below ${fmt.money(sim.spending.floor)}.`
-    : `of ${fmt.num(sim.n_sims)} simulated futures, spending ${fmt.money(state.spending)} a year from ${state.fire_year} (${rule}).`;
+    ? t("hero.what.spenddown", {
+        n: fmt.num(sim.n_sims),
+        year: state.fire_year,
+        typical: fmt.money(first.p50),
+        floor: fmt.money(sim.spending.floor),
+      })
+    : t("hero.what", {
+        n: fmt.num(sim.n_sims),
+        spending: fmt.money(state.spending),
+        year: state.fire_year,
+        rule: t(`rule.inline.${sim.rule}`),
+      });
   $("#rail-live").replaceChildren(
-    "Money lasts in ",
-    el("strong", { text: fmt.pct(s.success) }),
-    ` · ${sim.ms} ms`,
+    ...tParts("hero.live", { pct: el("strong", { text: fmt.pct(s.success) }), ms: sim.ms }),
   );
   const tile = (k, v, sub, help) =>
     el(
@@ -477,62 +493,56 @@ function renderHero() {
       sub ? el("span", { class: "s", text: sub }) : null,
     );
   const who = personById(state, state.end_person);
-  const failSub = s.fail_median_year
-    ? `in those, typically by ${s.fail_median_year} (${ageIn(s.fail_median_year)})${s.bridge_end ? ` · ${fmt.pct(s.fail_in_bridge, 1)} before ${s.bridge_end}` : ""}`
-    : "";
+  const failSub = !s.fail_median_year
+    ? ""
+    : s.bridge_end
+      ? t("hero.fail.whenBridge", {
+          year: s.fail_median_year,
+          age: ageIn(s.fail_median_year),
+          pct: fmt.pct(s.fail_in_bridge, 1),
+          bridge: s.bridge_end,
+        })
+      : t("hero.fail.when", { year: s.fail_median_year, age: ageIn(s.fail_median_year) });
   const tiles = [
     tile(
-      "Wealth at the FIRE start",
+      t("hero.start"),
       fmt.short(s.start_median),
-      `median · 10th pct ${fmt.short(s.start_p10)}`,
+      t("hero.start.sub", { p10: fmt.short(s.start_p10) }),
       "result.start",
     ),
     ...(first
       ? [
           tile(
-            "First-year spending",
+            t("hero.first"),
             fmt.money(first.p50),
             first.p90 - first.p10 < 1
-              ? "the same in every future: it starts from these balances"
-              : `typical · bad 10%: ${fmt.money(first.p10)} · good 10%: ${fmt.money(first.p90)}`,
+              ? t("hero.first.same")
+              : t("hero.first.sub", { bad: fmt.money(first.p10), good: fmt.money(first.p90) }),
             "result.first",
           ),
         ]
       : []),
+    tile(t("hero.rate"), fmt.pct(s.withdrawal_rate, 2), t("hero.rate.sub"), "result.rate"),
     tile(
-      "Starting withdrawal rate",
-      fmt.pct(s.withdrawal_rate, 2),
-      "of the median wealth",
-      "result.rate",
-    ),
-    tile(
-      "Runs out",
-      s.fail_median_year ? `in ${fmt.pct(1 - s.success)} of futures` : "in no future",
+      t("hero.fail"),
+      s.fail_median_year
+        ? t("hero.fail.share", { pct: fmt.pct(1 - s.success) })
+        : t("hero.fail.none"),
       failSub,
       "result.fail",
     ),
     tile(
-      `Wealth when ${who.name} is ${state.end_age}`,
+      t("hero.end", { name: who.name, age: state.end_age }),
       fmt.short(s.end_median),
-      `median of all futures · worst 10%: ${fmt.short(s.end_p10)}`,
+      t("hero.end.sub", { p10: fmt.short(s.end_p10) }),
       "result.end",
     ),
   ];
   if (s.avg_spending_median != null) {
     tiles.push(
-      tile(
-        "Average spending",
-        fmt.money(s.avg_spending_median),
-        "median lasting future",
-        "result.flex",
-      ),
-      tile("Leanest year", fmt.money(s.lowest_p10), "10th percentile", "result.flex"),
-      tile(
-        "Ever spending at the floor",
-        fmt.pct(s.floor_share),
-        "of lasting futures",
-        "result.flex",
-      ),
+      tile(t("hero.avg"), fmt.money(s.avg_spending_median), t("hero.avg.sub"), "result.flex"),
+      tile(t("hero.leanest"), fmt.money(s.lowest_p10), t("hero.leanest.sub"), "result.flex"),
+      tile(t("hero.atFloor"), fmt.pct(s.floor_share), t("hero.atFloor.sub"), "result.flex"),
     );
   }
   $("#tiles").replaceChildren(...tiles);
@@ -545,25 +555,32 @@ function renderHero() {
         "aria-pressed": String(c.kind === state.rule.kind),
         title:
           c.success == null
-            ? "the spending is outside this rule's floor and ceiling"
+            ? t("hero.chip.outside")
             : c.avg_spending
-              ? `average spending ${fmt.money(c.avg_spending)}`
-              : "same amount every year",
+              ? t("hero.chip.avg", { amount: fmt.money(c.avg_spending) })
+              : t("hero.chip.same"),
         disabled: c.success == null,
         onclick: () => {
           state.rule.kind = c.kind;
           changed();
         },
       },
-      `${c.name} ${c.success == null ? "n/a" : fmt.pct(c.success)}`,
+      t("hero.chip", {
+        rule: t(`rule.name.${c.kind}`),
+        pct: c.success == null ? t("chart.na") : fmt.pct(c.success),
+      }),
     ),
   );
   $("#compare").replaceChildren(
-    el("span", { class: "k" }, "Same plan, other rules: ", helpBtn("result.compare")),
+    el("span", { class: "k" }, t("hero.compare"), " ", helpBtn("result.compare")),
     ...chips,
   );
-  $("#sub").textContent =
-    `${state.currency}, today's money · ${fmt.num(sim.n_sims)} futures · seed ${settings.seed} · until ${sim.years[sim.years.length - 1]}`;
+  $("#sub").textContent = t("hero.sub", {
+    currency: state.currency,
+    n: fmt.num(sim.n_sims),
+    seed: settings.seed,
+    year: sim.years[sim.years.length - 1],
+  });
   $("#unit-money").textContent = state.currency;
 }
 
@@ -576,16 +593,16 @@ export function renderSim() {
 
 const GRID_TEXT = {
   spending: {
-    title: "When can you stop, at which spending?",
-    desc: "How often the money lasts for each FIRE year and spending level, on the same random markets throughout. Around 90% is a common target for a plan you can't easily undo. Tap a cell to try that plan.",
-    axis: () => `Spending per year (${state.currency}, today's)`,
-    hover: "Stop in %{y}, spend %{x} a year",
+    title: t("grid.spending.title"),
+    desc: t("grid.spending.desc"),
+    axis: () => t("grid.spending.axis", { currency: state.currency }),
+    hover: t("grid.spending.hover"),
   },
   floor: {
-    title: "When can you stop, with which floor?",
-    desc: "The spend-down works out its own spending, so the columns are its floor: how often the floor could always be paid, for each FIRE year. Same random markets throughout. Tap a cell to try that plan.",
-    axis: () => `Floor: the least you'd spend (${state.currency}, today's)`,
-    hover: "Stop in %{y}, never below %{x}",
+    title: t("grid.floor.title"),
+    desc: t("grid.floor.desc"),
+    axis: () => t("grid.floor.axis", { currency: state.currency }),
+    hover: t("grid.floor.hover"),
   },
 };
 function renderGrid() {
@@ -631,7 +648,7 @@ function renderGrid() {
         ygap: 2,
         showscale: false,
         hoverongaps: false, // an empty cell has no rate: Plotly would show it as 0.0%
-        hovertemplate: `${text.hover}<br>money lasts in <b>%{z:.1%}</b><extra></extra>`,
+        hovertemplate: `${text.hover}<br>${t("grid.lasts")}<extra></extra>`,
       },
     ],
     layout({
@@ -643,7 +660,7 @@ function renderGrid() {
         type: "category",
       },
       yaxis: {
-        title: { text: "FIRE start", font: { size: 11, color: css("--muted") } },
+        title: { text: t("chart.fireStart"), font: { size: 11, color: css("--muted") } },
         showgrid: false,
         fixedrange: true,
         type: "category",
@@ -657,14 +674,8 @@ function renderGrid() {
 }
 
 const SAFE_TEXT = {
-  safe: {
-    title: "Safe spending by FIRE year",
-    desc: "The highest yearly spending that lasts in 90% and 95% of futures. Hover for the withdrawal rate it implies (spending ÷ median wealth at the start, retirement accounts included).",
-  },
-  spenddown: {
-    title: "What the spend-down allows, by FIRE year",
-    desc: "The first year's spending the spend-down works out if you stop in each year: in a typical future, and when the years until then went badly or well (worst and best 10%). Below the floor you'd still spend the floor, with more risk.",
-  },
+  safe: { title: t("safe.title"), desc: t("safe.desc") },
+  spenddown: { title: t("safe.spenddown.title"), desc: t("safe.spenddown.desc") },
 };
 function renderSafe() {
   const s = explore.safe;
@@ -685,7 +696,7 @@ function renderSafe() {
     name,
     line: { color, width: 2.2, dash },
     marker: { size: 6 },
-    hovertemplate: `${name}: %{customdata[0]} a year · %{customdata[1]} of median wealth<extra></extra>`,
+    hovertemplate: `${t("safe.hover", { name })}<extra></extra>`,
   });
   const accent = css("--accent");
   const level = (v, name) => ({
@@ -698,15 +709,15 @@ function renderSafe() {
   });
   const traces = spendDown
     ? [
-        line("p50", accent, "solid", "typical"),
-        line("p10", accent, "dot", "bad 10%"),
-        line("p90", accent, "dash", "good 10%"),
-        level(state.rule.floor, "floor"),
+        line("p50", accent, "solid", t("safe.typical")),
+        line("p10", accent, "dot", t("safe.bad")),
+        line("p90", accent, "dash", t("safe.good")),
+        level(state.rule.floor, t("safe.floor")),
       ]
     : [
-        line("90", accent, "solid", "lasts in 90%"),
-        line("95", accent, "dot", "lasts in 95%"),
-        level(state.spending, "your spending"),
+        line("90", accent, "solid", t("safe.lasts90")),
+        line("95", accent, "dot", t("safe.lasts95")),
+        level(state.spending, t("safe.yours")),
       ];
   Plotly.react(
     "ch-safe",
@@ -742,7 +753,7 @@ function renderSafe() {
 function renderStress() {
   const st = explore.stress;
   if (!st) return;
-  const labels = st.map((r) => r.short);
+  const labels = st.map((r) => t(`stress.short.${r.id}`));
   const colors = {
     fixed: "--faint",
     guardrails: "--accent",
@@ -752,14 +763,14 @@ function renderStress() {
   const traces = RULE_KINDS.map((k) => ({
     type: "bar",
     orientation: "h",
-    name: RULE_SHORT[k],
+    name: t(`rule.short.${k}`),
     y: labels,
     x: st.map((r) => r.rates[k]),
     marker: { color: css(colors[k]), opacity: k === state.rule.kind ? 1 : 0.55 },
-    text: st.map((r) => (r.rates[k] == null ? "n/a" : fmt.pct(r.rates[k]))),
+    text: st.map((r) => (r.rates[k] == null ? t("chart.na") : fmt.pct(r.rates[k]))),
     textposition: "outside",
     cliponaxis: false,
-    hovertemplate: `${RULE_SHORT[k]}, %{y}: money lasts in %{x:.1%}<extra></extra>`,
+    hovertemplate: `${t("stress.hover", { rule: t(`rule.short.${k}`) })}<extra></extra>`,
   }));
   Plotly.react(
     "ch-stress",

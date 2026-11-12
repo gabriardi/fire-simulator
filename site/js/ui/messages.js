@@ -1,9 +1,11 @@
 // What the page tells the viewer: the "?" explanations and the guide, toasts, notices, errors and
 // the confirm box.
-import { GUIDE, HELP } from "../help.js";
+import { ALIASES, GUIDE } from "../help.js";
+import { t } from "../i18n.js";
+import HELP from "../locales/en/help.js";
 import { $, el } from "./dom.js";
 
-export const helpEntry = (key) => (HELP[key]?.alias ? HELP[HELP[key].alias] : HELP[key]);
+export const helpEntry = (key) => HELP[ALIASES[key] ?? key];
 export function helpBtn(key) {
   const h = helpEntry(key);
   if (!h) return null;
@@ -13,8 +15,8 @@ export function helpBtn(key) {
       type: "button",
       class: "help",
       "data-help": key,
-      "aria-label": `Explain: ${h.title}`,
-      title: "What is this?",
+      "aria-label": t("help.explain", { title: h.title }),
+      title: t("help.what"),
     },
     "?",
   );
@@ -33,7 +35,9 @@ function openDialog(title, body, wide = false) {
 }
 function entryNodes(h) {
   const div = el("div", { class: "help-entry" });
-  div.innerHTML = h.html; // trusted: our own static help.js
+  div.innerHTML = h.html; // trusted: our own static help texts
+  // An example's label, shown before it by the styles (app.css).
+  for (const ex of div.querySelectorAll(".ex")) ex.dataset.label = t("help.example");
   return div;
 }
 export function openHelp(key) {
@@ -45,12 +49,12 @@ export function openHelp(key) {
     el(
       "button",
       { type: "button", class: "btn guide-link", onclick: openGuide },
-      "Open the full guide",
+      t("help.openGuide"),
     ),
   ]);
 }
 export function openGuide() {
-  const toc = el("nav", { class: "guide-toc", "aria-label": "Guide sections" });
+  const toc = el("nav", { class: "guide-toc", "aria-label": t("guide.sections") });
   const content = el("div", { class: "guide-content" });
   const links = [];
   GUIDE.forEach(([title, keys], i) => {
@@ -86,7 +90,7 @@ export function openGuide() {
       ),
     );
   });
-  openDialog("Guide", [el("div", { class: "guide" }, toc, content)], true);
+  openDialog(t("guide.title"), [el("div", { class: "guide" }, toc, content)], true);
   const body = $("#help-body");
   const mark = () => {
     const top = body.getBoundingClientRect().top + 40;
@@ -106,7 +110,7 @@ export function openGuide() {
   body.onscroll = mark;
   mark();
 }
-export function confirmBox({ title, text, ok = "OK", cancel = "Cancel" }) {
+export function confirmBox({ title, text, ok = t("dialog.ok"), cancel = t("dialog.cancel") }) {
   return new Promise((resolve) => {
     const d = $("#confirm-dialog");
     $("#confirm-title").textContent = title;
@@ -128,9 +132,9 @@ export function confirmBox({ title, text, ok = "OK", cancel = "Cancel" }) {
 let toastTimer = null;
 /** A short message: `undo` adds an Undo button, `action` ({ label, run }) another one, `stay` keeps it until dismissed. */
 export function toast(text, { undo = null, action = null, error = false, stay = false } = {}) {
-  const t = $("#toast");
+  const box = $("#toast");
   $("#toast-text").textContent = text;
-  const act = action ?? (undo ? { label: "Undo", run: undo } : null);
+  const act = action ?? (undo ? { label: t("toast.undo"), run: undo } : null);
   const btn = $("#toast-action");
   btn.hidden = !act;
   if (act) btn.textContent = act.label;
@@ -140,11 +144,11 @@ export function toast(text, { undo = null, action = null, error = false, stay = 
         act.run();
       }
     : null;
-  t.classList.toggle("error", error);
-  t.classList.add("show");
-  t.dataset.ms = stay ? 0 : act || error ? 10000 : 4500;
+  box.classList.toggle("error", error);
+  box.classList.add("show");
+  box.dataset.ms = stay ? 0 : act || error ? 10000 : 4500;
   clearTimeout(toastTimer);
-  if (!stay) toastTimer = setTimeout(hideToast, Number(t.dataset.ms));
+  if (!stay) toastTimer = setTimeout(hideToast, Number(box.dataset.ms));
 }
 function hideToast() {
   clearTimeout(toastTimer);
@@ -154,16 +158,16 @@ function hideToast() {
 /** The toast stays while the mouse or the keyboard focus is on it. */
 export function wireToast() {
   $("#toast-close").addEventListener("click", hideToast);
-  const t = $("#toast");
+  const box = $("#toast");
   const hold = () => clearTimeout(toastTimer);
   const release = () => {
-    if (t.classList.contains("show") && Number(t.dataset.ms))
-      toastTimer = setTimeout(hideToast, Number(t.dataset.ms));
+    if (box.classList.contains("show") && Number(box.dataset.ms))
+      toastTimer = setTimeout(hideToast, Number(box.dataset.ms));
   };
-  t.addEventListener("mouseenter", hold);
-  t.addEventListener("focusin", hold);
-  t.addEventListener("mouseleave", release);
-  t.addEventListener("focusout", release);
+  box.addEventListener("mouseenter", hold);
+  box.addEventListener("focusin", hold);
+  box.addEventListener("mouseleave", release);
+  box.addEventListener("focusout", release);
 }
 // For screen readers, what just happened when nothing on the screen says it in words (a card
 // moved). Emptied first, so the same words twice are read twice.
