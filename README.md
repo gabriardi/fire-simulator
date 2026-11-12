@@ -41,14 +41,14 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
 
 ## What it answers
 
-| Question | Where to look |
-| --- | --- |
-| Will the money last until the end? | **Money lasts in**: the share of futures where it never runs out |
-| When could I stop, and at what spending? | **The grid**: FIRE year × yearly spending, the success rate in every cell |
-| How much can I safely spend? | **Safe spending by FIRE year**: the highest spending that lasts in 90% and 95% of futures |
-| What if the markets crash right after I stop? | **Stress test**: 2008, 2000–2002 and a lost decade, forced into the first FIRE years |
-| What does being flexible buy me? | **Same plan, other rules**: the success rate of each spending rule, side by side |
-| How bad do the bad futures get? | **Wealth over time**, plus the spread of wealth at the start and of the year the money runs out |
+| Question                                      | Where to look                                                                                   |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Will the money last until the end?            | **Money lasts in**: the share of futures where it never runs out                                |
+| When could I stop, and at what spending?      | **The grid**: FIRE year × yearly spending, the success rate in every cell                       |
+| How much can I safely spend?                  | **Safe spending by FIRE year**: the highest spending that lasts in 90% and 95% of futures       |
+| What if the markets crash right after I stop? | **Stress test**: 2008, 2000–2002 and a lost decade, forced into the first FIRE years            |
+| What does being flexible buy me?              | **Same plan, other rules**: the success rate of each spending rule, side by side                |
+| How bad do the bad futures get?               | **Wealth over time**, plus the spread of wealth at the start and of the year the money runs out |
 
 ![The grid of FIRE years and spending levels, and the safe spending for each FIRE year](docs/views.png)
 
@@ -82,6 +82,7 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
 
   The flexible rules have a floor and a ceiling, and are explained in
   [How the simulation works](docs/methodology.md#spending-rules).
+
 - **Markets**:
   - a stock/bond mix, with an optional **bond tent** that holds more bonds around the FIRE start;
   - stock and bond returns, volatilities and their correlation;
@@ -96,15 +97,15 @@ The **Guide** button shows all the explanations in one place.
 
 1. **Open it.** A made-up household, Alex and Sam, shows what the simulator does. Nothing about
    them is real.
-2. **Set up your plan.** The *Set up my plan* button asks for the essentials: who is in the
+2. **Set up your plan.** The _Set up my plan_ button asks for the essentials: who is in the
    household, the currency, what you have, what you save, what you'd spend, and when you'd like to
    stop. It also asks about state pensions. Everything else starts from sensible defaults.
 3. **Fill in the rest** in the left panel: retirement accounts, other income, events, markets.
    Results update as you type.
-4. **Save.** *Save* keeps the plan in this browser. *⋯ → Save as a copy* keeps a variant next
+4. **Save.** _Save_ keeps the plan in this browser. _⋯ → Save as a copy_ keeps a variant next
    to it, such as "Stop at 50" or "Cautious returns". The plan bar marks unsaved changes, and
-   *Revert* discards them.
-5. **Back it up.** *⋯ → Export plans* downloads all your plans as one file.
+   _Revert_ discards them.
+5. **Back it up.** _⋯ → Export plans_ downloads all your plans as one file.
 
 Tips for reading the results:
 
@@ -141,10 +142,11 @@ project's copy, with who runs it and how to reach them.
   On the first save, the page asks the browser to keep its storage for good. That covers the
   low-space case. Until an exported file holds your latest saves, a note under the plan reminds
   you to export. The page also warns you when the browser isn't keeping what it saves at all.
+
 - **Export plans** downloads every plan as a JSON file. That file is your backup, and also the way
   to move plans to another device or browser.
 - **Import plans** adds a file's plans to the ones already there, and never replaces anything.
-- **Share link** (*⋯ → Share link*) packs one plan into the link itself: the plan is compressed
+- **Share link** (_⋯ → Share link_) packs one plan into the link itself: the plan is compressed
   and placed after the `#`. Browsers don't send that part of a link to the server, so the plan
   isn't uploaded anywhere. Anyone with the link can see the plan's numbers, though, so share it
   like you'd share the numbers themselves. Opening a share link asks first, then adds the plan
@@ -152,7 +154,7 @@ project's copy, with who runs it and how to reach them.
   (a bookmark, or your own link) goes to that plan instead of adding a copy.
 - The link also carries the sharer's **seed and number of futures**, as information. If the
   person opening it uses others, a note under the plan says the numbers can differ a little and
-  offers *Use the same*. The note goes away when they do, dismiss it, or save changes to the plan.
+  offers _Use the same_. The note goes away when they do, dismiss it, or save changes to the plan.
 - **Password** (optional, in the share dialog): the link is encrypted in the browser
   (AES-256-GCM, with the key from the password by PBKDF2-SHA256 at 600,000 rounds), and opens only
   with that password. The plan's name is encrypted too. The password is never part of the link,
@@ -226,22 +228,23 @@ repository (the README, the tests, the scripts) is part of it.
 
 **Cloudflare Workers** (free, no limit on requests for static files, and it applies
 `site/_headers`):
-1. In the Cloudflare dashboard: *Workers & Pages → Create → Import a repository*, then pick the
+
+1. In the Cloudflare dashboard: _Workers & Pages → Create → Import a repository_, then pick the
    repository. Private repositories work.
 2. No build command. The deploy command is the default, `npx wrangler deploy`, which reads
    `wrangler.jsonc`: the files in `site/` are served as they are, and nothing else is uploaded.
 3. Every push to the main branch deploys. The site gets a `<name>.<account>.workers.dev` address,
-   and a custom domain can be added under the Worker's *Settings → Domains & Routes*.
+   and a custom domain can be added under the Worker's _Settings → Domains & Routes_.
    `wrangler.jsonc` lists no routes, so deploys leave those domains to the dashboard: this
    project's copy has whencanistop.fyi that way. The `workers.dev` address stays on as well.
 4. `wrangler.jsonc` turns on Workers Logs (`observability`). Remove that block to have none, or
-   tell your visitors, as *What the host sees* does.
+   tell your visitors, as _What the host sees_ does.
 
 Without Git, `npx wrangler deploy` from the repository's folder does the same. Leave
 Cloudflare's Web Analytics off: its script would break the no-third-party promise (and the
 Content-Security-Policy blocks it anyway).
 
-**GitHub Pages**: *Settings → Pages → Source: GitHub Actions*, then pick the workflow GitHub
+**GitHub Pages**: _Settings → Pages → Source: GitHub Actions_, then pick the workflow GitHub
 suggests for static HTML, and set its `path` to `site`. Every path in the site is relative, so a
 project URL like `user.github.io/fire-simulator/` works. GitHub Pages ignores `site/_headers`, so
 the site runs without the Content-Security-Policy. GitHub Pages on a private repository needs a

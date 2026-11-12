@@ -4,20 +4,47 @@
  */
 
 export const CURRENCIES = [
-  "USD", "EUR", "GBP", "CHF", "CAD", "AUD", "NZD", "JPY", "SEK", "NOK", "DKK", "PLN", "CZK", "HUF",
-  "SGD", "HKD", "INR", "ZAR", "BRL", "MXN", "ILS", "KRW", "CNY", "TRY", "AED",
+  "USD",
+  "EUR",
+  "GBP",
+  "CHF",
+  "CAD",
+  "AUD",
+  "NZD",
+  "JPY",
+  "SEK",
+  "NOK",
+  "DKK",
+  "PLN",
+  "CZK",
+  "HUF",
+  "SGD",
+  "HKD",
+  "INR",
+  "ZAR",
+  "BRL",
+  "MXN",
+  "ILS",
+  "KRW",
+  "CNY",
+  "TRY",
+  "AED",
 ];
 
 // Number formats to pick from, each shown the way this browser writes it.
 export const LOCALES = [
   ["", "Browser default"],
-  ...["en-US", "en-GB", "de-DE", "de-CH", "fr-FR", "fr-CH", "it-IT", "es-ES", "nl-NL", "sv-SE", "en-IN", "ja-JP"].map((loc) => {
-    let sample = loc;
-    try {
-      sample = new Intl.NumberFormat(loc).format(1234567.89);
-    } catch { /* unknown to this browser */ }
-    return [loc, `${sample} (${loc})`];
-  }),
+  ...["en-US", "en-GB", "de-DE", "de-CH", "fr-FR", "fr-CH", "it-IT", "es-ES", "nl-NL", "sv-SE", "en-IN", "ja-JP"].map(
+    (loc) => {
+      let sample = loc;
+      try {
+        sample = new Intl.NumberFormat(loc).format(1234567.89);
+      } catch {
+        /* unknown to this browser */
+      }
+      return [loc, `${sample} (${loc})`];
+    },
+  ),
 ];
 
 export function currencyName(code, locale) {
@@ -40,8 +67,20 @@ export function makeFormat(locale, currency) {
   const parts = new Intl.NumberFormat(loc).formatToParts(1234567.5);
   const group = parts.find((p) => p.type === "group")?.value ?? ",";
   const decimal = parts.find((p) => p.type === "decimal")?.value ?? ".";
-  const money = new Intl.NumberFormat(loc, { style: "currency", currency, currencyDisplay: "narrowSymbol", maximumFractionDigits: 0, minimumFractionDigits: 0 });
-  const compact = new Intl.NumberFormat(loc, { style: "currency", currency, currencyDisplay: "narrowSymbol", notation: "compact", maximumSignificantDigits: 3 });
+  const money = new Intl.NumberFormat(loc, {
+    style: "currency",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  });
+  const compact = new Intl.NumberFormat(loc, {
+    style: "currency",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    notation: "compact",
+    maximumSignificantDigits: 3,
+  });
   // Some languages (German, for one) only abbreviate millions: below that, whole amounts.
   const thousands = compact.formatToParts(1500).some((p) => p.type === "compact");
   const symbol = money.formatToParts(1).find((p) => p.type === "currency")?.value ?? currency;
@@ -50,7 +89,10 @@ export function makeFormat(locale, currency) {
 
   /** A typed number, or NaN. `kind` "pct" also accepts either decimal mark; money takes k/M. */
   function parse(s, kind = "num") {
-    let t = String(s).trim().replace(/[\s\u00a0\u202f'’]/g, "").replace(/[−–]/g, "-");
+    let t = String(s)
+      .trim()
+      .replace(/[\s\u00a0\u202f'’]/g, "")
+      .replace(/[−–]/g, "-");
     if (!t || t === "-") return NaN;
     let mult = 1;
     const m = /^(.*?)([kKmM])$/.exec(t);
@@ -86,6 +128,10 @@ export function makeFormat(locale, currency) {
     pct: (v, d = 0) => (ok(v) ? `${(v * 100).toFixed(d).replace(".", decimal)}%` : dash),
     parse,
     /** A typed list of numbers ("-15, -20, -25"), each read by `parse`: NaN where one isn't. */
-    parseList: (s, kind = "num") => String(s).split(listSep).filter(Boolean).map((x) => parse(x, kind)),
+    parseList: (s, kind = "num") =>
+      String(s)
+        .split(listSep)
+        .filter(Boolean)
+        .map((x) => parse(x, kind)),
   };
 }

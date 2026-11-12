@@ -1,351 +1,510 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>When can I stop? · Monte Carlo FIRE simulator</title>
-<meta name="description" content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device.">
-<link rel="canonical" href="https://whencanistop.fyi/">
-<!-- Link previews (Open Graph, X) and search engines' description of the site. A copy of your own
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>When can I stop? · Monte Carlo FIRE simulator</title>
+    <meta
+      name="description"
+      content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device."
+    />
+    <link rel="canonical" href="https://whencanistop.fyi/" />
+    <!-- Link previews (Open Graph, X) and search engines' description of the site. A copy of your own
      changes the addresses here, and the operator in privacy.html. -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="When can I stop?">
-<meta property="og:url" content="https://whencanistop.fyi/">
-<meta property="og:title" content="When can I stop? · Monte Carlo FIRE simulator">
-<meta property="og:description" content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device.">
-<meta property="og:image" content="https://whencanistop.fyi/images/social.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="When can I stop? A Monte Carlo FIRE simulator, next to a screenshot: the money lasts in 78% of 10,000 futures.">
-<meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "When can I stop?",
-  "alternateName": "When can I stop? Monte Carlo FIRE simulator",
-  "url": "https://whencanistop.fyi/",
-  "description": "When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device.",
-  "applicationCategory": "FinanceApplication",
-  "operatingSystem": "Any: runs in a web browser",
-  "browserRequirements": "Requires JavaScript",
-  "isAccessibleForFree": true,
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "image": "https://whencanistop.fyi/images/social.png",
-  "author": { "@type": "Person", "name": "Gabriele Ardizzone" },
-  "license": "https://opensource.org/license/mit",
-  "sameAs": ["https://github.com/gabriardi/fire-simulator"]
-}
-</script>
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1f5f9e" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#151d25" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="icons/favicon-64.png" type="image/png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Can I stop?">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="app.css">
-</head>
-<body>
-<div class="shell">
-  <aside class="rail" id="rail" aria-label="Parameters">
-    <div class="rail-head">
-      <div class="rail-top">
-        <div>
-          <h2>Parameters</h2>
-          <div class="rail-live" id="rail-live">Loading…</div>
-        </div>
-        <button class="btn sheet-close" id="sheet-close" type="button">Done</button>
-      </div>
-      <div class="scenario" id="scenario">
-        <div class="scenario-label">
-          <label for="plan-select">Plan</label>
-          <button class="help" type="button" data-help="plans" aria-label="Explain: Plans">?</button>
-        </div>
-        <div class="scenario-row">
-          <div class="input"><select id="plan-select"></select></div>
-          <div class="menu-wrap">
-            <button class="btn icon" id="plan-more" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="plan-menu" aria-label="Plan actions" title="Plan actions">⋯</button>
-            <div class="menu" id="plan-menu" role="menu" aria-label="Plan actions" hidden>
-              <button type="button" role="menuitem" data-act="new">New plan…</button>
-              <button type="button" role="menuitem" data-act="save-as">Save as a copy…</button>
-              <button type="button" role="menuitem" data-act="rename">Rename…</button>
-              <button type="button" role="menuitem" data-act="delete" class="danger">Delete</button>
-              <hr>
-              <button type="button" role="menuitem" data-act="share">Share link…</button>
-              <button type="button" role="menuitem" data-act="export">Export plans</button>
-              <button type="button" role="menuitem" data-act="import">Import plans…</button>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="When can I stop?" />
+    <meta property="og:url" content="https://whencanistop.fyi/" />
+    <meta property="og:title" content="When can I stop? · Monte Carlo FIRE simulator" />
+    <meta
+      property="og:description"
+      content="When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device."
+    />
+    <meta property="og:image" content="https://whencanistop.fyi/images/social.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="When can I stop? A Monte Carlo FIRE simulator, next to a screenshot: the money lasts in 78% of 10,000 futures."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "When can I stop?",
+        "alternateName": "When can I stop? Monte Carlo FIRE simulator",
+        "url": "https://whencanistop.fyi/",
+        "description": "When could you retire early, and how much could you spend? A free Monte Carlo FIRE simulator that runs in your browser: nothing you type leaves your device.",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Any: runs in a web browser",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "image": "https://whencanistop.fyi/images/social.png",
+        "author": { "@type": "Person", "name": "Gabriele Ardizzone" },
+        "license": "https://opensource.org/license/mit",
+        "sameAs": ["https://github.com/gabriardi/fire-simulator"]
+      }
+    </script>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#1f5f9e" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#151d25" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="icons/favicon-64.png" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Can I stop?" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail" id="rail" aria-label="Parameters">
+        <div class="rail-head">
+          <div class="rail-top">
+            <div>
+              <h2>Parameters</h2>
+              <div class="rail-live" id="rail-live">Loading…</div>
+            </div>
+            <button class="btn sheet-close" id="sheet-close" type="button">Done</button>
+          </div>
+          <div class="scenario" id="scenario">
+            <div class="scenario-label">
+              <label for="plan-select">Plan</label>
+              <button class="help" type="button" data-help="plans" aria-label="Explain: Plans">?</button>
+            </div>
+            <div class="scenario-row">
+              <div class="input"><select id="plan-select"></select></div>
+              <div class="menu-wrap">
+                <button
+                  class="btn icon"
+                  id="plan-more"
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-controls="plan-menu"
+                  aria-label="Plan actions"
+                  title="Plan actions"
+                >
+                  ⋯
+                </button>
+                <div class="menu" id="plan-menu" role="menu" aria-label="Plan actions" hidden>
+                  <button type="button" role="menuitem" data-act="new">New plan…</button>
+                  <button type="button" role="menuitem" data-act="save-as">Save as a copy…</button>
+                  <button type="button" role="menuitem" data-act="rename">Rename…</button>
+                  <button type="button" role="menuitem" data-act="delete" class="danger">Delete</button>
+                  <hr />
+                  <button type="button" role="menuitem" data-act="share">Share link…</button>
+                  <button type="button" role="menuitem" data-act="export">Export plans</button>
+                  <button type="button" role="menuitem" data-act="import">Import plans…</button>
+                </div>
+              </div>
+            </div>
+            <div class="scenario-status">
+              <span class="scenario-state" id="plan-state"></span>
+              <button class="btn quiet" id="plan-revert" type="button" hidden>Revert</button>
+              <button class="btn primary" id="plan-save" type="button" hidden>Save</button>
+            </div>
+            <div class="backup" id="backup" hidden>
+              <span class="backup-text" id="backup-text"></span>
+              <button class="btn small" id="backup-export" type="button">Export</button>
+              <button class="help" type="button" data-help="backup" aria-label="Explain: Backups">?</button>
+            </div>
+            <div class="backup shared-note" id="shared-note" role="status" hidden>
+              <span class="backup-text" id="shared-text"></span>
+              <button class="btn small" id="shared-use" type="button">Use the same</button>
+              <button class="btn quiet small" id="shared-close" type="button" aria-label="Dismiss this note">×</button>
             </div>
           </div>
         </div>
-        <div class="scenario-status">
-          <span class="scenario-state" id="plan-state"></span>
-          <button class="btn quiet" id="plan-revert" type="button" hidden>Revert</button>
-          <button class="btn primary" id="plan-save" type="button" hidden>Save</button>
-        </div>
-        <div class="backup" id="backup" hidden>
-          <span class="backup-text" id="backup-text"></span>
-          <button class="btn small" id="backup-export" type="button">Export</button>
-          <button class="help" type="button" data-help="backup" aria-label="Explain: Backups">?</button>
-        </div>
-        <div class="backup shared-note" id="shared-note" role="status" hidden>
-          <span class="backup-text" id="shared-text"></span>
-          <button class="btn small" id="shared-use" type="button">Use the same</button>
-          <button class="btn quiet small" id="shared-close" type="button" aria-label="Dismiss this note">×</button>
-        </div>
-      </div>
-    </div>
-    <div class="rail-body">
-      <div class="notice" id="notice" role="status"></div>
-      <form id="form" autocomplete="off" novalidate></form>
-      <div class="error" id="error" role="alert"><span id="error-text"></span><button class="btn" id="error-fix" type="button" hidden></button></div>
-    </div>
-  </aside>
-
-  <main>
-    <noscript><p class="noscript"><b>When can I stop?</b> is a Monte Carlo FIRE simulator that runs
-      in your browser, so it needs JavaScript. Nothing you type is ever sent anywhere.</p></noscript>
-    <header class="top">
-      <div class="title">
-        <h1>When can I stop?</h1>
-        <button class="scenario-pill" id="plan-pill" type="button" title="The plan on screen"></button>
-      </div>
-      <div class="top-right">
-        <span class="sub" id="sub">Today's money · Monte Carlo</span>
-        <button class="btn" id="new-seed" type="button" title="Draw a different set of random futures">New seed</button>
-        <button class="btn" id="guide" type="button">Guide</button>
-      </div>
-    </header>
-
-    <section class="welcome hidden" id="welcome">
-      <div>
-        <h2>When can you stop working, and how much can you spend?</h2>
-        <p>The simulator plays your plan through thousands of possible futures for the markets, and
-          tells you how often the money lasts. The numbers below are for Alex and Sam, a made-up
-          household, to show how it works. Set up your own plan to see yours: everything you enter
-          stays in this browser, and nothing is sent anywhere.</p>
-      </div>
-      <div class="welcome-actions">
-        <button class="btn primary" id="welcome-setup" type="button">Set up my plan</button>
-        <button class="btn" id="welcome-import" type="button">Import plans</button>
-        <button class="btn quiet" id="welcome-close" type="button">Keep exploring</button>
-      </div>
-    </section>
-
-    <section class="hero" aria-live="polite">
-      <div class="verdict">
-        <span class="label">Money lasts in <button class="help" type="button" data-help="result.success" aria-label="Explain: Money lasts in">?</button></span>
-        <span class="big" id="k-success">–</span>
-        <span class="what" id="k-what"></span>
-      </div>
-      <div class="tiles" id="tiles"></div>
-      <div class="compare" id="compare"></div>
-    </section>
-
-    <section class="card" id="c-paths">
-      <div class="card-head">
-        <div>
-          <h3>Wealth over time <button class="help" type="button" data-help="chart.paths" aria-label="Explain: Wealth over time">?</button></h3>
-          <p class="desc">Each thin line is one simulated future, coloured from poorest (purple) to richest (yellow); red lines run out of money. The black line is the median, the shaded bands hold the middle 50% and 80% of futures.</p>
-        </div>
-        <div class="tools">
-          <div class="seg" role="group" aria-label="Unit">
-            <button type="button" data-unit="years" aria-pressed="true">Years of spending</button>
-            <button type="button" data-unit="money" aria-pressed="false" id="unit-money">Money</button>
+        <div class="rail-body">
+          <div class="notice" id="notice" role="status"></div>
+          <form id="form" autocomplete="off" novalidate></form>
+          <div class="error" id="error" role="alert">
+            <span id="error-text"></span><button class="btn" id="error-fix" type="button" hidden></button>
           </div>
         </div>
-      </div>
-      <div class="chart" id="ch-paths"></div>
-    </section>
+      </aside>
 
-    <section class="card hidden" id="c-spending">
-      <div class="card-head">
-        <div>
-          <h3>What you'd get to spend <button class="help" type="button" data-help="chart.spending" aria-label="Explain this chart">?</button></h3>
-          <p class="desc">The price of flexibility: each line is one future's yearly spending (red ones end when the money runs out). The band holds 80% of the futures that last.</p>
+      <main>
+        <noscript
+          ><p class="noscript">
+            <b>When can I stop?</b> is a Monte Carlo FIRE simulator that runs in your browser, so it needs JavaScript.
+            Nothing you type is ever sent anywhere.
+          </p></noscript
+        >
+        <header class="top">
+          <div class="title">
+            <h1>When can I stop?</h1>
+            <button class="scenario-pill" id="plan-pill" type="button" title="The plan on screen"></button>
+          </div>
+          <div class="top-right">
+            <span class="sub" id="sub">Today's money · Monte Carlo</span>
+            <button class="btn" id="new-seed" type="button" title="Draw a different set of random futures">
+              New seed
+            </button>
+            <button class="btn" id="guide" type="button">Guide</button>
+          </div>
+        </header>
+
+        <section class="welcome hidden" id="welcome">
+          <div>
+            <h2>When can you stop working, and how much can you spend?</h2>
+            <p>
+              The simulator plays your plan through thousands of possible futures for the markets, and tells you how
+              often the money lasts. The numbers below are for Alex and Sam, a made-up household, to show how it works.
+              Set up your own plan to see yours: everything you enter stays in this browser, and nothing is sent
+              anywhere.
+            </p>
+          </div>
+          <div class="welcome-actions">
+            <button class="btn primary" id="welcome-setup" type="button">Set up my plan</button>
+            <button class="btn" id="welcome-import" type="button">Import plans</button>
+            <button class="btn quiet" id="welcome-close" type="button">Keep exploring</button>
+          </div>
+        </section>
+
+        <section class="hero" aria-live="polite">
+          <div class="verdict">
+            <span class="label"
+              >Money lasts in
+              <button class="help" type="button" data-help="result.success" aria-label="Explain: Money lasts in">
+                ?
+              </button></span
+            >
+            <span class="big" id="k-success">–</span>
+            <span class="what" id="k-what"></span>
+          </div>
+          <div class="tiles" id="tiles"></div>
+          <div class="compare" id="compare"></div>
+        </section>
+
+        <section class="card" id="c-paths">
+          <div class="card-head">
+            <div>
+              <h3>
+                Wealth over time
+                <button class="help" type="button" data-help="chart.paths" aria-label="Explain: Wealth over time">
+                  ?
+                </button>
+              </h3>
+              <p class="desc">
+                Each thin line is one simulated future, coloured from poorest (purple) to richest (yellow); red lines
+                run out of money. The black line is the median, the shaded bands hold the middle 50% and 80% of futures.
+              </p>
+            </div>
+            <div class="tools">
+              <div class="seg" role="group" aria-label="Unit">
+                <button type="button" data-unit="years" aria-pressed="true">Years of spending</button>
+                <button type="button" data-unit="money" aria-pressed="false" id="unit-money">Money</button>
+              </div>
+            </div>
+          </div>
+          <div class="chart" id="ch-paths"></div>
+        </section>
+
+        <section class="card hidden" id="c-spending">
+          <div class="card-head">
+            <div>
+              <h3>
+                What you'd get to spend
+                <button class="help" type="button" data-help="chart.spending" aria-label="Explain this chart">?</button>
+              </h3>
+              <p class="desc">
+                The price of flexibility: each line is one future's yearly spending (red ones end when the money runs
+                out). The band holds 80% of the futures that last.
+              </p>
+            </div>
+          </div>
+          <div class="chart mid" id="ch-spending"></div>
+        </section>
+
+        <section class="card" id="c-grid">
+          <div class="card-head">
+            <div>
+              <h3>
+                <span id="grid-title">When can you stop, at which spending?</span>
+                <button class="help" type="button" data-help="chart.grid" aria-label="Explain this chart">?</button>
+              </h3>
+              <p class="desc" id="grid-desc"></p>
+            </div>
+          </div>
+          <div class="chart mid" id="ch-grid"></div>
+        </section>
+
+        <section class="card" id="c-safe">
+          <div class="card-head">
+            <div>
+              <h3>
+                <span id="safe-title">Safe spending by FIRE year</span>
+                <button class="help" type="button" data-help="chart.safe" aria-label="Explain this chart">?</button>
+              </h3>
+              <p class="desc" id="safe-desc"></p>
+            </div>
+          </div>
+          <div class="chart small" id="ch-safe"></div>
+        </section>
+
+        <section class="card" id="c-stress">
+          <div class="card-head">
+            <div>
+              <h3>
+                Stress test: a crash right after you stop
+                <button class="help" type="button" data-help="chart.stress" aria-label="Explain this chart">?</button>
+              </h3>
+              <p class="desc">
+                A historical-style crash forced into the first FIRE years, random markets after it. A bad start is what
+                breaks a withdrawal plan: you sell low to pay the bills, and that money never recovers.
+              </p>
+            </div>
+          </div>
+          <div class="chart small" id="ch-stress"></div>
+        </section>
+
+        <section class="card" id="c-dist">
+          <div class="two">
+            <div>
+              <h3>
+                Wealth at the FIRE start
+                <button class="help" type="button" data-help="chart.dist" aria-label="Explain these charts">?</button>
+              </h3>
+              <div class="chart small" id="ch-start"></div>
+            </div>
+            <div>
+              <h3>Year the money runs out</h3>
+              <div class="chart small" id="ch-fail"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card how">
+          <details>
+            <summary>How the simulation works, and what it can't see</summary>
+            <h4>Everything is in today's money</h4>
+            <p>
+              Returns are drawn after inflation, so a spending of 40,000 a year means today's purchasing power in every
+              year. Nominal inputs (returns, interest rates) are converted using the inflation you set.
+            </p>
+            <h4>One year at a time</h4>
+            <ul>
+              <li>
+                The portfolio, and the retirement accounts invested like it, is a mix of stocks and bonds rebalanced
+                every year. Stocks and bonds each get one random return per year, drawn independently from a log-normal
+                distribution with the median and spread you set (or a fat-tailed one).
+              </li>
+              <li>
+                Cash and fixed-interest accounts grow at their interest minus inflation. Until the FIRE year you keep
+                saving.
+              </li>
+              <li>
+                When its owner reaches the unlock age, a retirement account is withdrawn, taxed, and added to the
+                portfolio.
+              </li>
+              <li>
+                From the FIRE year, income lines (pensions, part-time work) and extra costs count, and one-off events
+                happen in their year.
+              </li>
+              <li>
+                Spending comes from cash first, then the portfolio. A future <strong>fails</strong> in the first year
+                the reachable money can't pay the bills, even if a retirement account would unlock later.
+              </li>
+            </ul>
+            <h4>Spending rules</h4>
+            <ul>
+              <li><strong>Fixed:</strong> the same real amount every year (the classic safe withdrawal rate).</li>
+              <li>
+                <strong>Guardrails</strong> (Guyton &amp; Klinger): cut spending when the withdrawal rate drifts above
+                where it started by more than the band, raise it when it drifts below.
+              </li>
+              <li>
+                <strong>Vanguard dynamic:</strong> aim at a fixed share of wealth, but change spending by at most +up /
+                −down a year.
+              </li>
+              <li>
+                <strong>Spend-down</strong> (die with zero): each year, aim at what could be spent every year until the
+                end if the money earned the assumed return, with the locked accounts and future income counted as money
+                today; until an account unlocks, only the reachable money pays. Spending moves towards it by at most
+                +raise / −cut a year.
+              </li>
+              <li>
+                The flexible rules stay between the floor (costs you can't cut) and the ceiling. They fail only when
+                even the floor can't be paid.
+              </li>
+            </ul>
+            <h4>What it can't see</h4>
+            <ul>
+              <li>
+                Real markets have long bad stretches and recoveries; independent random years are a simplification. Use
+                the stress test for bad starts.
+              </li>
+              <li>The return assumption moves the answer more than anything else. Try a cautious case.</li>
+              <li>Inflation is the rate you set, in every year: only the returns are random.</li>
+              <li>
+                Taxes are simplified: a flat rate on each retirement account when it unlocks, and optionally an
+                effective rate on portfolio withdrawals. Put everything else (income tax, wealth tax, health insurance)
+                into the spending.
+              </li>
+              <li>
+                Not modelled: pension reforms, costs rising faster than prices, how long each person lives (the plan
+                simply runs until the age you set), currency risk.
+              </li>
+            </ul>
+            <p>This is a tool for thinking about a plan, not financial advice.</p>
+          </details>
+        </section>
+        <footer class="site-foot">
+          <p>
+            Free, with no ads and no tracking. If it's useful to you:
+            <a class="coffee" href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener"
+              ><span aria-hidden="true">☕</span> Buy me a coffee</a
+            >
+          </p>
+          <p>
+            Open source (<a
+              href="https://github.com/gabriardi/fire-simulator/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener"
+              >MIT license</a
+            >) ·
+            <a href="https://github.com/gabriardi/fire-simulator" target="_blank" rel="noopener"
+              >Code and issues on GitHub</a
+            >
+            · Feedback: <a href="mailto:hello@whencanistop.fyi">hello@whencanistop.fyi</a> ·
+            <a href="privacy">Privacy</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <button class="fab" id="fab" type="button">Adjust parameters</button>
+    <input type="file" id="import-file" accept=".json,application/json" hidden />
+
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <div class="help-head">
+        <h2 id="help-title">Help</h2>
+        <button class="btn" id="help-close" type="button">Close</button>
+      </div>
+      <div class="help-body" id="help-body"></div>
+    </dialog>
+
+    <dialog class="panel" id="name-dialog" aria-labelledby="name-title">
+      <form id="name-form" method="dialog" novalidate>
+        <h2 id="name-title">Save plan</h2>
+        <p class="panel-text" id="name-text"></p>
+        <label for="name-input">Name</label>
+        <div class="input">
+          <input
+            id="name-input"
+            type="text"
+            maxlength="60"
+            autocomplete="off"
+            enterkeyhint="done"
+            aria-describedby="name-error"
+          />
+        </div>
+        <div class="field-error" id="name-error" role="alert"></div>
+        <div class="dialog-actions">
+          <button class="btn" id="name-cancel" type="button">Cancel</button>
+          <button class="btn primary" id="name-ok" type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="panel wide" id="setup-dialog" aria-labelledby="setup-title">
+      <form id="setup-form" method="dialog" novalidate>
+        <h2 id="setup-title">Set up a plan</h2>
+        <p class="panel-text">
+          The essentials, to get a first answer. Retirement accounts, other income, one-off events and the market
+          assumptions can be added afterwards in the panel.
+        </p>
+        <div id="setup-fields" class="setup-fields"></div>
+        <div class="field-error" id="setup-error" role="alert"></div>
+        <div class="dialog-actions">
+          <button class="btn" id="setup-cancel" type="button">Cancel</button>
+          <button class="btn primary" type="submit">Create plan</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="panel" id="share-dialog" aria-labelledby="share-title">
+      <div class="panel-body">
+        <h2 id="share-title">Share this plan</h2>
+        <p class="panel-text">
+          A link that opens a copy of the plan on screen, unsaved changes included. The plan is packed into the link
+          itself, after the “#”, which browsers never send to the site: nothing is uploaded.
+          <strong>Anyone with the link sees every number in it</strong>, unless you lock it with a password.
+        </p>
+        <div class="share-field" id="share-lock">
+          <label for="share-password">Password (optional)</label>
+          <div class="input">
+            <input
+              id="share-password"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="done"
+              aria-describedby="share-lock-note"
+            />
+          </div>
+          <div class="hint" id="share-lock-note" aria-live="polite"></div>
+        </div>
+        <div class="share-field">
+          <label for="share-url">Link</label>
+          <div class="input"><input id="share-url" type="text" readonly /></div>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn" id="share-close" type="button">Close</button>
+          <button class="btn" id="share-native" type="button" hidden>Share…</button>
+          <button class="btn primary" id="share-copy" type="button">Copy link</button>
         </div>
       </div>
-      <div class="chart mid" id="ch-spending"></div>
-    </section>
+    </dialog>
 
-    <section class="card" id="c-grid">
-      <div class="card-head">
-        <div>
-          <h3><span id="grid-title">When can you stop, at which spending?</span> <button class="help" type="button" data-help="chart.grid" aria-label="Explain this chart">?</button></h3>
-          <p class="desc" id="grid-desc"></p>
+    <dialog class="panel" id="unlock-dialog" aria-labelledby="unlock-title">
+      <form id="unlock-form" method="dialog" novalidate>
+        <h2 id="unlock-title">Open a shared plan?</h2>
+        <p class="panel-text">
+          Someone shared a plan locked with a password: ask them for it. It opens as a new plan in this browser; your
+          own plans stay as they are.
+        </p>
+        <label for="unlock-input">Password</label>
+        <div class="input">
+          <input
+            id="unlock-input"
+            type="text"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            enterkeyhint="go"
+            aria-describedby="unlock-error"
+          />
+        </div>
+        <div class="field-error" id="unlock-error" role="alert"></div>
+        <div class="dialog-actions">
+          <button class="btn" id="unlock-cancel" type="button">Not now</button>
+          <button class="btn primary" id="unlock-ok" type="submit">Open it</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="panel" id="confirm-dialog" aria-labelledby="confirm-title">
+      <div class="panel-body">
+        <h2 id="confirm-title"></h2>
+        <p class="panel-text" id="confirm-text"></p>
+        <div class="dialog-actions">
+          <button class="btn" id="confirm-cancel" type="button">Cancel</button>
+          <button class="btn primary" id="confirm-ok" type="button">OK</button>
         </div>
       </div>
-      <div class="chart mid" id="ch-grid"></div>
-    </section>
+    </dialog>
 
-    <section class="card" id="c-safe">
-      <div class="card-head">
-        <div>
-          <h3><span id="safe-title">Safe spending by FIRE year</span> <button class="help" type="button" data-help="chart.safe" aria-label="Explain this chart">?</button></h3>
-          <p class="desc" id="safe-desc"></p>
-        </div>
-      </div>
-      <div class="chart small" id="ch-safe"></div>
-    </section>
-
-    <section class="card" id="c-stress">
-      <div class="card-head">
-        <div>
-          <h3>Stress test: a crash right after you stop <button class="help" type="button" data-help="chart.stress" aria-label="Explain this chart">?</button></h3>
-          <p class="desc">A historical-style crash forced into the first FIRE years, random markets after it. A bad start is what breaks a withdrawal plan: you sell low to pay the bills, and that money never recovers.</p>
-        </div>
-      </div>
-      <div class="chart small" id="ch-stress"></div>
-    </section>
-
-    <section class="card" id="c-dist">
-      <div class="two">
-        <div>
-          <h3>Wealth at the FIRE start <button class="help" type="button" data-help="chart.dist" aria-label="Explain these charts">?</button></h3>
-          <div class="chart small" id="ch-start"></div>
-        </div>
-        <div>
-          <h3>Year the money runs out</h3>
-          <div class="chart small" id="ch-fail"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card how">
-      <details>
-        <summary>How the simulation works, and what it can't see</summary>
-        <h4>Everything is in today's money</h4>
-        <p>Returns are drawn after inflation, so a spending of 40,000 a year means today's purchasing power in every year. Nominal inputs (returns, interest rates) are converted using the inflation you set.</p>
-        <h4>One year at a time</h4>
-        <ul>
-          <li>The portfolio, and the retirement accounts invested like it, is a mix of stocks and bonds rebalanced every year. Stocks and bonds each get one random return per year, drawn independently from a log-normal distribution with the median and spread you set (or a fat-tailed one).</li>
-          <li>Cash and fixed-interest accounts grow at their interest minus inflation. Until the FIRE year you keep saving.</li>
-          <li>When its owner reaches the unlock age, a retirement account is withdrawn, taxed, and added to the portfolio.</li>
-          <li>From the FIRE year, income lines (pensions, part-time work) and extra costs count, and one-off events happen in their year.</li>
-          <li>Spending comes from cash first, then the portfolio. A future <strong>fails</strong> in the first year the reachable money can't pay the bills, even if a retirement account would unlock later.</li>
-        </ul>
-        <h4>Spending rules</h4>
-        <ul>
-          <li><strong>Fixed:</strong> the same real amount every year (the classic safe withdrawal rate).</li>
-          <li><strong>Guardrails</strong> (Guyton &amp; Klinger): cut spending when the withdrawal rate drifts above where it started by more than the band, raise it when it drifts below.</li>
-          <li><strong>Vanguard dynamic:</strong> aim at a fixed share of wealth, but change spending by at most +up / −down a year.</li>
-          <li><strong>Spend-down</strong> (die with zero): each year, aim at what could be spent every year until the end if the money earned the assumed return, with the locked accounts and future income counted as money today; until an account unlocks, only the reachable money pays. Spending moves towards it by at most +raise / −cut a year.</li>
-          <li>The flexible rules stay between the floor (costs you can't cut) and the ceiling. They fail only when even the floor can't be paid.</li>
-        </ul>
-        <h4>What it can't see</h4>
-        <ul>
-          <li>Real markets have long bad stretches and recoveries; independent random years are a simplification. Use the stress test for bad starts.</li>
-          <li>The return assumption moves the answer more than anything else. Try a cautious case.</li>
-          <li>Inflation is the rate you set, in every year: only the returns are random.</li>
-          <li>Taxes are simplified: a flat rate on each retirement account when it unlocks, and optionally an effective rate on portfolio withdrawals. Put everything else (income tax, wealth tax, health insurance) into the spending.</li>
-          <li>Not modelled: pension reforms, costs rising faster than prices, how long each person lives (the plan simply runs until the age you set), currency risk.</li>
-        </ul>
-        <p>This is a tool for thinking about a plan, not financial advice.</p>
-      </details>
-    </section>
-    <footer class="site-foot">
-      <p>Free, with no ads and no tracking. If it's useful to you:
-        <a class="coffee" href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener"><span aria-hidden="true">☕</span> Buy me a coffee</a></p>
-      <p>Open source (<a href="https://github.com/gabriardi/fire-simulator/blob/main/LICENSE" target="_blank" rel="noopener">MIT license</a>) ·
-        <a href="https://github.com/gabriardi/fire-simulator" target="_blank" rel="noopener">Code and issues on GitHub</a> ·
-        Feedback: <a href="mailto:hello@whencanistop.fyi">hello@whencanistop.fyi</a> ·
-        <a href="privacy">Privacy</a></p>
-    </footer>
-  </main>
-</div>
-<button class="fab" id="fab" type="button">Adjust parameters</button>
-<input type="file" id="import-file" accept=".json,application/json" hidden>
-
-<dialog id="help-dialog" aria-labelledby="help-title">
-  <div class="help-head">
-    <h2 id="help-title">Help</h2>
-    <button class="btn" id="help-close" type="button">Close</button>
-  </div>
-  <div class="help-body" id="help-body"></div>
-</dialog>
-
-<dialog class="panel" id="name-dialog" aria-labelledby="name-title">
-  <form id="name-form" method="dialog" novalidate>
-    <h2 id="name-title">Save plan</h2>
-    <p class="panel-text" id="name-text"></p>
-    <label for="name-input">Name</label>
-    <div class="input"><input id="name-input" type="text" maxlength="60" autocomplete="off" enterkeyhint="done" aria-describedby="name-error"></div>
-    <div class="field-error" id="name-error" role="alert"></div>
-    <div class="dialog-actions">
-      <button class="btn" id="name-cancel" type="button">Cancel</button>
-      <button class="btn primary" id="name-ok" type="submit">Save</button>
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span id="toast-text"></span>
+      <button class="toast-action" id="toast-action" type="button" hidden>Undo</button>
+      <button class="toast-close" id="toast-close" type="button" aria-label="Dismiss">×</button>
     </div>
-  </form>
-</dialog>
 
-<dialog class="panel wide" id="setup-dialog" aria-labelledby="setup-title">
-  <form id="setup-form" method="dialog" novalidate>
-    <h2 id="setup-title">Set up a plan</h2>
-    <p class="panel-text">The essentials, to get a first answer. Retirement accounts, other income, one-off events and the market assumptions can be added afterwards in the panel.</p>
-    <div id="setup-fields" class="setup-fields"></div>
-    <div class="field-error" id="setup-error" role="alert"></div>
-    <div class="dialog-actions">
-      <button class="btn" id="setup-cancel" type="button">Cancel</button>
-      <button class="btn primary" type="submit">Create plan</button>
-    </div>
-  </form>
-</dialog>
-
-<dialog class="panel" id="share-dialog" aria-labelledby="share-title">
-  <div class="panel-body">
-    <h2 id="share-title">Share this plan</h2>
-    <p class="panel-text">A link that opens a copy of the plan on screen, unsaved changes included. The plan is packed into the link itself, after the “#”, which browsers never send to the site: nothing is uploaded. <strong>Anyone with the link sees every number in it</strong>, unless you lock it with a password.</p>
-    <div class="share-field" id="share-lock">
-      <label for="share-password">Password (optional)</label>
-      <div class="input"><input id="share-password" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-describedby="share-lock-note"></div>
-      <div class="hint" id="share-lock-note" aria-live="polite"></div>
-    </div>
-    <div class="share-field">
-      <label for="share-url">Link</label>
-      <div class="input"><input id="share-url" type="text" readonly></div>
-    </div>
-    <div class="dialog-actions">
-      <button class="btn" id="share-close" type="button">Close</button>
-      <button class="btn" id="share-native" type="button" hidden>Share…</button>
-      <button class="btn primary" id="share-copy" type="button">Copy link</button>
-    </div>
-  </div>
-</dialog>
-
-<dialog class="panel" id="unlock-dialog" aria-labelledby="unlock-title">
-  <form id="unlock-form" method="dialog" novalidate>
-    <h2 id="unlock-title">Open a shared plan?</h2>
-    <p class="panel-text">Someone shared a plan locked with a password: ask them for it. It opens as a new plan in this browser; your own plans stay as they are.</p>
-    <label for="unlock-input">Password</label>
-    <div class="input"><input id="unlock-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-describedby="unlock-error"></div>
-    <div class="field-error" id="unlock-error" role="alert"></div>
-    <div class="dialog-actions">
-      <button class="btn" id="unlock-cancel" type="button">Not now</button>
-      <button class="btn primary" id="unlock-ok" type="submit">Open it</button>
-    </div>
-  </form>
-</dialog>
-
-<dialog class="panel" id="confirm-dialog" aria-labelledby="confirm-title">
-  <div class="panel-body">
-    <h2 id="confirm-title"></h2>
-    <p class="panel-text" id="confirm-text"></p>
-    <div class="dialog-actions">
-      <button class="btn" id="confirm-cancel" type="button">Cancel</button>
-      <button class="btn primary" id="confirm-ok" type="button">OK</button>
-    </div>
-  </div>
-</dialog>
-
-<div class="toast" id="toast" role="status" aria-live="polite">
-  <span id="toast-text"></span>
-  <button class="toast-action" id="toast-action" type="button" hidden>Undo</button>
-  <button class="toast-close" id="toast-close" type="button" aria-label="Dismiss">×</button>
-</div>
-
-<script src="vendor/plotly-cartesian-4.1.1.min.js"></script>
-<script type="module" src="js/app.js"></script>
-</body>
+    <script src="vendor/plotly-cartesian-4.1.1.min.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>

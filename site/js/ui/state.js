@@ -16,16 +16,30 @@ export let sim = null; // the main view's result, as the worker sent it
 export const explore = { grid: null, safe: null, stress: null }; // the heavier views' results
 export let canStore = true; // whether this browser keeps what the page saves
 
-export const refreshFormat = () => { fmt = makeFormat(settings.locale, state.currency); };
+export const refreshFormat = () => {
+  fmt = makeFormat(settings.locale, state.currency);
+};
 export const realOf = (nominal) => real(nominal, state.inflation);
 export const planById = (id) => plans.find((p) => p.id === id);
 export const runPlan = () => ({ ...state, seed: settings.seed, n_sims: settings.n_sims });
 export const today = () => new Date();
 
 // The setters.
-export const setState = (v) => { state = v; };
-export const setBase = (v) => { base = v; };
-export const setPlans = (v) => { plans = v; };
-export const setSim = (v) => { sim = v; };
-export const setExported = (v) => { exported = v; };
-export const setCanStore = (v) => { canStore = v; };
+export const setState = (v) => {
+  state = v;
+};
+export const setBase = (v) => {
+  base = v;
+};
+export const setPlans = (v) => {
+  plans = v;
+};
+export const setSim = (v) => {
+  sim = v;
+};
+export const setExported = (v) => {
+  exported = v;
+};
+export const setCanStore = (v) => {
+  canStore = v;
+};

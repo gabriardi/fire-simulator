@@ -30,7 +30,10 @@ export function spawnMain() {
     if (q) postMain(q);
     if (e.data.id !== main.latest) return;
     busy(MAIN_CARDS, false);
-    if (e.data.error) { showError(`The simulation stopped: ${e.data.error}`); return; }
+    if (e.data.error) {
+      showError(`The simulation stopped: ${e.data.error}`);
+      return;
+    }
     setSim({ ...e.data.result, ms: e.data.ms });
     renderSim();
   };
@@ -54,14 +57,20 @@ function runMain(plan) {
 }
 function runHeavy(name, plan) {
   const h = heavy[name];
-  if (h.id && h.worker) { h.worker.terminate(); h.worker = null; } // still busy with an older plan
+  if (h.id && h.worker) {
+    h.worker.terminate();
+    h.worker = null;
+  } // still busy with an older plan
   if (!h.worker) {
     h.worker = spawn();
     h.worker.onmessage = (e) => {
       if (e.data.id !== h.id) return;
       h.id = 0;
       busy([CARDS[name]], false);
-      if (e.data.error) { showError(`The ${name} view stopped: ${e.data.error}`); return; }
+      if (e.data.error) {
+        showError(`The ${name} view stopped: ${e.data.error}`);
+        return;
+      }
       explore[name] = e.data.result;
       RENDER[name]();
     };
@@ -86,13 +95,23 @@ export function changed() {
   simTimer = setTimeout(runSim, 160);
 }
 export function runSim() {
-  if (invalid.size) { showError("Some fields aren't valid yet: fix the red ones."); return; }
+  if (invalid.size) {
+    showError("Some fields aren't valid yet: fix the red ones.");
+    return;
+  }
   const probs = problems(state);
   if (probs.length) {
     const r = state.rule;
-    const fix = r.kind !== "fixed" && probs.some((p) => p.includes("floor"))
-      ? { label: "Set floor and ceiling around this spending", run: () => { Object.assign(state.rule, bandAround(state.spending)); changed(); } }
-      : null;
+    const fix =
+      r.kind !== "fixed" && probs.some((p) => p.includes("floor"))
+        ? {
+            label: "Set floor and ceiling around this spending",
+            run: () => {
+              Object.assign(state.rule, bandAround(state.spending));
+              changed();
+            },
+          }
+        : null;
     showError(probs.join(" "), fix);
     return;
   }
@@ -100,7 +119,9 @@ export function runSim() {
   const plan = runPlan();
   runMain(plan);
   clearTimeout(expTimer);
-  expTimer = setTimeout(() => { for (const name of Object.keys(heavy)) runHeavy(name, plan); }, 250);
+  expTimer = setTimeout(() => {
+    for (const name of Object.keys(heavy)) runHeavy(name, plan);
+  }, 250);
 }
 function busy(ids, on) {
   for (const id of ids) document.getElementById(id)?.classList.toggle("busy", on);

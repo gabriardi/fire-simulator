@@ -2,8 +2,29 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { simulate } from "../site/js/engine.js";
 import { makeFormat } from "../site/js/format.js";
-import { DEFAULT_CURRENCY, SCHEMA, bandAround, blankPlan, differences, examplePlan, fromNewer, migrate, normalize, problems, roundish } from "../site/js/plan.js";
-import { cleanRun, cleanSaved, cleanSettings, exportFile, isLocked, packPlan, readFile, unpackPlan } from "../site/js/store.js";
+import {
+  DEFAULT_CURRENCY,
+  SCHEMA,
+  bandAround,
+  blankPlan,
+  differences,
+  examplePlan,
+  fromNewer,
+  migrate,
+  normalize,
+  problems,
+  roundish,
+} from "../site/js/plan.js";
+import {
+  cleanRun,
+  cleanSaved,
+  cleanSettings,
+  exportFile,
+  isLocked,
+  packPlan,
+  readFile,
+  unpackPlan,
+} from "../site/js/store.js";
 
 const today = new Date(2026, 10, 11);
 
@@ -17,7 +38,10 @@ test("a new plan and the example are complete and simulate", () => {
 });
 
 test("normalize fills what's missing and drops what doesn't belong", () => {
-  const p = normalize({ spending: 50_000, people: [{ name: "Ana", birth_year: 1980 }], evil: "<script>", rule: { kind: "nope" } }, { today, currency: "CHF" });
+  const p = normalize(
+    { spending: 50_000, people: [{ name: "Ana", birth_year: 1980 }], evil: "<script>", rule: { kind: "nope" } },
+    { today, currency: "CHF" },
+  );
   assert.equal(p.currency, "CHF");
   assert.equal(p.people.length, 1);
   assert.equal(p.people[0].name, "Ana");
@@ -29,17 +53,20 @@ test("normalize fills what's missing and drops what doesn't belong", () => {
 });
 
 test("normalize keeps values in bounds and references pointing at people who exist", () => {
-  const p = normalize({
-    people: [{ id: "a", name: "A", birth_year: 1985 }],
-    end_person: "ghost",
-    start_month: 15,
-    stock_vol: -3,
-    fat_tails_df: 1,
-    stress_returns: [-2, "x", 0.1],
-    accounts: [{ owner: "ghost", balance: -5, tax: 2, growth: "magic" }],
-    income: [{ amount: 1000, from: { kind: "age", person: "ghost", value: 67 }, to: { kind: "bogus", value: 2050 } }],
-    people_extra: 1,
-  }, { today });
+  const p = normalize(
+    {
+      people: [{ id: "a", name: "A", birth_year: 1985 }],
+      end_person: "ghost",
+      start_month: 15,
+      stock_vol: -3,
+      fat_tails_df: 1,
+      stress_returns: [-2, "x", 0.1],
+      accounts: [{ owner: "ghost", balance: -5, tax: 2, growth: "magic" }],
+      income: [{ amount: 1000, from: { kind: "age", person: "ghost", value: 67 }, to: { kind: "bogus", value: 2050 } }],
+      people_extra: 1,
+    },
+    { today },
+  );
   assert.equal(p.end_person, "a");
   assert.equal(p.start_month, 12);
   assert.equal(p.stock_vol, 0);
@@ -54,10 +81,16 @@ test("normalize keeps values in bounds and references pointing at people who exi
 });
 
 test("normalize gives every item a unique id", () => {
-  const p = normalize({
-    people: [{ id: "x", name: "A", birth_year: 1980 }, { id: "x", name: "B", birth_year: 1982 }],
-    accounts: [{ id: "x" }, {}],
-  }, { today });
+  const p = normalize(
+    {
+      people: [
+        { id: "x", name: "A", birth_year: 1980 },
+        { id: "x", name: "B", birth_year: 1982 },
+      ],
+      accounts: [{ id: "x" }, {}],
+    },
+    { today },
+  );
   const ids = [...p.people, ...p.accounts].map((x) => x.id);
   assert.equal(new Set(ids).size, ids.length);
 });
@@ -108,16 +141,29 @@ test("a share link carries the run it was shared with, as information", async ()
   const plan = examplePlan({ today });
   const run = { seed: 7, n_sims: 50_000 };
   assert.deepEqual((await unpackPlan(await packPlan("A", plan, { run }))).run, run);
-  assert.deepEqual((await unpackPlan(await packPlan("A", plan, { run, password: "long enough pw" }), "long enough pw")).run, run);
+  assert.deepEqual(
+    (await unpackPlan(await packPlan("A", plan, { run, password: "long enough pw" }), "long enough pw")).run,
+    run,
+  );
   assert.equal((await unpackPlan(await packPlan("A", plan))).run, null); // links made before
-  for (const bad of [null, "7", { seed: -1, n_sims: 10_000 }, { seed: 1.5, n_sims: 10_000 }, { seed: 1, n_sims: 100 }, { seed: 1, n_sims: 1e6 }]) {
+  for (const bad of [
+    null,
+    "7",
+    { seed: -1, n_sims: 10_000 },
+    { seed: 1.5, n_sims: 10_000 },
+    { seed: 1, n_sims: 100 },
+    { seed: 1, n_sims: 1e6 },
+  ]) {
     assert.equal(cleanRun(bad), null);
   }
 });
 
 test("old plans are migrated step by step before they're cleaned", () => {
   const steps = {
-    1: (r) => { const { yearly_spend, ...rest } = r; return { ...rest, spending: yearly_spend }; },
+    1: (r) => {
+      const { yearly_spend, ...rest } = r;
+      return { ...rest, spending: yearly_spend };
+    },
     2: (r) => ({ ...r, extra: (r.extra ?? 0) + 1 }),
   };
   const old = { schema: 1, yearly_spend: 40_000 };
@@ -164,11 +210,17 @@ test("a locked share link opens with its password only, and hides the plan's nam
 });
 
 test("exported files read back; a bare plan and junk are handled", () => {
-  const plans = [{ name: "A", plan: blankPlan({ today }) }, { name: "B", plan: examplePlan({ today }) }];
+  const plans = [
+    { name: "A", plan: blankPlan({ today }) },
+    { name: "B", plan: examplePlan({ today }) },
+  ];
   const f = exportFile(plans, today);
   assert.equal(f.name, "fire-plans-2026-11-11.json");
   const back = readFile(f.text);
-  assert.deepEqual(back.map((x) => x.name), ["A", "B"]);
+  assert.deepEqual(
+    back.map((x) => x.name),
+    ["A", "B"],
+  );
   assert.deepEqual(back[1].plan, plans[1].plan);
   assert.equal(readFile(JSON.stringify(blankPlan({ today })))[0].plan.spending, 40_000);
   assert.throws(() => readFile("not json"), /isn't JSON/);
@@ -218,19 +270,46 @@ test("settings from storage: odd values put right, the rest kept", () => {
   assert.deepEqual(cleanSettings(null), { seed: 42, n_sims: 10_000, locale: "" });
   assert.deepEqual(cleanSettings([1, 2]), { seed: 42, n_sims: 10_000, locale: "" });
   assert.deepEqual(cleanSettings({ seed: -5, n_sims: 123_456, locale: 5 }), { seed: 42, n_sims: 50_000, locale: "" });
-  assert.deepEqual(cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH" }), { seed: 7, n_sims: 500, locale: "de-CH" });
-  assert.deepEqual(cleanSettings({ seed: 1.5, n_sims: "many", welcomeClosed: true }), { seed: 42, n_sims: 10_000, locale: "", welcomeClosed: true });
+  assert.deepEqual(cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH" }), {
+    seed: 7,
+    n_sims: 500,
+    locale: "de-CH",
+  });
+  assert.deepEqual(cleanSettings({ seed: 1.5, n_sims: "many", welcomeClosed: true }), {
+    seed: 42,
+    n_sims: 10_000,
+    locale: "",
+    welcomeClosed: true,
+  });
 });
 
 test("saved plans from storage: junk dropped, each entry complete, a bad currency replaced", () => {
   const saved = cleanSaved([
-    { id: "a", name: "  Stop early  ", plan: { spending: 50_000, currency: "EUR" }, updated: 3, shared: { seed: 7, n_sims: 20_000 } },
-    null, "junk", { name: "No plan here" },
-    { id: 5, name: "", plan: { spending: 30_000, currency: "xx" }, updated: NaN, example: "yes", shared: { seed: 1, n_sims: 10 } },
+    {
+      id: "a",
+      name: "  Stop early  ",
+      plan: { spending: 50_000, currency: "EUR" },
+      updated: 3,
+      shared: { seed: 7, n_sims: 20_000 },
+    },
+    null,
+    "junk",
+    { name: "No plan here" },
+    {
+      id: 5,
+      name: "",
+      plan: { spending: 30_000, currency: "xx" },
+      updated: NaN,
+      example: "yes",
+      shared: { seed: 1, n_sims: 10 },
+    },
   ]);
   assert.equal(saved.length, 2);
   const [a, b] = saved;
-  assert.deepEqual([a.id, a.name, a.updated, a.example, a.shared, a.plan.currency], ["a", "Stop early", 3, false, { seed: 7, n_sims: 20_000 }, "EUR"]);
+  assert.deepEqual(
+    [a.id, a.name, a.updated, a.example, a.shared, a.plan.currency],
+    ["a", "Stop early", 3, false, { seed: 7, n_sims: 20_000 }, "EUR"],
+  );
   assert.equal(typeof b.id, "string");
   assert.deepEqual([b.name, b.updated, b.example, "shared" in b], ["Plan", null, false, false]);
   // "xx" isn't a currency: kept, it would stop the page (Intl throws on it).

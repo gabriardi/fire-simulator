@@ -42,7 +42,7 @@ The headline number is the share of futures that never fail before the plan's en
 Every future draws from its own random stream, seeded from the seed and the future's number. The
 same seed always gives the same futures. Every comparison (rules, FIRE years, spending levels,
 plans) is therefore made on the same markets, so a difference between two options comes from the
-options themselves, not from luck. *New seed* draws a fresh set of futures.
+options themselves, not from luck. _New seed_ draws a fresh set of futures.
 
 ## Precision
 
@@ -53,12 +53,12 @@ rules at most 20,000.
 
 ## Spending rules
 
-| Rule | What it does | When it fails |
-| --- | --- | --- |
-| **Fixed** | Spends the same real amount every year, whatever the markets do. This is the classic "4% rule" setup. | When the money can't pay that amount |
-| **Guardrails** (Guyton & Klinger) | Cuts spending (by 10% by default) when the withdrawal rate rises too far above where it started, and raises it when the rate falls too far below. | When even the floor can't be paid |
-| **Vanguard dynamic** | Aims at the starting withdrawal rate applied to the current wealth, but changes spending by at most +5% or −2.5% a year (by default). | When even the floor can't be paid |
-| **Spend-down** (die with zero) | Each year, aims at the amount that could be spent every year until the end, counting locked accounts and future income as money today. It moves towards that amount gradually. | When even the floor can't be paid |
+| Rule                              | What it does                                                                                                                                                                   | When it fails                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| **Fixed**                         | Spends the same real amount every year, whatever the markets do. This is the classic "4% rule" setup.                                                                          | When the money can't pay that amount |
+| **Guardrails** (Guyton & Klinger) | Cuts spending (by 10% by default) when the withdrawal rate rises too far above where it started, and raises it when the rate falls too far below.                              | When even the floor can't be paid    |
+| **Vanguard dynamic**              | Aims at the starting withdrawal rate applied to the current wealth, but changes spending by at most +5% or −2.5% a year (by default).                                          | When even the floor can't be paid    |
+| **Spend-down** (die with zero)    | Each year, aims at the amount that could be spent every year until the end, counting locked accounts and future income as money today. It moves towards that amount gradually. | When even the floor can't be paid    |
 
 The flexible rules stay between a **floor** (the costs you can't cut) and a **ceiling**. They
 start at your spending, so that has to sit between the two. Until you set them yourself, they

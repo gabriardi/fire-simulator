@@ -17,7 +17,20 @@ export const groups = [];
 
 // kind: money (whole amounts in the plan's currency), pct (a fraction, shown in %), int, year, num.
 // `setting: true` edits the viewer's settings instead of the plan (no "edited" marks).
-export function numberField({ path, label, kind = "money", unit: u, hint, slider, help, what, min, max, setting = false, onchange }) {
+export function numberField({
+  path,
+  label,
+  kind = "money",
+  unit: u,
+  hint,
+  slider,
+  help,
+  what,
+  min,
+  max,
+  setting = false,
+  onchange,
+}) {
   const target = () => (setting ? settings : state);
   const toShow = (v) => {
     if (v == null || Number.isNaN(v)) return "";
@@ -33,7 +46,12 @@ export function numberField({ path, label, kind = "money", unit: u, hint, slider
   };
   const unitText = () => u ?? (kind === "pct" ? "%" : kind === "money" ? state.currency : "");
   const id = `f-${path.replace(/\./g, "-")}`;
-  const input = el("input", { type: "text", inputmode: kind === "int" || kind === "year" ? "numeric" : "decimal", id, "aria-label": label });
+  const input = el("input", {
+    type: "text",
+    inputmode: kind === "int" || kind === "year" ? "numeric" : "decimal",
+    id,
+    "aria-label": label,
+  });
   const unitEl = el("span", { class: "unit" });
   const box = el("div", { class: "input" }, input, unitEl);
   const hintEl = hint ? el("div", { class: "hint" }) : null;
@@ -91,7 +109,10 @@ export function numberField({ path, label, kind = "money", unit: u, hint, slider
   input.addEventListener("input", () => {
     const v = fromShow(input.value);
     box.classList.toggle("invalid", bad(v));
-    if (bad(v)) { invalid.add(path); return; }
+    if (bad(v)) {
+      invalid.add(path);
+      return;
+    }
     invalid.delete(path);
     const prev = getPath(target(), path);
     setPath(target(), path, v);
@@ -120,10 +141,23 @@ export function numberField({ path, label, kind = "money", unit: u, hint, slider
     }
     if (hintEl) hintEl.textContent = typeof hint === "function" ? hint(v) : hint;
   });
-  const head = el("div", { class: "field-head" }, el("label", { for: id }, el("span", { text: label })), helpBtn(help ?? path));
+  const head = el(
+    "div",
+    { class: "field-head" },
+    el("label", { for: id }, el("span", { text: label })),
+    helpBtn(help ?? path),
+  );
   const node = el("div", { class: "field" }, head, range, box, hintEl);
   if (!setting) {
-    FIELDS.push({ path, label: what ?? label, node, show: (v) => (kind === "money" ? fmt.money(v) : `${toShow(v)}${unitText() === "%" ? "%" : unitText() ? ` ${unitText()}` : ""}`) });
+    FIELDS.push({
+      path,
+      label: what ?? label,
+      node,
+      show: (v) =>
+        kind === "money"
+          ? fmt.money(v)
+          : `${toShow(v)}${unitText() === "%" ? "%" : unitText() ? ` ${unitText()}` : ""}`,
+    });
   }
   return node;
 }
@@ -142,7 +176,9 @@ export function textField({ path, label, what, help, oncommit, placeholder }) {
     changed();
     oncommit?.();
   });
-  syncers.push(() => { if (document.activeElement !== input) input.value = getPath(state, path) ?? ""; });
+  syncers.push(() => {
+    if (document.activeElement !== input) input.value = getPath(state, path) ?? "";
+  });
   const head = el("div", { class: "field-head" }, el("label", { for: id, text: label }), help ? helpBtn(help) : null);
   const node = el("div", { class: "field" }, head, el("div", { class: "input" }, input));
   FIELDS.push({ path, label: what ?? label, node, show: (v) => `“${v}”` });
@@ -170,13 +206,13 @@ export function selectField({ path, label, options, hint, onchange, help, what, 
   syncers.push(() => {
     fill();
     const v = getPath(target(), path);
-    sel.value = String(show ? show.toKey(v) : v ?? "");
+    sel.value = String(show ? show.toKey(v) : (v ?? ""));
     if (hintEl) hintEl.textContent = typeof hint === "function" ? hint() : hint;
   });
   const head = el("div", { class: "field-head" }, el("label", { for: id, text: label }), helpBtn(help ?? path));
   const node = el("div", { class: "field" }, head, el("div", { class: "input" }, sel), hintEl);
   if (!setting) {
-    const optionText = (v) => options().find(([o]) => o === String(show ? show.toKey(v) : v ?? ""))?.[1];
+    const optionText = (v) => options().find(([o]) => o === String(show ? show.toKey(v) : (v ?? "")))?.[1];
     FIELDS.push({ path, label: what ?? label, node, show: show?.text ?? optionText });
   }
   return node;
@@ -189,8 +225,14 @@ export function checkField({ path, label, what, help }) {
     setPath(state, path, box.checked);
     changed();
   });
-  syncers.push(() => { box.checked = Boolean(getPath(state, path)); });
-  const node = el("div", { class: "field check" }, el("div", { class: "field-head" }, el("label", { for: id }, box, el("span", { text: label })), helpBtn(help)));
+  syncers.push(() => {
+    box.checked = Boolean(getPath(state, path));
+  });
+  const node = el(
+    "div",
+    { class: "field check" },
+    el("div", { class: "field-head" }, el("label", { for: id }, box, el("span", { text: label })), helpBtn(help)),
+  );
   FIELDS.push({ path, label: what ?? label, node, show: (v) => (v ? "yes" : "no") });
   return node;
 }
@@ -241,12 +283,17 @@ export function whenField({ path, label, what, never = false }) {
     const w = getPath(state, path);
     const ok = Number.isFinite(v) && v >= 0 && (w?.kind !== "year" || (v >= 1900 && v <= 2300));
     valueBox.classList.toggle("invalid", !ok);
-    if (!ok) { invalid.add(path); return; }
+    if (!ok) {
+      invalid.add(path);
+      return;
+    }
     invalid.delete(path);
     setPath(state, path, { ...w, value: v });
     changed();
   });
-  input.addEventListener("blur", () => { if (!invalid.has(path)) syncNow(); });
+  input.addEventListener("blur", () => {
+    if (!invalid.has(path)) syncNow();
+  });
   const syncNow = () => {
     fill();
     const w = getPath(state, path);
@@ -259,7 +306,10 @@ export function whenField({ path, label, what, never = false }) {
   syncers.push(syncNow, () => {
     const w = getPath(state, path);
     const y = yearOf(state, w);
-    if (y == null) { hintEl.textContent = ""; return; }
+    if (y == null) {
+      hintEl.textContent = "";
+      return;
+    }
     const line = getPath(state, path.split(".").slice(0, -1).join("."));
     const from = yearOf(state, line.from);
     const stopsFirst = path.endsWith(".to") && y <= from;
@@ -267,7 +317,13 @@ export function whenField({ path, label, what, never = false }) {
     hintEl.classList.toggle("warn", stopsFirst);
   });
   const head = el("div", { class: "field-head" }, el("label", { for: id, text: label }), helpBtn("income.when"));
-  const node = el("div", { class: "field" }, head, el("div", { class: "when" }, el("div", { class: "input" }, sel), valueBox), hintEl);
+  const node = el(
+    "div",
+    { class: "field" },
+    head,
+    el("div", { class: "when" }, el("div", { class: "input" }, sel), valueBox),
+    hintEl,
+  );
   FIELDS.push({ path, label: what ?? label, node, show: describeWhen, deep: true });
   return node;
 }
@@ -275,15 +331,42 @@ export function whenField({ path, label, what, never = false }) {
 // A list item: a card with a title and a remove button.
 export function itemCard({ title, onremove, removeLabel }, ...fields) {
   const t = el("span", { class: "item-title" });
-  syncers.push(() => { t.textContent = title(); });
-  return el("div", { class: "item" },
-    el("div", { class: "item-head" }, t,
-      onremove ? el("button", { type: "button", class: "btn quiet small", "aria-label": removeLabel, title: removeLabel, onclick: onremove }, "Remove") : null),
-    ...fields);
+  syncers.push(() => {
+    t.textContent = title();
+  });
+  return el(
+    "div",
+    { class: "item" },
+    el(
+      "div",
+      { class: "item-head" },
+      t,
+      onremove
+        ? el(
+            "button",
+            {
+              type: "button",
+              class: "btn quiet small",
+              "aria-label": removeLabel,
+              title: removeLabel,
+              onclick: onremove,
+            },
+            "Remove",
+          )
+        : null,
+    ),
+    ...fields,
+  );
 }
 export const row2 = (...kids) => el("div", { class: "row2" }, ...kids);
 export function addButtons(...buttons) {
-  return el("div", { class: "add-row" }, ...buttons.map(([text, onclick, disabled]) => el("button", { type: "button", class: "btn", onclick, disabled }, text)));
+  return el(
+    "div",
+    { class: "add-row" },
+    ...buttons.map(([text, onclick, disabled]) =>
+      el("button", { type: "button", class: "btn", onclick, disabled }, text),
+    ),
+  );
 }
 
 // Every section starts in its default state; opening or closing one is remembered in this browser.
@@ -291,9 +374,12 @@ export function group(title, open, ...fields) {
   const list = typeof open === "object" ? open.list : null;
   if (typeof open === "object") open = open.open;
   const remembered = store.loadGroups()[title];
-  const d = el("details", { class: "group", open: remembered ?? open },
+  const d = el(
+    "details",
+    { class: "group", open: remembered ?? open },
     el("summary", {}, el("span", { class: "group-title", text: title })),
-    el("div", { class: "fields" }, ...fields));
+    el("div", { class: "fields" }, ...fields),
+  );
   if (list) d.dataset.list = list;
   groups.push(d);
   d.addEventListener("toggle", () => {

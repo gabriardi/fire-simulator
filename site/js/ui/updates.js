@@ -28,14 +28,18 @@ export function startServiceWorker() {
   if (!("serviceWorker" in navigator) || location.protocol !== "https:") return;
   navigator.serviceWorker.register("sw.js").catch(() => {});
   setTimeout(check, FIRST);
-  setInterval(() => { if (document.visibilityState === "visible") check(); }, EVERY);
+  setInterval(() => {
+    if (document.visibilityState === "visible") check();
+  }, EVERY);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible") return;
     shownAt = Date.now();
     if (!ready) check({ shown: true });
     else if (quiet()) location.reload();
   });
-  const touched = () => { touchedAt = Date.now(); };
+  const touched = () => {
+    touchedAt = Date.now();
+  };
   addEventListener("pointerdown", touched, { capture: true, passive: true });
   addEventListener("keydown", touched, { capture: true, passive: true });
 }
@@ -53,14 +57,21 @@ async function check({ shown = false } = {}) {
     if (!latest || latest === running) return;
     ready = true;
     if (shown && quiet()) location.reload();
-    else toast("A new version is ready. Your plan stays as it is.", { action: { label: "Reload", run: () => location.reload() }, stay: true });
+    else
+      toast("A new version is ready. Your plan stays as it is.", {
+        action: { label: "Reload", run: () => location.reload() },
+        stay: true,
+      });
   } finally {
     checking = false;
   }
 }
 
 /** Nothing in progress: the user hasn't touched the page since it came into view, no dialog is open, and no field has the focus. */
-const quiet = () => touchedAt < shownAt && !document.querySelector("dialog[open]") && !document.activeElement?.matches("input, select, textarea");
+const quiet = () =>
+  touchedAt < shownAt &&
+  !document.querySelector("dialog[open]") &&
+  !document.activeElement?.matches("input, select, textarea");
 
 /** Asks the service worker for a fingerprint ("server" or "stored"); null if there's no answer. */
 function ask(from) {
@@ -68,7 +79,10 @@ function ask(from) {
     const timer = setTimeout(() => resolve(null), 30_000);
     navigator.serviceWorker.ready.then((reg) => {
       const channel = new MessageChannel();
-      channel.port1.onmessage = (e) => { clearTimeout(timer); resolve(e.data); };
+      channel.port1.onmessage = (e) => {
+        clearTimeout(timer);
+        resolve(e.data);
+      };
       reg.active.postMessage({ fingerprint: from }, [channel.port2]);
     });
   });

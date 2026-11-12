@@ -29,7 +29,12 @@ import {
 
 let keepAsked = false;
 
-const LIST_NAMES = { "people.#": "Household members", "accounts.#": "Retirement accounts", "income.#": "Income and costs", "events.#": "One-off events" };
+const LIST_NAMES = {
+  "people.#": "Household members",
+  "accounts.#": "Retirement accounts",
+  "income.#": "Income and costs",
+  "events.#": "One-off events",
+};
 const MOD_S = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? "⌘S" : "Ctrl+S";
 export const edits = () => differences(base.values, state);
 
@@ -46,12 +51,16 @@ export function persistSession() {
 }
 export function storageProblem() {
   setCanStore(false);
-  showNotice("This browser isn't keeping what the page saves (a private window, or storage blocked or full): your plans will be lost when you close it. Use ⋯ → Export plans to keep a copy.");
+  showNotice(
+    "This browser isn't keeping what the page saves (a private window, or storage blocked or full): your plans will be lost when you close it. Use ⋯ → Export plans to keep a copy.",
+  );
 }
 
 // Undo brings back what was on screen, never an older list of saved plans: a save made after the
 // action it undoes must survive.
-export function snapshot() { return { state: clone(state), base: clone(base) }; }
+export function snapshot() {
+  return { state: clone(state), base: clone(base) };
+}
 export function restore(snap) {
   setState(snap.state);
   setBase(snap.base);
@@ -96,13 +105,19 @@ export function uniqueName(name) {
 }
 
 export function canSave() {
-  if (invalid.size) { toast("Some fields aren't valid yet: fix the red ones first.", { error: true }); return false; }
+  if (invalid.size) {
+    toast("Some fields aren't valid yet: fix the red ones first.", { error: true });
+    return false;
+  }
   return true;
 }
 export function saveCurrent() {
   if (!canSave()) return;
   const p = planById(base.id);
-  if (!p) { saveAsNew(); return; }
+  if (!p) {
+    saveAsNew();
+    return;
+  }
   p.plan = clone(state);
   p.updated = Date.now();
   p.example = false;
@@ -155,7 +170,9 @@ export function deletePlan() {
   const p = planById(base.id);
   setPlans(plans.filter((x) => x.id !== p.id));
   // Never an empty list: the example comes back, until it's needed no more.
-  const stand_in = plans.length ? null : addPlan("Example", examplePlan({ currency: state.currency }), { example: true });
+  const stand_in = plans.length
+    ? null
+    : addPlan("Example", examplePlan({ currency: state.currency }), { example: true });
   const next = [...plans].sort((a, b) => (b.updated ?? 0) - (a.updated ?? 0))[0];
   persistPlans();
   useBase(next.id);
@@ -194,7 +211,11 @@ function askName({ title, text = "", value = "", ok, exceptId = null, submit }) 
     e.preventDefault();
     const name = input.value.trim().replace(/\s+/g, " ");
     const msg = nameProblem(name, exceptId);
-    if (msg) { problem(msg); input.focus(); return; }
+    if (msg) {
+      problem(msg);
+      input.focus();
+      return;
+    }
     submit(name);
     d.close();
   };
@@ -206,7 +227,8 @@ function askName({ title, text = "", value = "", ok, exceptId = null, submit }) 
 const labelOf = (path) => {
   if (LIST_NAMES[path]) return LIST_NAMES[path];
   let best = null;
-  for (const f of FIELDS) if ((path === f.path || path.startsWith(`${f.path}.`)) && (!best || f.path.length > best.path.length)) best = f;
+  for (const f of FIELDS)
+    if ((path === f.path || path.startsWith(`${f.path}.`)) && (!best || f.path.length > best.path.length)) best = f;
   return best?.label ?? path;
 };
 let optionsKey = "";
@@ -231,7 +253,10 @@ export function renderPlanBar() {
   // A section is edited when a field in it is, or when one of its list items was added or removed.
   for (const g of groups) {
     const list = g.dataset.list;
-    g.classList.toggle("edited", Boolean(g.querySelector(".field.edited")) || Boolean(list && !eq(state[list], base.values[list])));
+    g.classList.toggle(
+      "edited",
+      Boolean(g.querySelector(".field.edited")) || Boolean(list && !eq(state[list], base.values[list])),
+    );
   }
   const status = $("#plan-state");
   const saveBtn = $("#plan-save");

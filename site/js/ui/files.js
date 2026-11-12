@@ -21,7 +21,9 @@ export function exportPlans() {
   setExported(Date.now());
   store.saveExported(exported);
   renderPlanBar();
-  toast(`Exported ${plans.length} plan${plans.length > 1 ? "s" : ""}.${edits().length ? " Unsaved changes aren't in the file: save them first." : ""}`);
+  toast(
+    `Exported ${plans.length} plan${plans.length > 1 ? "s" : ""}.${edits().length ? " Unsaved changes aren't in the file: save them first." : ""}`,
+  );
 }
 export async function importPlans(file) {
   let items;
@@ -35,7 +37,9 @@ export async function importPlans(file) {
     toast(`${NEWER}, then import the file again.`, { error: true });
     return;
   }
-  const added = items.map((x) => addPlan(uniqueName(str(x.name) || "Imported plan"), normalize(x.plan, { currency: state.currency })));
+  const added = items.map((x) =>
+    addPlan(uniqueName(str(x.name) || "Imported plan"), normalize(x.plan, { currency: state.currency })),
+  );
   switchTo(added[0].id);
   toast(`Imported ${added.length} plan${added.length > 1 ? "s" : ""}.`);
 }

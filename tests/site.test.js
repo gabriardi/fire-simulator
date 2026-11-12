@@ -13,7 +13,14 @@ const read = (path) => readFileSync(new URL(path, ROOT), "utf8");
 const exists = (path) => existsSync(new URL(path, ROOT));
 const html = read("index.html");
 // The page's code: js/app.js and the modules in js/ui/.
-const app = ["js/app.js", ...readdirSync(new URL("js/ui/", ROOT)).filter((f) => f.endsWith(".js")).map((f) => `js/ui/${f}`)].map(read).join("\n");
+const app = [
+  "js/app.js",
+  ...readdirSync(new URL("js/ui/", ROOT))
+    .filter((f) => f.endsWith(".js"))
+    .map((f) => `js/ui/${f}`),
+]
+  .map(read)
+  .join("\n");
 
 /** The paths in sw.js's SHELL list. */
 const SHELL = (() => {
@@ -108,12 +115,14 @@ test("every ? has an explanation, and the guide shows all of them", () => {
   }
   assert.ok(fields > 40, `the form's fields were found (${fields})`);
   for (const key of keys) if (!entry(key)) problems.push(`"${key}" has no entry in HELP`);
-  for (const [key, h] of Object.entries(HELP)) if (h.alias && !HELP[h.alias]) problems.push(`"${key}" is an alias of a missing "${h.alias}"`);
+  for (const [key, h] of Object.entries(HELP))
+    if (h.alias && !HELP[h.alias]) problems.push(`"${key}" is an alias of a missing "${h.alias}"`);
 
   const inGuide = GUIDE.flatMap(([, list]) => list);
   for (const key of inGuide) if (!entry(key)) problems.push(`the guide lists "${key}", which has no entry`);
   if (new Set(inGuide).size !== inGuide.length) problems.push("the guide lists an entry twice");
-  for (const key of Object.keys(HELP)) if (!HELP[key].alias && !inGuide.includes(key)) problems.push(`"${key}" isn't in the guide`);
+  for (const key of Object.keys(HELP))
+    if (!HELP[key].alias && !inGuide.includes(key)) problems.push(`"${key}" isn't in the guide`);
   assert.deepEqual(problems, []);
 });
 

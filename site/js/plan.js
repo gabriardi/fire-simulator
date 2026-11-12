@@ -121,12 +121,46 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
     cash: 30_000,
     contrib: 42_000,
     accounts: [
-      { id: "ret-alex", name: "Retirement account", owner: "alex", balance: 140_000, contrib: 12_000, growth: "portfolio", interest: 0.02, unlock_age: 60, tax: 0.15 },
-      { id: "pen-sam", name: "Workplace pension", owner: "sam", balance: 95_000, contrib: 9_000, growth: "fixed", interest: 0.03, unlock_age: 60, tax: 0.15 },
+      {
+        id: "ret-alex",
+        name: "Retirement account",
+        owner: "alex",
+        balance: 140_000,
+        contrib: 12_000,
+        growth: "portfolio",
+        interest: 0.02,
+        unlock_age: 60,
+        tax: 0.15,
+      },
+      {
+        id: "pen-sam",
+        name: "Workplace pension",
+        owner: "sam",
+        balance: 95_000,
+        contrib: 9_000,
+        growth: "fixed",
+        interest: 0.03,
+        unlock_age: 60,
+        tax: 0.15,
+      },
     ],
     income: [
-      { id: "sp-alex", name: "State pension (Alex)", amount: 21_000, from: { kind: "age", person: "alex", value: 67 }, to: null, indexed: true },
-      { id: "sp-sam", name: "State pension (Sam)", amount: 17_000, from: { kind: "age", person: "sam", value: 67 }, to: null, indexed: true },
+      {
+        id: "sp-alex",
+        name: "State pension (Alex)",
+        amount: 21_000,
+        from: { kind: "age", person: "alex", value: 67 },
+        to: null,
+        indexed: true,
+      },
+      {
+        id: "sp-sam",
+        name: "State pension (Sam)",
+        amount: 17_000,
+        from: { kind: "age", person: "sam", value: 67 },
+        to: null,
+        indexed: true,
+      },
     ],
     rule: { ...RULE_DEFAULTS, ...bandAround(64_000) },
   };
@@ -139,11 +173,34 @@ export function newPerson(plan) {
   return { id: uid(), name: `Person ${k}`, birth_year: plan.people[0]?.birth_year ?? plan.start_year - 35 };
 }
 export const newAccount = (plan, owner = plan.people[0].id) => ({
-  id: uid(), name: "Retirement account", owner, balance: 0, contrib: 0, growth: "portfolio", interest: 0.02, unlock_age: 60, tax: 0.1,
+  id: uid(),
+  name: "Retirement account",
+  owner,
+  balance: 0,
+  contrib: 0,
+  growth: "portfolio",
+  interest: 0.02,
+  unlock_age: 60,
+  tax: 0.1,
 });
-export const newIncome = (plan, cost = false) => (cost
-  ? { id: uid(), name: "Extra cost", amount: -5_000, from: { kind: "fire", value: 0 }, to: { kind: "fire", value: 10 }, indexed: true }
-  : { id: uid(), name: "State pension", amount: 15_000, from: { kind: "age", person: plan.people[0].id, value: 67 }, to: null, indexed: true });
+export const newIncome = (plan, cost = false) =>
+  cost
+    ? {
+        id: uid(),
+        name: "Extra cost",
+        amount: -5_000,
+        from: { kind: "fire", value: 0 },
+        to: { kind: "fire", value: 10 },
+        indexed: true,
+      }
+    : {
+        id: uid(),
+        name: "State pension",
+        amount: 15_000,
+        from: { kind: "age", person: plan.people[0].id, value: 67 },
+        to: null,
+        indexed: true,
+      };
 export const newEvent = (plan) => ({ id: uid(), name: "One-off", year: plan.fire_year, amount: -20_000 });
 
 // ---- cleaning what comes from outside ------------------------------------------------------------
@@ -184,7 +241,10 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
     if (w === null) return null;
     if (!w || typeof w !== "object") return dflt;
     const kind = oneOf(w.kind, ["year", "age", "fire"], "year");
-    const out = { kind, value: int(w.value, kind === "year" ? d.fire_year : 0, kind === "year" ? 1900 : 0, kind === "year" ? 2300 : 150) };
+    const out = {
+      kind,
+      value: int(w.value, kind === "year" ? d.fire_year : 0, kind === "year" ? 1900 : 0, kind === "year" ? 2300 : 150),
+    };
     if (kind === "age") out.person = person(w.person);
     return out;
   };
@@ -238,7 +298,12 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
     stock_return: num(r.stock_return, d.stock_return, -0.5, 1),
     stock_vol: num(r.stock_vol, d.stock_vol, 0, 1),
     fat_tails_df: r.fat_tails_df == null ? null : num(r.fat_tails_df, null, 2.1, 100),
-    stress_returns: Array.isArray(r.stress_returns) ? r.stress_returns.filter(isNum).slice(0, 30).map((x) => Math.min(Math.max(x, -1), 5)) : [],
+    stress_returns: Array.isArray(r.stress_returns)
+      ? r.stress_returns
+          .filter(isNum)
+          .slice(0, 30)
+          .map((x) => Math.min(Math.max(x, -1), 5))
+      : [],
     stock_share: num(r.stock_share, 1, 0, 1),
     tent_share: num(r.tent_share, num(r.stock_share, 1, 0, 1), 0, 1),
     tent_years_before: int(r.tent_years_before, 4, 0, 40),
@@ -275,7 +340,10 @@ export function problems(plan) {
   if (!(plan.spending > 0)) out.push("The spending per year must be more than 0.");
   const r = plan.rule;
   if (r.kind !== "fixed" && r.floor > r.ceiling) out.push("The spending rule's floor must not be above its ceiling.");
-  else if ((r.kind === "guardrails" || r.kind === "vanguard") && (plan.spending < r.floor || plan.spending > r.ceiling)) {
+  else if (
+    (r.kind === "guardrails" || r.kind === "vanguard") &&
+    (plan.spending < r.floor || plan.spending > r.ceiling)
+  ) {
     out.push("With a flexible rule the spending per year must be between the floor and the ceiling.");
   }
   return out;
@@ -301,7 +369,8 @@ export function flatten(v, prefix = "", out = {}) {
 
 /** Equal, numbers to 1e-9: 2.5 typed in as % is 0.025. */
 export function same(a, b) {
-  if (typeof a === "number" && typeof b === "number") return Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
+  if (typeof a === "number" && typeof b === "number")
+    return Math.abs(a - b) <= 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
   if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((x, i) => same(x, b[i]));
   return a === b || (a == null && b == null);
 }
@@ -314,12 +383,14 @@ export function differences(from, to) {
   const a = flatten(from);
   const b = flatten(to);
   const lengths = {};
-  for (const [p, v] of Object.entries({ ...a, ...b })) if (p.endsWith(".#")) lengths[p.slice(0, -2)] = Math.min(a[p] ?? 0, b[p] ?? 0, v);
-  const inChangedItem = (p) => Object.entries(lengths).some(([list, n]) => {
-    if (!p.startsWith(`${list}.`)) return false;
-    const k = Number(p.slice(list.length + 1).split(".")[0]);
-    return Number.isInteger(k) && k >= n;
-  });
+  for (const [p, v] of Object.entries({ ...a, ...b }))
+    if (p.endsWith(".#")) lengths[p.slice(0, -2)] = Math.min(a[p] ?? 0, b[p] ?? 0, v);
+  const inChangedItem = (p) =>
+    Object.entries(lengths).some(([list, n]) => {
+      if (!p.startsWith(`${list}.`)) return false;
+      const k = Number(p.slice(list.length + 1).split(".")[0]);
+      return Number.isInteger(k) && k >= n;
+    });
   const paths = new Set([...Object.keys(a), ...Object.keys(b)]);
   return [...paths].filter((p) => !same(a[p], b[p]) && !inChangedItem(p));
 }

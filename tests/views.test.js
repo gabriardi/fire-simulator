@@ -47,11 +47,19 @@ test("each future's highest lasting spending is found by bisection, to the searc
 
 test("the main view counts every future that runs out, also those that run out before the FIRE start", () => {
   // A cost in 2030, ten years before the FIRE start, that some futures can't pay.
-  const plan = household({ stock_vol: 0.17, n_sims: 2000, seed: 1, events: [{ id: "e", name: "House", year: 2030, amount: -420_000 }] });
+  const plan = household({
+    stock_vol: 0.17,
+    n_sims: 2000,
+    seed: 1,
+    events: [{ id: "e", name: "House", year: 2030, amount: -420_000 }],
+  });
   const v = mainView(plan, 10);
   const res = simulate(plan);
   const failures = Array.from(res.fail).filter((f) => !Number.isNaN(f));
-  assert.ok(failures.some((f) => f === 2030) && failures.some((f) => f >= 2040), "the plan should fail both before and after the FIRE start");
+  assert.ok(
+    failures.some((f) => f === 2030) && failures.some((f) => f >= 2040),
+    "the plan should fail both before and after the FIRE start",
+  );
   assert.equal(v.summary.success, successRate(res));
   assert.equal(sum(v.fail_hist.counts), failures.length);
   assert.equal(v.fail_hist.years[0], 2030);

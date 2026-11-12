@@ -184,10 +184,16 @@ export const isLocked = (code) => code[0] === "e";
 // The same password typed on two devices can come out as different Unicode ("é" as one character
 // or two): NFC makes them the same bytes.
 async function lockKey(password, salt, usage) {
-  const raw = await crypto.subtle.importKey("raw", encoder.encode(password.normalize("NFC")), "PBKDF2", false, ["deriveKey"]);
+  const raw = await crypto.subtle.importKey("raw", encoder.encode(password.normalize("NFC")), "PBKDF2", false, [
+    "deriveKey",
+  ]);
   return crypto.subtle.deriveKey(
     { name: "PBKDF2", hash: "SHA-256", salt, iterations: LOCK.iterations },
-    raw, { name: "AES-GCM", length: 256 }, false, [usage]);
+    raw,
+    { name: "AES-GCM", length: 256 },
+    false,
+    [usage],
+  );
 }
 
 /**
@@ -197,7 +203,13 @@ async function lockKey(password, salt, usage) {
 export function cleanRun(r) {
   if (!r || typeof r !== "object") return null;
   const { seed, n_sims } = r;
-  const ok = Number.isInteger(seed) && seed >= 0 && seed < SEEDS && Number.isInteger(n_sims) && n_sims >= SIMS.min && n_sims <= SIMS.max;
+  const ok =
+    Number.isInteger(seed) &&
+    seed >= 0 &&
+    seed < SEEDS &&
+    Number.isInteger(n_sims) &&
+    n_sims >= SIMS.min &&
+    n_sims <= SIMS.max;
   return ok ? { seed, n_sims } : null;
 }
 
@@ -215,7 +227,11 @@ export async function packPlan(name, plan, { password = "", run = null } = {}) {
   const salt = crypto.getRandomValues(new Uint8Array(LOCK.salt));
   const iv = crypto.getRandomValues(new Uint8Array(LOCK.iv));
   const key = await lockKey(password, salt, "encrypt");
-  const sealed = await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: head }, key, concat(encoder.encode(kind), body));
+  const sealed = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv, additionalData: head },
+    key,
+    concat(encoder.encode(kind), body),
+  );
   return `e${toB64(concat(head, salt, iv, new Uint8Array(sealed)))}`;
 }
 
@@ -234,15 +250,26 @@ export async function unpackPlan(code, password = "") {
   }
   if (kind === "e") {
     if (!password) throw fail("locked", "This share link is locked with a password.");
-    if (!canLock()) throw fail("locked", "This share link is locked with a password, which this browser can only unlock over https.");
-    if (bytes[0] > LOCK.version) throw fail("newer", "This share link was made by a newer version of the simulator: reload the page, then open it again.");
+    if (!canLock())
+      throw fail("locked", "This share link is locked with a password, which this browser can only unlock over https.");
+    if (bytes[0] > LOCK.version)
+      throw fail(
+        "newer",
+        "This share link was made by a newer version of the simulator: reload the page, then open it again.",
+      );
     const top = 1 + LOCK.salt + LOCK.iv;
     if (bytes[0] !== LOCK.version || bytes.length <= top + 16) throw fail("damaged", DAMAGED);
     let inner;
     try {
       const key = await lockKey(password, bytes.subarray(1, 1 + LOCK.salt), "decrypt");
       const iv = bytes.subarray(1 + LOCK.salt, top);
-      inner = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv, additionalData: bytes.subarray(0, 1) }, key, bytes.subarray(top)));
+      inner = new Uint8Array(
+        await crypto.subtle.decrypt(
+          { name: "AES-GCM", iv, additionalData: bytes.subarray(0, 1) },
+          key,
+          bytes.subarray(top),
+        ),
+      );
     } catch {
       // AES-GCM can't tell a wrong password from a changed link; a wrong password is far likelier.
       throw fail("password", "That password doesn't open this link.");

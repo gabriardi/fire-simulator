@@ -42,9 +42,30 @@ test("an account counts net of tax while locked, and becomes reachable when its 
 test("income lines: by age, by year, after the FIRE start, and not before it", () => {
   const plan = household({
     income: [
-      { id: "1", name: "Pension", amount: 10_000, from: { kind: "age", person: "a", value: 67 }, to: null, indexed: true },
-      { id: "2", name: "Part-time", amount: 20_000, from: { kind: "fire", value: 0 }, to: { kind: "fire", value: 3 }, indexed: true },
-      { id: "3", name: "Rent", amount: -6_000, from: { kind: "year", value: 2030 }, to: { kind: "year", value: 2045 }, indexed: true },
+      {
+        id: "1",
+        name: "Pension",
+        amount: 10_000,
+        from: { kind: "age", person: "a", value: 67 },
+        to: null,
+        indexed: true,
+      },
+      {
+        id: "2",
+        name: "Part-time",
+        amount: 20_000,
+        from: { kind: "fire", value: 0 },
+        to: { kind: "fire", value: 3 },
+        indexed: true,
+      },
+      {
+        id: "3",
+        name: "Rent",
+        amount: -6_000,
+        from: { kind: "year", value: 2030 },
+        to: { kind: "year", value: 2045 },
+        indexed: true,
+      },
     ],
   });
   assert.equal(yearOf(plan, plan.income[0].from), 2053);
@@ -63,7 +84,9 @@ test("income lines: by age, by year, after the FIRE start, and not before it", (
 
 test("an income line that isn't indexed loses value to inflation", () => {
   const plan = household({
-    income: [{ id: "1", name: "Annuity", amount: 10_000, from: { kind: "year", value: 2040 }, to: null, indexed: false }],
+    income: [
+      { id: "1", name: "Annuity", amount: 10_000, from: { kind: "year", value: 2040 }, to: null, indexed: false },
+    ],
   });
   const years = Array.from({ length: 30 }, (_, k) => 2026 + k);
   const inc = incomeByYear(plan, years);
@@ -86,7 +109,9 @@ test("income reduces what the portfolio pays: a pension covering all spending ne
 
 test("a one-off event before the FIRE start adds to the portfolio in its year", () => {
   const without = simulate(household(), { record: true });
-  const withIt = simulate(household({ events: [{ id: "e", name: "Inheritance", year: 2030, amount: 100_000 }] }), { record: true });
+  const withIt = simulate(household({ events: [{ id: "e", name: "Inheritance", year: 2030, amount: 100_000 }] }), {
+    record: true,
+  });
   assert.equal(row(withIt, "total", 2030), row(without, "total", 2030)); // the start of the year
   const g = 1 + real(0.06, 0.02);
   assert.ok(Math.abs(row(withIt, "total", 2031) - row(without, "total", 2031) - 100_000 * g) < 1e-6);
@@ -108,7 +133,14 @@ test("the tax on portfolio withdrawals grosses up what the portfolio pays, not c
 });
 
 test("savings grow by the savings growth each year until the FIRE start", () => {
-  const plan = household({ accounts: [], contrib_growth: 0.03, stock_return: 0.02, inflation: 0.02, cash_interest: 0.02, start_month: 1 });
+  const plan = household({
+    accounts: [],
+    contrib_growth: 0.03,
+    stock_return: 0.02,
+    inflation: 0.02,
+    cash_interest: 0.02,
+    start_month: 1,
+  });
   const res = simulate(plan, { record: true });
   // Zero real return: wealth is the sum of the contributions.
   let want = 320_000;
@@ -131,7 +163,10 @@ test("the flexible rules stay within their floor and ceiling", () => {
 });
 
 test("the spend-down with returns as assumed spends evenly, down to nothing at the end", () => {
-  const plan = household({ cash: 0, rule: { kind: "spenddown", floor: 0, ceiling: 1e9, assumed_return: real(0.06, 0.02) } });
+  const plan = household({
+    cash: 0,
+    rule: { kind: "spenddown", floor: 0, ceiling: 1e9, assumed_return: real(0.06, 0.02) },
+  });
   const res = simulate(plan, { record: true });
   const Y = res.years.length;
   const sp = Array.from(res.spending.subarray(res.i0, Y));
@@ -148,7 +183,14 @@ test("the spend-down never runs out when it may cut freely", () => {
 });
 
 test("the spend-down moves by at most its yearly limits", () => {
-  const res = simulate(household({ stock_vol: 0.17, n_sims: 2000, rule: { kind: "spenddown", max_raise: 0.05, max_cut: 0.1, floor: 0, ceiling: 1e9 } }), { record: true });
+  const res = simulate(
+    household({
+      stock_vol: 0.17,
+      n_sims: 2000,
+      rule: { kind: "spenddown", max_raise: 0.05, max_cut: 0.1, floor: 0, ceiling: 1e9 },
+    }),
+    { record: true },
+  );
   const Y = res.years.length;
   for (let i = 0; i < res.n; i++) {
     if (!Number.isNaN(res.fail[i])) continue;
@@ -208,7 +250,14 @@ test("the same seed gives the same futures, and a bigger run starts with a small
 });
 
 test("bond tent shares step down and back", () => {
-  const plan = household({ start_year: 2026, fire_year: 2036, stock_share: 1, tent_share: 0.7, tent_years_before: 4, tent_years_after: 8 });
+  const plan = household({
+    start_year: 2026,
+    fire_year: 2036,
+    stock_share: 1,
+    tent_share: 0.7,
+    tent_years_before: 4,
+    tent_years_after: 8,
+  });
   const w = stockShares(plan, 40);
   const at = (y) => w[y - 2026];
   assert.equal(at(2032), 1);
@@ -221,7 +270,10 @@ test("bond tent shares step down and back", () => {
 test("the mix's mean and volatility are those of the model's own draws", () => {
   const plan = household({ stock_vol: 0.17, bond_vol: 0.06, stock_bond_corr: 0.3, seed: 9 });
   // All stocks, or all bonds: the median and the volatility that were set.
-  for (const [w, nominal, vol] of [[1, plan.stock_return, 0.17], [0, plan.bond_return, 0.06]]) {
+  for (const [w, nominal, vol] of [
+    [1, plan.stock_return, 0.17],
+    [0, plan.bond_return, 0.06],
+  ]) {
     const m = mixStats(plan, w);
     assert.ok(Math.abs(m.compound - real(nominal, plan.inflation)) < 1e-12);
     assert.ok(Math.abs(m.vol - vol) < 1e-12);
@@ -254,7 +306,18 @@ test("without volatility, the most a portfolio can spend each year is an annuity
 test("the odds of a bad first year are those of the log-normal distribution", () => {
   // Two years: spend s from W, then s again. The money runs out exactly when the first year's
   // growth g is below s / (W - s), whose probability the distribution gives.
-  const plan = household({ portfolio: 1_000_000, cash: 0, contrib: 0, accounts: [], income: [], fire_year: 2026, start_month: 1, end_age: 2027 - 1986, stock_vol: 0.17, seed: 11 });
+  const plan = household({
+    portfolio: 1_000_000,
+    cash: 0,
+    contrib: 0,
+    accounts: [],
+    income: [],
+    fire_year: 2026,
+    start_month: 1,
+    end_age: 2027 - 1986,
+    stock_vol: 0.17,
+    seed: 11,
+  });
   const W = plan.portfolio;
   const M = 1 + real(plan.stock_return, plan.inflation); // the median growth
   // A log-normal with median M and standard deviation sd has sigma^2 = ln u, u = (1 + sqrt(1 + 4 (sd/M)^2)) / 2.

@@ -51,7 +51,8 @@ export function inBand(plan, kind, spending = plan.spending) {
 /** The FIRE years around the plan's, as far as they make sense. */
 export function nearYears(plan) {
   const out = [];
-  for (let y = plan.fire_year - 4; y <= plan.fire_year + 4; y++) if (y >= plan.start_year && y < endYear(plan)) out.push(y);
+  for (let y = plan.fire_year - 4; y <= plan.fire_year + 4; y++)
+    if (y >= plan.start_year && y < endYear(plan)) out.push(y);
   return out;
 }
 
@@ -60,7 +61,8 @@ export function niceStep(x) {
   if (!(x > 0)) return 1;
   const e = 10 ** Math.floor(Math.log10(x));
   let best = e;
-  for (const m of [1, 2, 2.5, 5, 10]) if (Math.abs(Math.log(m * e) - Math.log(x)) < Math.abs(Math.log(best) - Math.log(x))) best = m * e;
+  for (const m of [1, 2, 2.5, 5, 10])
+    if (Math.abs(Math.log(m * e) - Math.log(x)) < Math.abs(Math.log(best) - Math.log(x))) best = m * e;
   return best;
 }
 
@@ -105,13 +107,15 @@ export function milestones(plan) {
     marks.get(year).push(item);
   };
   for (const a of plan.accounts) {
-    if (a.balance > 0 || a.contrib > 0) add(unlockYear(plan, a), { type: "unlock", name: a.name, owner: personById(plan, a.owner).name });
+    if (a.balance > 0 || a.contrib > 0)
+      add(unlockYear(plan, a), { type: "unlock", name: a.name, owner: personById(plan, a.owner).name });
   }
   for (const s of plan.income) {
     const from = yearOf(plan, s.from);
     if (from > plan.fire_year) add(from, { type: "income", name: s.name, amount: s.amount });
     const to = yearOf(plan, s.to);
-    if (to != null && to > Math.max(from, plan.fire_year)) add(to, { type: "income-end", name: s.name, amount: s.amount });
+    if (to != null && to > Math.max(from, plan.fire_year))
+      add(to, { type: "income-end", name: s.name, amount: s.amount });
   }
   for (const e of plan.events) if (e.amount) add(e.year, { type: "event", name: e.name, amount: e.amount });
   return [...marks].sort((a, b) => a[0] - b[0]).map(([year, items]) => ({ year, items }));
@@ -200,7 +204,9 @@ export function mainView(plan, nPaths = 120) {
     const sp = { 10: [], 50: [], 90: [] };
     const c2 = new Float64Array(Math.max(lasting.length, 1));
     for (let t = i0; t < Y; t++) {
-      lasting.forEach((i, k) => { c2[k] = res.spending[i * Y + t]; });
+      lasting.forEach((i, k) => {
+        c2[k] = res.spending[i * Y + t];
+      });
       c2.sort();
       for (const q of [10, 50, 90]) sp[q].push(round(percentile(c2, q)));
     }
@@ -254,11 +260,13 @@ export function gridView(plan) {
   const values = [];
   for (let k = -5; k <= 5; k++) if (centre + k * step > 0) values.push(centre + k * step);
   const fireYears = nearYears(plan);
-  const success = fireYears.map((fy) => values.map((v) => {
-    if (byFloor) return v > plan.rule.ceiling ? null : lasts(plan, { n, fire_year: fy, rule: { floor: v } });
-    if (!inBand(plan, kind, v)) return null;
-    return lasts(plan, { n, fire_year: fy, spending: v });
-  }));
+  const success = fireYears.map((fy) =>
+    values.map((v) => {
+      if (byFloor) return v > plan.rule.ceiling ? null : lasts(plan, { n, fire_year: fy, rule: { floor: v } });
+      if (!inBand(plan, kind, v)) return null;
+      return lasts(plan, { n, fire_year: fy, spending: v });
+    }),
+  );
   return { fire_years: fireYears, axis: byFloor ? "floor" : "spending", values, step, success };
 }
 
@@ -271,7 +279,13 @@ export function safeView(plan) {
     return nearYears(plan).map((fy) => {
       const r = simulate(plan, { n, fire_year: fy });
       const s = sorted(r.startAmount);
-      return { fire_year: fy, median_start: median(r.atFire), p10: percentile(s, 10), p50: percentile(s, 50), p90: percentile(s, 90) };
+      return {
+        fire_year: fy,
+        median_start: median(r.atFire),
+        p10: percentile(s, 10),
+        p50: percentile(s, 50),
+        p90: percentile(s, 90),
+      };
     });
   }
   const flexible = kind !== "fixed";
@@ -289,8 +303,12 @@ export function safeView(plan) {
 export function sustainable(plan, fireYear, n, lo, hi, steps = 13) {
   const c = prepare(plan, n, { fire_year: fireYear });
   const out = {
-    fail: new Float64Array(n), atFire: new Float64Array(n), spendMean: new Float64Array(n),
-    spendMin: new Float64Array(n), startAmount: null, total: null,
+    fail: new Float64Array(n),
+    atFire: new Float64Array(n),
+    spendMean: new Float64Array(n),
+    spendMin: new Float64Array(n),
+    startAmount: null,
+    total: null,
   };
   const caps = new Float64Array(n);
   for (let i = 0; i < n; i++) {
@@ -323,6 +341,8 @@ export function stressView(plan) {
   return STRESS_SCENARIOS.map((s) => ({
     label: s.label,
     short: s.short,
-    rates: Object.fromEntries(RULE_KINDS.map((k) => [k, inBand(plan, k) ? lasts(plan, { n, kind: k, stress_returns: s.returns }) : null])),
+    rates: Object.fromEntries(
+      RULE_KINDS.map((k) => [k, inBand(plan, k) ? lasts(plan, { n, kind: k, stress_returns: s.returns }) : null]),
+    ),
   }));
 }

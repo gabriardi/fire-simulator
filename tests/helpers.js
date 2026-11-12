@@ -23,12 +23,46 @@ export function household(over = {}) {
     contrib: 30_000,
     spending: 50_000,
     accounts: [
-      { id: "x", name: "Pension A", owner: "a", balance: 80_000, contrib: 6_000, growth: "portfolio", interest: 0, unlock_age: 60, tax: 0.1 },
-      { id: "y", name: "Pension B", owner: "b", balance: 120_000, contrib: 8_000, growth: "fixed", interest: 0.02, unlock_age: 62, tax: 0.1 },
+      {
+        id: "x",
+        name: "Pension A",
+        owner: "a",
+        balance: 80_000,
+        contrib: 6_000,
+        growth: "portfolio",
+        interest: 0,
+        unlock_age: 60,
+        tax: 0.1,
+      },
+      {
+        id: "y",
+        name: "Pension B",
+        owner: "b",
+        balance: 120_000,
+        contrib: 8_000,
+        growth: "fixed",
+        interest: 0.02,
+        unlock_age: 62,
+        tax: 0.1,
+      },
     ],
     income: [
-      { id: "s1", name: "State pension A", amount: 15_000, from: { kind: "age", person: "a", value: 67 }, to: null, indexed: true },
-      { id: "s2", name: "State pension B", amount: 12_000, from: { kind: "age", person: "b", value: 67 }, to: null, indexed: true },
+      {
+        id: "s1",
+        name: "State pension A",
+        amount: 15_000,
+        from: { kind: "age", person: "a", value: 67 },
+        to: null,
+        indexed: true,
+      },
+      {
+        id: "s2",
+        name: "State pension B",
+        amount: 12_000,
+        from: { kind: "age", person: "b", value: 67 },
+        to: null,
+        indexed: true,
+      },
     ],
     stock_vol: 0,
     bond_vol: 0,
@@ -45,7 +79,15 @@ export function household(over = {}) {
  * the portfolio, g the yearly real growth and N the number of years.
  */
 export function annuityPlan() {
-  const plan = household({ portfolio: 1_000_000, cash: 0, contrib: 0, accounts: [], income: [], fire_year: 2026, start_month: 1 });
+  const plan = household({
+    portfolio: 1_000_000,
+    cash: 0,
+    contrib: 0,
+    accounts: [],
+    income: [],
+    fire_year: 2026,
+    start_month: 1,
+  });
   const g = 1 + real(plan.stock_return, plan.inflation);
   const years = 2081 - 2026 + 1; // until Ana (born 1986) turns 95
   return { plan, years, most: (plan.portfolio * (1 - 1 / g)) / (1 - g ** -years) };

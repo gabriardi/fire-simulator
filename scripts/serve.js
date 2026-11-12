@@ -33,7 +33,15 @@ function parseHeaders() {
   for (const line of readFileSync(join(ROOT, "_headers"), "utf8").split("\n")) {
     if (!line.trim() || line.trim().startsWith("#")) continue;
     if (!/^\s/.test(line)) {
-      current = { pattern: new RegExp(`^${line.trim().replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*")}$`), headers: {} };
+      current = {
+        pattern: new RegExp(
+          `^${line
+            .trim()
+            .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
+            .replace(/\*/g, ".*")}$`,
+        ),
+        headers: {},
+      };
       rules.push(current);
     } else if (current) {
       const i = line.indexOf(":");
@@ -68,7 +76,8 @@ createServer(async (req, res) => {
   console.log(`When can I stop? http://127.0.0.1:${PORT}`);
   if (LAN) {
     for (const nets of Object.values(networkInterfaces())) {
-      for (const n of nets ?? []) if (n.family === "IPv4" && !n.internal) console.log(`On your network: http://${n.address}:${PORT}`);
+      for (const n of nets ?? [])
+        if (n.family === "IPv4" && !n.internal) console.log(`On your network: http://${n.address}:${PORT}`);
     }
   }
 });

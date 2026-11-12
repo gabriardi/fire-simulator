@@ -134,7 +134,9 @@ function mix32(h) {
 
 /** A seeded generator (sfc32) for one stream of one simulated future. */
 export function makeRng(seed, path, stream) {
-  let s = mix32(mix32(mix32((seed >>> 0) ^ 0x9e3779b9) ^ Math.imul(path + 1, 0x85ebca6b)) ^ Math.imul(stream + 1, 0xc2b2ae35));
+  let s = mix32(
+    mix32(mix32((seed >>> 0) ^ 0x9e3779b9) ^ Math.imul(path + 1, 0x85ebca6b)) ^ Math.imul(stream + 1, 0xc2b2ae35),
+  );
   const next0 = () => {
     s = (s + 0x9e3779b9) | 0;
     return mix32(s);
@@ -288,13 +290,41 @@ export function prepare(plan, n, o = {}) {
   const draws = marketDraws(plan, n, Y);
 
   const c = {
-    plan, kind, rule, years, Y, i0, f0, fireYear,
-    portfolio: plan.portfolio, cash: plan.cash, contrib, cbuf: plan.cash_buffer_years,
-    A, bal0, keep, fixed, gfix, gfixF0, unlockT, contribA, byUnlock,
-    income, events, w, allStocks: w.every((x) => x === 1), stressG,
-    gcash, gcashF0: gcash ** f0, keepP: 1 - ptax, grossUp: 1 / (1 - ptax),
-    stock: draws.stock, bond: draws.bond,
-    acct: new Float64Array(A), locked: new Uint8Array(A), steps: new Float64Array(A),
+    plan,
+    kind,
+    rule,
+    years,
+    Y,
+    i0,
+    f0,
+    fireYear,
+    portfolio: plan.portfolio,
+    cash: plan.cash,
+    contrib,
+    cbuf: plan.cash_buffer_years,
+    A,
+    bal0,
+    keep,
+    fixed,
+    gfix,
+    gfixF0,
+    unlockT,
+    contribA,
+    byUnlock,
+    income,
+    events,
+    w,
+    allStocks: w.every((x) => x === 1),
+    stressG,
+    gcash,
+    gcashF0: gcash ** f0,
+    keepP: 1 - ptax,
+    grossUp: 1 / (1 - ptax),
+    stock: draws.stock,
+    bond: draws.bond,
+    acct: new Float64Array(A),
+    locked: new Uint8Array(A),
+    steps: new Float64Array(A),
   };
   if (kind === "spenddown") c.sd = spendDownTables(c);
   return c;

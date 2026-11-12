@@ -7,7 +7,11 @@ export const helpEntry = (key) => (HELP[key]?.alias ? HELP[HELP[key].alias] : HE
 export function helpBtn(key) {
   const h = helpEntry(key);
   if (!h) return null;
-  return el("button", { type: "button", class: "help", "data-help": key, "aria-label": `Explain: ${h.title}`, title: "What is this?" }, "?");
+  return el(
+    "button",
+    { type: "button", class: "help", "data-help": key, "aria-label": `Explain: ${h.title}`, title: "What is this?" },
+    "?",
+  );
 }
 function openDialog(title, body, wide = false) {
   $("#help-title").textContent = title;
@@ -17,7 +21,9 @@ function openDialog(title, body, wide = false) {
   const d = $("#help-dialog");
   d.classList.toggle("wide", wide);
   if (!d.open) d.showModal();
-  requestAnimationFrame(() => { b.scrollTop = 0; });
+  requestAnimationFrame(() => {
+    b.scrollTop = 0;
+  });
 }
 function entryNodes(h) {
   const div = el("div", { class: "help-entry" });
@@ -28,7 +34,10 @@ export function openHelp(key) {
   const h = helpEntry(key);
   if (!h) return;
   $("#help-body").onscroll = null;
-  openDialog(h.title, [entryNodes(h), el("button", { type: "button", class: "btn guide-link", onclick: openGuide }, "Open the full guide")]);
+  openDialog(h.title, [
+    entryNodes(h),
+    el("button", { type: "button", class: "btn guide-link", onclick: openGuide }, "Open the full guide"),
+  ]);
 }
 export function openGuide() {
   const toc = el("nav", { class: "guide-toc", "aria-label": "Guide sections" });
@@ -36,30 +45,50 @@ export function openGuide() {
   const links = [];
   GUIDE.forEach(([title, keys], i) => {
     const id = `guide-${i}`;
-    const link = el("button", {
-      type: "button", class: "toc-link", "data-target": id,
-      onclick: () => document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" }),
-    }, title);
+    const link = el(
+      "button",
+      {
+        type: "button",
+        class: "toc-link",
+        "data-target": id,
+        onclick: () => document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" }),
+      },
+      title,
+    );
     links.push(link);
     toc.append(link);
-    content.append(el("section", { class: "guide-section", id },
-      el("h3", { text: title }),
-      el("div", { class: "guide-cards" },
-        ...keys.map(helpEntry).filter(Boolean).map((h) => el("article", { class: "guide-item" }, el("h4", { text: h.title }), entryNodes(h))))));
+    content.append(
+      el(
+        "section",
+        { class: "guide-section", id },
+        el("h3", { text: title }),
+        el(
+          "div",
+          { class: "guide-cards" },
+          ...keys
+            .map(helpEntry)
+            .filter(Boolean)
+            .map((h) => el("article", { class: "guide-item" }, el("h4", { text: h.title }), entryNodes(h))),
+        ),
+      ),
+    );
   });
   openDialog("Guide", [el("div", { class: "guide" }, toc, content)], true);
   const body = $("#help-body");
   const mark = () => {
     const top = body.getBoundingClientRect().top + 40;
     let current = links[0];
-    for (const l of links) if (document.getElementById(l.dataset.target).getBoundingClientRect().top <= top) current = l;
+    for (const l of links)
+      if (document.getElementById(l.dataset.target).getBoundingClientRect().top <= top) current = l;
     if (body.scrollTop + body.clientHeight >= body.scrollHeight - 2) current = links.at(-1); // the end: short last sections never reach the top
     links.forEach((l) => l.setAttribute("aria-current", String(l === current)));
     // The list scrolls when it doesn't fit (a short window; a phone's row): keep the current one in view.
     if (current.offsetTop < toc.scrollTop) toc.scrollTop = current.offsetTop;
-    else if (current.offsetTop + current.offsetHeight > toc.scrollTop + toc.clientHeight) toc.scrollTop = current.offsetTop + current.offsetHeight - toc.clientHeight;
+    else if (current.offsetTop + current.offsetHeight > toc.scrollTop + toc.clientHeight)
+      toc.scrollTop = current.offsetTop + current.offsetHeight - toc.clientHeight;
     if (current.offsetLeft < toc.scrollLeft) toc.scrollLeft = current.offsetLeft;
-    else if (current.offsetLeft + current.offsetWidth > toc.scrollLeft + toc.clientWidth) toc.scrollLeft = current.offsetLeft + current.offsetWidth - toc.clientWidth;
+    else if (current.offsetLeft + current.offsetWidth > toc.scrollLeft + toc.clientWidth)
+      toc.scrollLeft = current.offsetLeft + current.offsetWidth - toc.clientWidth;
   };
   body.onscroll = mark;
   mark();
@@ -71,7 +100,11 @@ export function confirmBox({ title, text, ok = "OK", cancel = "Cancel" }) {
     $("#confirm-text").textContent = text;
     $("#confirm-ok").textContent = ok;
     $("#confirm-cancel").textContent = cancel;
-    const done = (v) => { d.onclose = null; d.close(); resolve(v); };
+    const done = (v) => {
+      d.onclose = null;
+      d.close();
+      resolve(v);
+    };
     $("#confirm-ok").onclick = () => done(true);
     $("#confirm-cancel").onclick = () => done(false);
     d.onclose = () => resolve(false);
@@ -88,7 +121,12 @@ export function toast(text, { undo = null, action = null, error = false, stay = 
   const btn = $("#toast-action");
   btn.hidden = !act;
   if (act) btn.textContent = act.label;
-  btn.onclick = act ? () => { hideToast(); act.run(); } : null;
+  btn.onclick = act
+    ? () => {
+        hideToast();
+        act.run();
+      }
+    : null;
   t.classList.toggle("error", error);
   t.classList.add("show");
   t.dataset.ms = stay ? 0 : act || error ? 10000 : 4500;
@@ -105,7 +143,9 @@ export function wireToast() {
   $("#toast-close").addEventListener("click", hideToast);
   const t = $("#toast");
   const hold = () => clearTimeout(toastTimer);
-  const release = () => { if (t.classList.contains("show") && Number(t.dataset.ms)) toastTimer = setTimeout(hideToast, Number(t.dataset.ms)); };
+  const release = () => {
+    if (t.classList.contains("show") && Number(t.dataset.ms)) toastTimer = setTimeout(hideToast, Number(t.dataset.ms));
+  };
   t.addEventListener("mouseenter", hold);
   t.addEventListener("focusin", hold);
   t.addEventListener("mouseleave", release);

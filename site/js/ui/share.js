@@ -40,25 +40,33 @@ export async function openShare() {
     const short = password !== "" && [...password].length < MIN_PASSWORD;
     clearTimeout(timer);
     note.classList.toggle("warn", short);
-    note.textContent = !password ? "Without one, anyone with the link can open it."
-      : short ? `At least ${MIN_PASSWORD} characters. A few unrelated words are best.`
+    note.textContent = !password
+      ? "Without one, anyone with the link can open it."
+      : short
+        ? `At least ${MIN_PASSWORD} characters. A few unrelated words are best.`
         : "The link opens only with this password, which isn't in the link: send it separately, not in the same message.";
     // Never a link without the lock while a password is being typed: it could be sent by mistake.
     show("", short ? "Finish the password first" : password ? "Locking…" : "");
     if (short) return;
-    timer = setTimeout(async () => {
-      const code = await store.packPlan(name, plan, { password, run });
-      if (turn !== shareTurn) return;
-      locked = Boolean(password);
-      show(`${location.origin}${location.pathname}#plan=${code}`);
-    }, password ? 300 : 0);
+    timer = setTimeout(
+      async () => {
+        const code = await store.packPlan(name, plan, { password, run });
+        if (turn !== shareTurn) return;
+        locked = Boolean(password);
+        show(`${location.origin}${location.pathname}#plan=${code}`);
+      },
+      password ? 300 : 0,
+    );
   };
   $("#share-lock").hidden = !store.canLock();
   pw.oninput = make;
-  pw.onkeydown = (e) => { if (e.key === "Enter") e.preventDefault(); };
+  pw.onkeydown = (e) => {
+    if (e.key === "Enter") e.preventDefault();
+  };
   nativeBtn.hidden = typeof navigator.share !== "function";
   // A share sheet often puts the title in the message: a locked plan's name stays out of it.
-  nativeBtn.onclick = () => navigator.share({ title: locked ? "FIRE plan" : `FIRE plan: ${name}`, url }).catch(() => {});
+  nativeBtn.onclick = () =>
+    navigator.share({ title: locked ? "FIRE plan" : `FIRE plan: ${name}`, url }).catch(() => {});
   copyBtn.onclick = async () => {
     try {
       await navigator.clipboard.writeText(url);
@@ -109,14 +117,22 @@ function unlockShared(code) {
     $("#unlock-form").onsubmit = async (e) => {
       e.preventDefault();
       if (ok.disabled) return;
-      if (!input.value) { problem("Type the password you were given."); input.focus(); return; }
+      if (!input.value) {
+        problem("Type the password you were given.");
+        input.focus();
+        return;
+      }
       ok.disabled = true;
       ok.textContent = "Unlocking…";
       try {
         done(resolve, await store.unpackPlan(code, input.value));
       } catch (err) {
         if (err.code !== "password") done(reject, err);
-        else if (!settled) { problem(err.message); input.focus(); input.select(); }
+        else if (!settled) {
+          problem(err.message);
+          input.focus();
+          input.select();
+        }
       } finally {
         ok.disabled = false;
         ok.textContent = "Open it";
@@ -162,12 +178,14 @@ export async function openSharedLink() {
     return;
   }
   // Typing the password already said yes.
-  const yes = locked || await confirmBox({
-    title: "Open a shared plan?",
-    text: `Someone shared “${name}” with you. It opens as a new plan in this browser; your own plans stay as they are.`,
-    ok: "Open it",
-    cancel: "Not now",
-  });
+  const yes =
+    locked ||
+    (await confirmBox({
+      title: "Open a shared plan?",
+      text: `Someone shared “${name}” with you. It opens as a new plan in this browser; your own plans stay as they are.`,
+      ok: "Open it",
+      cancel: "Not now",
+    }));
   if (!yes) return;
   const p = addPlan(uniqueName(name), plan);
   noteRun(p, shared.run);
@@ -191,7 +209,9 @@ export function renderShared() {
   const seed = run.seed !== settings.seed;
   const n = run.n_sims !== settings.n_sims;
   const theirs = [seed && `seed ${run.seed}`, n && `${fmt.num(run.n_sims)} futures`].filter(Boolean).join(" and ");
-  const yours = [seed && `seed ${settings.seed}`, n && `${fmt.num(settings.n_sims)} futures`].filter(Boolean).join(" and ");
+  const yours = [seed && `seed ${settings.seed}`, n && `${fmt.num(settings.n_sims)} futures`]
+    .filter(Boolean)
+    .join(" and ");
   $("#shared-text").textContent = `Shared with ${theirs}. With your ${yours}, the numbers can differ a little.`;
 }
 export function forgetRun() {

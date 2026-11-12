@@ -40,42 +40,42 @@ formats need no page, so the tests run them under Node.
 
 In `site/`:
 
-| File | What it does |
-| --- | --- |
-| `index.html`, `app.css` | The page and its styles, in light and dark mode, down to phone width |
-| `js/app.js` | The page's entry point: wires buttons, menus and dialogs to `js/ui/`, then starts |
-| `js/ui/state.js` | What the page's modules share: settings, saved plans, the plan on screen, its results |
-| `js/ui/fields.js`, `js/ui/form.js` | The form's fields, and the form built from them, section by section |
-| `js/ui/plans.js` | Saving, switching, renaming, deleting, undo, and the plan bar |
-| `js/ui/setup.js`, `js/ui/share.js`, `js/ui/files.js` | Setting up a plan; share links; export and import files |
-| `js/ui/run.js`, `js/ui/charts.js` | Running the model in workers, and drawing what they return |
-| `js/ui/messages.js`, `js/ui/dom.js` | Help and the guide, toasts and errors; small page helpers |
-| `js/ui/updates.js` | Starting the service worker; loading a new version into a page left open |
-| `js/engine.js` | The model: random draws, accounts, income, spending rules, one future at a time |
-| `js/views.js` | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |
-| `js/worker.js` | Runs the views in Web Workers, so the page never freezes |
-| `js/plan.js` | The plan format: defaults, the example, cleaning a plan that comes from storage, a file or a link |
-| `js/store.js` | Local storage, export and import files, share links |
-| `js/format.js` | Currencies, number formats, and parsing typed numbers |
-| `js/help.js` | Every "?" text and the guide |
-| `sw.js`, `manifest.webmanifest` | Offline use, installing as an app, and telling a page left open about a new version |
-| `vendor/` | Plotly's cartesian bundle (charts) |
-| `privacy.html` | The privacy notice of this project's copy |
-| `robots.txt`, `sitemap.xml`, `images/social.png` | For search engines and link previews |
-| `_headers` | The response headers: the Content-Security-Policy, caching |
-| `LICENSE` | A copy of the repository's license, served with the code |
+| File                                                 | What it does                                                                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `index.html`, `app.css`                              | The page and its styles, in light and dark mode, down to phone width                                 |
+| `js/app.js`                                          | The page's entry point: wires buttons, menus and dialogs to `js/ui/`, then starts                    |
+| `js/ui/state.js`                                     | What the page's modules share: settings, saved plans, the plan on screen, its results                |
+| `js/ui/fields.js`, `js/ui/form.js`                   | The form's fields, and the form built from them, section by section                                  |
+| `js/ui/plans.js`                                     | Saving, switching, renaming, deleting, undo, and the plan bar                                        |
+| `js/ui/setup.js`, `js/ui/share.js`, `js/ui/files.js` | Setting up a plan; share links; export and import files                                              |
+| `js/ui/run.js`, `js/ui/charts.js`                    | Running the model in workers, and drawing what they return                                           |
+| `js/ui/messages.js`, `js/ui/dom.js`                  | Help and the guide, toasts and errors; small page helpers                                            |
+| `js/ui/updates.js`                                   | Starting the service worker; loading a new version into a page left open                             |
+| `js/engine.js`                                       | The model: random draws, accounts, income, spending rules, one future at a time                      |
+| `js/views.js`                                        | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |
+| `js/worker.js`                                       | Runs the views in Web Workers, so the page never freezes                                             |
+| `js/plan.js`                                         | The plan format: defaults, the example, cleaning a plan that comes from storage, a file or a link    |
+| `js/store.js`                                        | Local storage, export and import files, share links                                                  |
+| `js/format.js`                                       | Currencies, number formats, and parsing typed numbers                                                |
+| `js/help.js`                                         | Every "?" text and the guide                                                                         |
+| `sw.js`, `manifest.webmanifest`                      | Offline use, installing as an app, and telling a page left open about a new version                  |
+| `vendor/`                                            | Plotly's cartesian bundle (charts)                                                                   |
+| `privacy.html`                                       | The privacy notice of this project's copy                                                            |
+| `robots.txt`, `sitemap.xml`, `images/social.png`     | For search engines and link previews                                                                 |
+| `_headers`                                           | The response headers: the Content-Security-Policy, caching                                           |
+| `LICENSE`                                            | A copy of the repository's license, served with the code                                             |
 
 Around it:
 
-| File | What it does |
-| --- | --- |
-| `scripts/serve.js` | The local server, with the production headers |
-| `wrangler.jsonc` | Hosting on Cloudflare: `site/` as static files, and the logs |
-| `tests/` | The tests, below |
-| `docs/` | How the simulation works, the README's screenshots, and the link-preview card |
-| `.github/` | The tests on GitHub Actions, Dependabot for those actions, the issue forms and the pull request checklist, the sponsor button |
-| `.editorconfig` | UTF-8, LF, two spaces; files from elsewhere left as they came |
-| `.prettierrc.json`, `.prettierignore` | How Prettier formats the code (lines up to 120 columns), and what it leaves alone |
+| File                                  | What it does                                                                                                                  |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `scripts/serve.js`                    | The local server, with the production headers                                                                                 |
+| `wrangler.jsonc`                      | Hosting on Cloudflare: `site/` as static files, and the logs                                                                  |
+| `tests/`                              | The tests, below                                                                                                              |
+| `docs/`                               | How the simulation works, the README's screenshots, and the link-preview card                                                 |
+| `.github/`                            | The tests on GitHub Actions, Dependabot for those actions, the issue forms and the pull request checklist, the sponsor button |
+| `.editorconfig`                       | UTF-8, LF, two spaces; files from elsewhere left as they came                                                                 |
+| `.prettierrc.json`, `.prettierignore` | How Prettier formats the code (lines up to 120 columns), and what it leaves alone                                             |
 
 ## Tests
 
@@ -98,6 +98,7 @@ Plotly is, byte for byte, the file published on npm for its version.
   not that the model is right: the hand-worked results in `tests/engine.test.js` are for that. A
   deliberate change to the model that breaks a case says so in its commit, and retires the case
   or takes the engine's new numbers for it.
+
 - `tests/views.test.js` covers what the charts show:
   - the percentiles (numpy's method), and the safe-spending search, which finds an annuity's
     payment;
@@ -126,7 +127,7 @@ Plotly is, byte for byte, the file published on npm for its version.
 2. Try the change in the page (`node scripts/serve.js`), in a browser's private window so you start
    from the example. The tests don't drive the page, so it's worth a few minutes:
    - the result and all the charts appear, and update when you change the spending or a slider;
-   - *Set up my plan* creates a plan; save, *Save as a copy*, rename, delete and undo work;
+   - _Set up my plan_ creates a plan; save, _Save as a copy_, rename, delete and undo work;
    - a share link, with and without a password, opens in another private window;
    - export, then import the file;
    - light and dark mode, and a phone's width.
@@ -139,6 +140,7 @@ Plotly is, byte for byte, the file published on npm for its version.
 
    The only names it should report are the browser's own (`document`, `history`,
    `getComputedStyle`, `requestAnimationFrame`) and `Plotly`, which the page loads separately.
+
 4. Commit messages say what changed for someone using or reading the project, in plain words,
    with the reason in the body: `Share links: an optional password`.
 

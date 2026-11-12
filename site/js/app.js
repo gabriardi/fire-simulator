@@ -68,17 +68,27 @@ function wireMenu() {
     if (refocus) btn.focus();
   };
   btn.addEventListener("click", () => (menu.hidden ? open() : close(false)));
-  btn.addEventListener("keydown", (e) => { if (e.key === "ArrowDown") { e.preventDefault(); open(); } });
+  btn.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      open();
+    }
+  });
   menu.addEventListener("keydown", (e) => {
     const list = items();
     const i = list.indexOf(document.activeElement);
-    const go = (j) => { e.preventDefault(); list[(j + list.length) % list.length]?.focus(); };
+    const go = (j) => {
+      e.preventDefault();
+      list[(j + list.length) % list.length]?.focus();
+    };
     if (e.key === "ArrowDown") go(i + 1);
     else if (e.key === "ArrowUp") go(i - 1);
     else if (e.key === "Home") go(0);
     else if (e.key === "End") go(list.length - 1);
-    else if (e.key === "Escape") { e.preventDefault(); close(true); }
-    else if (e.key === "Tab") close(false);
+    else if (e.key === "Escape") {
+      e.preventDefault();
+      close(true);
+    } else if (e.key === "Tab") close(false);
   });
   menu.addEventListener("click", (e) => {
     const item = e.target.closest("[role=menuitem]");
@@ -86,7 +96,9 @@ function wireMenu() {
     close(false);
     ACTIONS[item.dataset.act]();
   });
-  document.addEventListener("click", (e) => { if (!e.target.closest(".menu-wrap")) close(false); });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".menu-wrap")) close(false);
+  });
 }
 
 function wire() {
@@ -98,12 +110,16 @@ function wire() {
   });
   $("#guide").addEventListener("click", openGuide);
   $("#help-close").addEventListener("click", () => $("#help-dialog").close());
-  $("#help-dialog").addEventListener("click", (e) => { if (e.target.id === "help-dialog") e.target.close(); });
-  document.querySelectorAll("#c-paths [data-unit]").forEach((b) => b.addEventListener("click", () => {
-    setUnit(b.dataset.unit);
-    document.querySelectorAll("#c-paths [data-unit]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    if (sim) renderPaths();
-  }));
+  $("#help-dialog").addEventListener("click", (e) => {
+    if (e.target.id === "help-dialog") e.target.close();
+  });
+  document.querySelectorAll("#c-paths [data-unit]").forEach((b) =>
+    b.addEventListener("click", () => {
+      setUnit(b.dataset.unit);
+      document.querySelectorAll("#c-paths [data-unit]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      if (sim) renderPaths();
+    }),
+  );
   $("#new-seed").addEventListener("click", newSeed);
   $("#plan-select").addEventListener("change", (e) => switchTo(e.target.value));
   $("#plan-save").addEventListener("click", saveCurrent);
@@ -126,7 +142,10 @@ function wire() {
   $("#name-cancel").addEventListener("click", () => $("#name-dialog").close());
   $("#setup-cancel").addEventListener("click", () => $("#setup-dialog").close());
   $("#share-close").addEventListener("click", () => $("#share-dialog").close());
-  for (const d of document.querySelectorAll("dialog.panel")) d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
+  for (const d of document.querySelectorAll("dialog.panel"))
+    d.addEventListener("click", (e) => {
+      if (e.target === d) d.close();
+    });
   $("#import-file").addEventListener("change", (e) => {
     const file = e.target.files?.[0];
     e.target.value = "";
@@ -147,8 +166,11 @@ function wire() {
   let resizeTimer = null;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
-    if ((w <= 960) !== (window.innerWidth <= 960)) renderAll();
-    else resizeTimer = setTimeout(() => { if (sim) renderPaths(); }, 200); // the year labels' spacing follows the width
+    if (w <= 960 !== window.innerWidth <= 960) renderAll();
+    else
+      resizeTimer = setTimeout(() => {
+        if (sim) renderPaths();
+      }, 200); // the year labels' spacing follows the width
     w = window.innerWidth;
   });
   window.addEventListener("hashchange", openSharedLink);
@@ -187,7 +209,11 @@ function start() {
   const session = store.loadSession();
   const current = planById(session?.current) ?? [...plans].sort((a, b) => (b.updated ?? 0) - (a.updated ?? 0))[0];
   setBase({ id: current.id, name: current.name, values: clone(current.plan) });
-  setState(session?.current === current.id && session.working ? normalize(session.working, { currency: current.plan.currency }) : clone(current.plan));
+  setState(
+    session?.current === current.id && session.working
+      ? normalize(session.working, { currency: current.plan.currency })
+      : clone(current.plan),
+  );
   refreshFormat();
   spawnMain();
   buildForm();
