@@ -6,6 +6,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 import { RULE_KINDS } from "../site/js/engine.js";
 import { GUIDE, HELP } from "../site/js/help.js";
+import { SETTINGS_KEY } from "../site/js/store.js";
 
 const ROOT = new URL("../site/", import.meta.url); // what is deployed
 const REPO = new URL("../", import.meta.url);
@@ -71,6 +72,35 @@ test("every file in the service worker's list exists", () => {
   // One missing file fails the whole install: the app then doesn't work offline at all.
   const missing = SHELL.filter((f) => f !== "./" && !exists(f));
   assert.deepEqual(missing, []);
+});
+
+test("the theme is on every page before it's drawn, read from where the settings are kept", () => {
+  // js/ui/theme.js runs before the page's modules, so it can't import the key from store.js.
+  assert.ok(read("js/ui/theme.js").includes(`"${SETTINGS_KEY}"`), "theme.js reads SETTINGS_KEY");
+  for (const page of ["index.html", "privacy.html"]) {
+    const src = read(page);
+    const script = src.indexOf('<script src="js/ui/theme.js"></script>');
+    assert.ok(script > 0, `${page} loads js/ui/theme.js`);
+    // In the head, after the colours of the browser's bar, which it sets, and before the styles.
+    assert.ok(script > src.lastIndexOf('<meta name="theme-color"'), `${page}: after theme-color`);
+    assert.ok(script < src.indexOf('<link rel="stylesheet"'), `${page}: before the styles`);
+  }
+});
+
+test("dark mode has the same colours, whether the device or the theme switch picks it", () => {
+  const css = read("app.css");
+  const block = (selector) => {
+    const from = css.indexOf(`${selector} {`);
+    assert.ok(from >= 0, `app.css has ${selector}`);
+    return css
+      .slice(from + selector.length + 2, css.indexOf("}", from))
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+  };
+  const device = block(':root:not([data-theme="light"])');
+  assert.ok(device.length > 10, "the dark colours were found");
+  assert.deepEqual(block(':root[data-theme="dark"]'), device);
 });
 
 test("the chart library is the same version everywhere", () => {

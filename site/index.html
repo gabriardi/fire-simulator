@@ -49,6 +49,7 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#1f5f9e" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#151d25" media="(prefers-color-scheme: dark)" />
+    <script src="js/ui/theme.js"></script>
     <link rel="icon" href="icons/favicon-64.png" type="image/png" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -168,6 +169,16 @@
               New seed
             </button>
             <button class="btn" id="guide" type="button">Guide</button>
+            <select
+              class="btn theme-select"
+              id="theme"
+              aria-label="Theme"
+              title="Light, dark, or as the device is set"
+            >
+              <option value="auto">Theme: auto</option>
+              <option value="light">Theme: light</option>
+              <option value="dark">Theme: dark</option>
+            </select>
           </div>
         </header>
 

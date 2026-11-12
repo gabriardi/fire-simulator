@@ -52,6 +52,7 @@ In `site/`:
 | `js/ui/setup.js`, `js/ui/share.js`, `js/ui/files.js` | Setting up a plan; share links; export and import files                                              |
 | `js/ui/run.js`, `js/ui/charts.js`                    | Running the model in workers, and drawing what they return                                           |
 | `js/ui/messages.js`, `js/ui/dom.js`                  | Help and the guide, toasts and errors; small page helpers                                            |
+| `js/ui/theme.js`                                     | The theme picked in this browser, put on each page before it's drawn                                 |
 | `js/ui/updates.js`                                   | Starting the service worker; loading a new version into a page left open                             |
 | `js/engine.js`                                       | The model: random draws, accounts, income, spending rules, one future at a time                      |
 | `js/views.js`                                        | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |

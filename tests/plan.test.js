@@ -336,22 +336,19 @@ test("typed lists of numbers: where the decimal mark is a comma, it isn't a sepa
 });
 
 test("settings from storage: odd values put right, the rest kept", () => {
-  assert.deepEqual(cleanSettings(null), { seed: 42, n_sims: 10_000, locale: "" });
-  assert.deepEqual(cleanSettings([1, 2]), { seed: 42, n_sims: 10_000, locale: "" });
-  assert.deepEqual(cleanSettings({ seed: -5, n_sims: 123_456, locale: 5 }), {
-    seed: 42,
+  const plain = { seed: 42, n_sims: 10_000, locale: "", theme: "auto" };
+  assert.deepEqual(cleanSettings(null), plain);
+  assert.deepEqual(cleanSettings([1, 2]), plain);
+  assert.deepEqual(cleanSettings({ seed: -5, n_sims: 123_456, locale: 5, theme: "purple" }), {
+    ...plain,
     n_sims: 50_000,
-    locale: "",
   });
-  assert.deepEqual(cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH" }), {
-    seed: 7,
-    n_sims: 500,
-    locale: "de-CH",
-  });
+  assert.deepEqual(
+    cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH", theme: "dark" }),
+    { seed: 7, n_sims: 500, locale: "de-CH", theme: "dark" },
+  );
   assert.deepEqual(cleanSettings({ seed: 1.5, n_sims: "many", welcomeClosed: true }), {
-    seed: 42,
-    n_sims: 10_000,
-    locale: "",
+    ...plain,
     welcomeClosed: true,
   });
 });

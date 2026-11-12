@@ -24,8 +24,10 @@
   --radius: 10px;
   --rail: 360px;
 }
+/* Dark: as the device is set, unless the page's switch says light; or picked with the switch.
+   The two lists are the same (tests/site.test.js checks it). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0e141a;
     --surface: #151d25;
     --surface-2: #1b252f;
@@ -44,6 +46,25 @@
     --shadow: 0 1px 2px rgb(0 0 0 / 30%);
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #0e141a;
+  --surface: #151d25;
+  --surface-2: #1b252f;
+  --ink: #e4eaf0;
+  --muted: #9aa7b4;
+  --faint: #6f7d8a;
+  --line: #26323d;
+  --accent: #6aa8e4;
+  --accent-soft: #17304a;
+  --good: #5cbf85;
+  --warn: #e2a64a;
+  --bad: #ec6a5b;
+  --good-soft: #15301f;
+  --warn-soft: #33270f;
+  --bad-soft: #3a1a16;
+  --shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  color-scheme: dark;
 }
 
 * {
@@ -361,6 +382,21 @@ input[type="range"] {
   padding: 0 10px;
   font-size: 1.15rem;
   line-height: 1;
+}
+/* The theme switch: a select that looks like the buttons beside it, with a small chevron. */
+select.btn.theme-select {
+  appearance: none;
+  -webkit-appearance: none;
+  color: inherit;
+  padding-right: 28px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) 52%,
+    calc(100% - 10px) 52%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
 }
 .btn:disabled {
   opacity: 0.55;

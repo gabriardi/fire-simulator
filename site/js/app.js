@@ -101,6 +101,20 @@ function wireMenu() {
   });
 }
 
+// Light, dark or the device's: a setting of this browser, like the number format. js/ui/theme.js
+// put it on the page before it was drawn; a change here goes on the page at once.
+function wireTheme() {
+  const sel = $("#theme");
+  sel.value = settings.theme;
+  sel.addEventListener("change", () => {
+    settings.theme = sel.value;
+    store.saveSettings(settings);
+    if (sel.value === "auto") delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = sel.value;
+    renderAll(); // the charts take their colours from the page's
+  });
+}
+
 function wire() {
   document.addEventListener("click", (e) => {
     const b = e.target.closest?.("[data-help]");
@@ -130,6 +144,7 @@ function wire() {
   $("#shared-use").addEventListener("click", useSharedRun);
   $("#shared-close").addEventListener("click", forgetRun);
   wireMenu();
+  wireTheme();
   $("#plan-pill").addEventListener("click", () => {
     if (isPhone()) $("#rail").classList.add("open");
     $("#plan-select").focus();

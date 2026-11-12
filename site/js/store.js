@@ -7,18 +7,21 @@ import { normalize, uid } from "./plan.js";
 const KEYS = {
   plans: "fire-sim.plans.v1", // [{ id, name, plan, updated, example, shared }]: the saved plans
   session: "fire-sim.session.v1", // { current, working }: the plan on screen, unsaved changes included
-  settings: "fire-sim.settings.v1", // { seed, n_sims, locale }: the viewer's, not part of any plan
+  settings: "fire-sim.settings.v1", // { seed, n_sims, locale, theme }: the viewer's, not any plan's
   groups: "fire-sim.groups.v1", // which form sections are open
   backup: "fire-sim.backup.v1", // { exported }: when the plans were last exported to a file
 };
 export const PLANS_KEY = KEYS.plans;
 export const BACKUP_KEY = KEYS.backup;
+export const SETTINGS_KEY = KEYS.settings; // also read by js/ui/theme.js, before the page is drawn
 
 // A run: which futures (the seed) and how many. The viewer's choice, kept in the settings; a share
 // link only tells the person opening it which run the sharer used.
 export const SEEDS = 2 ** 31; // a seed is 0 to 2^31 - 1
 export const SIMS = { min: 500, max: 50_000 };
-const DEFAULT_SETTINGS = { seed: 42, n_sims: 10_000, locale: "" };
+/** The page's colours: the device's light or dark ("auto"), or always one of them. */
+export const THEMES = ["auto", "light", "dark"];
+const DEFAULT_SETTINGS = { seed: 42, n_sims: 10_000, locale: "", theme: "auto" };
 
 function read(key, fallback) {
   try {
@@ -80,6 +83,7 @@ export function cleanSettings(raw) {
     ? Math.min(Math.max(s.n_sims, SIMS.min), SIMS.max)
     : DEFAULT_SETTINGS.n_sims;
   if (typeof s.locale !== "string") s.locale = DEFAULT_SETTINGS.locale;
+  if (!THEMES.includes(s.theme)) s.theme = DEFAULT_SETTINGS.theme;
   return s;
 }
 
