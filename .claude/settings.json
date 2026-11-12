@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(node -p 'JSON.parse(require(\"fs\").readFileSync(0, \"utf8\")).tool_input.file_path'); case \"$f\" in \"$CLAUDE_PROJECT_DIR\"/*) cd \"$CLAUDE_PROJECT_DIR\" && npm run --silent prettier -- --write --ignore-unknown --log-level warn \"$f\" ;; esac",
+            "timeout": 60,
+            "statusMessage": "Formatting with Prettier"
+          }
+        ]
+      }
+    ]
+  }
+}

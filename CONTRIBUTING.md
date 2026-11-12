@@ -77,6 +77,7 @@ Around it:
 | `.editorconfig`                       | UTF-8, LF, two spaces; files from elsewhere left as they came                                                                 |
 | `.prettierrc.json`, `.prettierignore` | How Prettier formats the code (lines up to 120 columns), and what it leaves alone                                             |
 | `.git-blame-ignore-revs`              | Commits that `git blame` skips: the one that formatted every file                                                             |
+| `.claude/settings.json`               | For Claude Code: runs Prettier on each file it edits                                                                          |
 
 ## Tests
 
