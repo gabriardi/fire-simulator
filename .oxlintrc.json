@@ -1,0 +1,19 @@
+{
+  "ignorePatterns": ["site/vendor/**"],
+  "categories": { "correctness": "error" },
+  "rules": {
+    "no-undef": "error",
+    "no-unused-vars": "error",
+    "unicorn/no-new-array": "off",
+    "unicorn/no-useless-fallback-in-spread": "off"
+  },
+  "env": { "browser": true, "es2024": true },
+  "overrides": [
+    { "files": ["site/js/*.js"], "env": { "browser": false, "shared-node-browser": true } },
+    { "files": ["site/js/app.js"], "env": { "browser": true } },
+    { "files": ["site/js/ui/charts.js"], "globals": { "Plotly": "readonly" } },
+    { "files": ["site/js/worker.js"], "env": { "browser": false, "worker": true } },
+    { "files": ["site/sw.js"], "env": { "browser": false, "serviceworker": true } },
+    { "files": ["scripts/**", "tests/**"], "env": { "browser": false, "node": true } }
+  ]
+}

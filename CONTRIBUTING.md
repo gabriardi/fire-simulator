@@ -27,6 +27,7 @@ cd fire-simulator
 node scripts/serve.js            # http://127.0.0.1:8000, with the production headers
 node --test "tests/*.test.js"    # Node 22 or newer; no packages to install
 npm run format                   # Prettier; npx fetches the pinned version, nothing is installed
+npm run lint                     # Oxlint, the same way
 ```
 
 Opening `site/index.html` from disk won't work: browsers don't load ES modules or Web Workers
@@ -76,14 +77,15 @@ Around it:
 | `.github/`                            | The tests on GitHub Actions, Dependabot for those actions, the issue forms and the pull request checklist, the sponsor button |
 | `.editorconfig`                       | UTF-8, LF, two spaces; files from elsewhere left as they came                                                                 |
 | `.prettierrc.json`, `.prettierignore` | How Prettier formats the code (lines up to 100 columns), and what it leaves alone                                             |
+| `.oxlintrc.json`                      | What the linter checks, and which globals each part of the code may use                                                       |
 | `.git-blame-ignore-revs`              | Commits that `git blame` skips: the one that formatted every file                                                             |
 | `.claude/settings.json`               | For Claude Code: runs Prettier on each file it edits                                                                          |
 
 ## Tests
 
 GitHub Actions runs them on every push to `main` and every pull request, on Node 22 and 24
-(`.github/workflows/test.yml`). It also checks that the code is formatted, and that the bundled
-Plotly is, byte for byte, the file published on npm for its version.
+(`.github/workflows/test.yml`). It also checks that the code is formatted and passes the linter,
+and that the bundled Plotly is, byte for byte, the file published on npm for its version.
 
 - `tests/engine.test.js` covers the model's mechanics:
   - accounts unlocking, income lines and events;
@@ -122,10 +124,17 @@ Plotly is, byte for byte, the file published on npm for its version.
 
 ## Before a pull request
 
-1. `node --test "tests/*.test.js"` passes, and the code is formatted: `npm run format`. Prettier
-   decides the layout, so there's no style to learn; an editor's Prettier extension with format on
-   save does the same as you type. The version is pinned in `package.json`'s scripts, so everyone
-   gets the same result.
+1. `node --test "tests/*.test.js"` passes, `npm run lint` reports nothing, and the code is
+   formatted: `npm run format`. Prettier decides the layout, so there's no style to learn; an
+   editor's Prettier extension with format on save does the same as you type. Both tools'
+   versions are pinned in `package.json`'s scripts, so everyone gets the same result.
+
+   The linter finds a name used without being defined or imported (after moving code between
+   modules, say), one defined and never used, and likely bugs. It also knows where each kind of
+   code runs: only `js/app.js` and `js/ui/` may use the page's globals (`document`, `window`…),
+   only `js/ui/charts.js` uses `Plotly`, and the other modules in `js/` use only what browsers and
+   Node share, as the tests run them under Node (`js/worker.js` may also use a worker's own).
+
 2. Try the change in the page (`node scripts/serve.js`), in a browser's private window so you start
    from the example. The tests don't drive the page, so it's worth a few minutes:
    - the result and all the charts appear, and update when you change the spending or a slider;
@@ -133,17 +142,7 @@ Plotly is, byte for byte, the file published on npm for its version.
    - a share link, with and without a password, opens in another private window;
    - export, then import the file;
    - light and dark mode, and a phone's width.
-3. If you moved code between modules, check that nothing is used without being imported. With
-   [Deno](https://deno.com) (nothing to install in the project):
-
-   ```bash
-   deno lint --rules-tags= --rules-include=no-undef,no-unused-vars site/js/
-   ```
-
-   The only names it should report are the browser's own (`document`, `history`,
-   `getComputedStyle`, `requestAnimationFrame`) and `Plotly`, which the page loads separately.
-
-4. Commit messages say what changed for someone using or reading the project, in plain words,
+3. Commit messages say what changed for someone using or reading the project, in plain words,
    with the reason in the body: `Share links: an optional password`.
 
 ## Notes for changes

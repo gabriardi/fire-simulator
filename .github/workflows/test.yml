@@ -36,6 +36,18 @@ jobs:
           node-version: 24
       - run: npm run format:check
 
+  # Names used without being defined or imported, names never used, likely bugs, and globals used
+  # where that code can't have them (.oxlintrc.json). Oxlint is pinned the same way as Prettier.
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm run lint
+
   # The chart library is checked in, minified: nobody reads 1.5 MB of it. This checks that it is,
   # byte for byte, the file published on npm for the version in its name.
   vendored:

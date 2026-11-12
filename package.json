@@ -15,7 +15,8 @@
     "serve": "node scripts/serve.js",
     "prettier": "npx --yes prettier@3.10.1",
     "format": "npm run --silent prettier -- --write .",
-    "format:check": "npm run --silent prettier -- --check ."
+    "format:check": "npm run --silent prettier -- --check .",
+    "lint": "npx --yes oxlint@1.93.0"
   },
   "engines": {
     "node": ">=22"
