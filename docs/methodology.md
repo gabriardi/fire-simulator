@@ -20,10 +20,10 @@ from. In every simulated future, each year goes like this:
    its tax is deducted, and the rest joins the portfolio.
 2. **Money goes out, or comes in.**
    - One-off events happen in their year.
-   - From the FIRE year, the spending rule sets the year's spending.
+   - From the FIRE start, the spending rule sets the year's spending.
    - Income lines that are active that year reduce what the portfolio has to pay.
    - The money comes from cash first, then from the portfolio, grossed up for the withdrawal tax.
-     If you keep a cash buffer, it moves into cash at the FIRE start.
+     If you keep a cash cushion, it moves into cash at the FIRE start.
 3. **A future fails** in the first year the money you can reach can't pay the bills, even if a
    retirement account would unlock later.
 4. **Markets move.**
@@ -33,20 +33,19 @@ from. In every simulated future, each year goes like this:
      median and volatility you set. With fat tails it follows a Student-t distribution instead,
      capped at −60% and +60%.
    - Cash and fixed-interest accounts grow at their rate minus inflation.
-5. **Savings arrive.** Until the FIRE year, the year's savings are added at the end of the year.
+5. **Savings arrive.** Until the FIRE start, the year's savings are added at the end of the year.
 
 The headline number is the share of futures that never fail before the plan's end.
 
 ## Reproducible
 
 Every future draws from its own random stream, seeded from the seed and the future's number. The
-same seed always gives the same futures. Every comparison (rules, FIRE years, spending levels,
-plans) is therefore made on the same markets, so a difference between two options comes from the
+same seed always gives the same futures. Every comparison (rules, FIRE starts, spending levels, plans) is therefore made on the same markets, so a difference between two options comes from the
 options themselves, not from luck. _New seed_ draws a fresh set of futures.
 
 ## Precision
 
-At 10,000 futures, the default, the success rate is within about ±1 point of the exact answer for
+At 10,000 futures, the default, the share of futures that last is within about ±1 point of the exact answer for
 these assumptions, 19 times in 20 (±0.6 near 90%). You can choose 1,000 to 50,000. To stay fast,
 the grid and safe spending use at most 4,000 futures, and the stress test and the comparison of
 rules at most 20,000.
@@ -62,9 +61,9 @@ rules at most 20,000.
 
 The flexible rules stay between a **floor** (the costs you can't cut) and a **ceiling**. They
 start at your spending, so that has to sit between the two. Until you set them yourself, they
-are a band around the spending (−20%, +25%, rounded) that moves with it. Once you set them, they
+sit around the spending (−20%, +25%, rounded) and move with it. Once you set them, they
 stay, and the spending slider keeps within them; a spending typed outside them gets an error that
-offers to set a band around it.
+offers to set them around it.
 
 ## Assumptions and limits
 

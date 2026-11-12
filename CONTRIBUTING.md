@@ -79,7 +79,7 @@ Around it:
 | `scripts/strings.js`                  | Every text the site shows, by key, from the code and the pages: `npm run strings`                                             |
 | `wrangler.jsonc`                      | Hosting on Cloudflare: `site/` as static files, and the logs                                                                  |
 | `tests/`                              | The tests, below                                                                                                              |
-| `docs/`                               | How the simulation works, the README's screenshots, and the link-preview card                                                 |
+| `docs/`                               | How the simulation works, the site's terms and style, the README's screenshots, and the link-preview card                     |
 | `.github/`                            | The tests on GitHub Actions, Dependabot for those actions, the issue forms and the pull request checklist, the sponsor button |
 | `.editorconfig`                       | UTF-8, LF, two spaces; files from elsewhere left as they came                                                                 |
 | `.prettierrc.json`, `.prettierignore` | How Prettier formats the code (lines up to 100 columns), and what it leaves alone                                             |
@@ -102,7 +102,7 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
 - `tests/parity.test.js` checks the engine against the Python/numpy model it was ported from. The
   numbers in `tests/fixtures/python-model.json` come from that model, run on fictional plans:
   - without volatility, both are deterministic and agree year by year to within 1e-9;
-  - with volatility, the success rates agree within sampling noise.
+  - with volatility, the shares of futures that last agree within sampling noise.
 
   That model isn't published, so the fixture is frozen. Agreeing shows that the port is faithful,
   not that the model is right: the hand-worked results in `tests/engine.test.js` are for that. A
@@ -161,7 +161,8 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
   and input by input in the guide (`site/js/locales/en/help.js`). A change to the model updates
   all three, and the README's short "How it works" if it's affected.
 - **Text is in the catalog, never in the code**, so that it can be translated. Only English
-  exists so far.
+  exists so far. [docs/terminology.md](docs/terminology.md) has the site's terms (one word for
+  each idea) and its style; a new text uses them.
   - A text the code shows is a message, `t("plans.saved", { name })`, with its English in
     `site/js/locales/en/messages.js`. A "?" explanation or a guide card is in
     `site/js/locales/en/help.js`.

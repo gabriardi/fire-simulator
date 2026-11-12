@@ -168,7 +168,7 @@ export function openSetup() {
       });
       plan.income = people.flatMap((p, i) => {
         const who = plan.people[i].name;
-        const v = amount(p.pension, t("setup.pensionOf", { name: who }));
+        const v = amount(p.pension, t("plan.statePensionOf", { name: who }));
         const age = Math.round(F.parse(p.age, "num"));
         if (!v) return [];
         if (!(age >= 40 && age <= 90))

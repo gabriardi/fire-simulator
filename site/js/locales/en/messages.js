@@ -1,4 +1,5 @@
-// The page's own texts, in English: everything its code shows, by key (see ../../i18n.js).
+// The page's own texts, in English: everything its code shows, by key (see ../../i18n.js). The
+// terms and the style they're written in: docs/terminology.md.
 //
 // - `{name}` is filled in by the code; Plotly fills in `%{x}`-style ones in the charts.
 // - `{ one, other }`: a form per number, for `{n}`, picked by the language's plural rules.
@@ -19,7 +20,7 @@ export default {
   // Inside a sentence: the headline ("spending 64,000 a year from 2039 (fixed spending)").
   "rule.inline.fixed": "fixed spending",
   "rule.inline.guardrails": "guardrails",
-  "rule.inline.vanguard": "vanguard dynamic",
+  "rule.inline.vanguard": "Vanguard dynamic",
   "rule.inline.spenddown": "spend-down",
   // In a suggested plan name ("Stop 2039, CHF 64k, guardrails").
   "rule.inName.fixed": "fixed",
@@ -31,7 +32,7 @@ export default {
   "rule.hint.guardrails":
     "Guyton & Klinger: cut spending when the withdrawal rate drifts above where it started by more than the band, raise it when it drifts below. Never below the floor or above the ceiling.",
   "rule.hint.vanguard":
-    "Aim at a fixed share of wealth, but change spending by at most +up / −down a year. Never below the floor or above the ceiling.",
+    "Aim at a fixed share of wealth, but change spending by at most +raise / −cut a year. Never below the floor or above the ceiling.",
   "rule.hint.spenddown":
     "Die with zero: each year, aim at what would leave nothing at the end if the money earned the assumed return, locked accounts and future income included. Change spending by at most +raise / −cut a year, between the floor and the ceiling.",
   "stress.label.none": "No forced crash",
@@ -154,9 +155,9 @@ export default {
   "form.fireYear": "FIRE start",
   "form.fireYear.hint": "Ages then: {ages}",
   "form.spending": "Spending per year",
-  "form.spending.hint": "{month} a month, today's money, taxes of the FIRE years included",
+  "form.spending.hint": "{month} a month, today's money, taxes after stopping included",
   "form.spending.band":
-    "{month} a month, today's money, taxes of the FIRE years included. The slider stays within the rule's floor and ceiling, {floor}–{ceiling}.",
+    "{month} a month, today's money, taxes after stopping included. The slider stays within the rule's floor and ceiling, {floor}–{ceiling}.",
   "form.spending.spenddown":
     "Not used by the spend-down, which works out its own. Still the unit of “years of spending” and of the cash cushion.",
   "form.endPerson": "Must last until",
@@ -188,7 +189,7 @@ export default {
   "form.cash": "Cash today",
   "form.contrib": "Saved per year until the FIRE start",
   "form.contrib.hint": "{month} a month, into the portfolio",
-  "form.contribGrowth": "Savings growth",
+  "form.contribGrowth": "Saving rises by",
   "form.contribGrowth.hint": "above inflation",
   "form.cashInterest": "Cash interest",
   "form.cushion": "Cash cushion",
@@ -301,10 +302,10 @@ export default {
     "of {n} simulated futures, spending down from {year}: typically {typical} in the first year, never below {floor}.",
   "hero.sub": "{currency}, today's money · {n} futures · seed {seed} · until {year}",
   "hero.start": "Wealth at the FIRE start",
-  "hero.start.sub": "median · 10th pct {p10}",
+  "hero.start.sub": "median · worst 10%: {p10}",
   "hero.first": "First-year spending",
   "hero.first.same": "the same in every future: it starts from these balances",
-  "hero.first.sub": "typical · bad 10%: {bad} · good 10%: {good}",
+  "hero.first.sub": "median · worst 10%: {worst} · best 10%: {best}",
   "hero.rate": "Starting withdrawal rate",
   "hero.rate.sub": "of the median wealth",
   "hero.fail": "Runs out",
@@ -317,8 +318,8 @@ export default {
   "hero.avg": "Average spending",
   "hero.avg.sub": "median lasting future",
   "hero.leanest": "Leanest year",
-  "hero.leanest.sub": "10th percentile",
-  "hero.atFloor": "Ever spending at the floor",
+  "hero.leanest.sub": "worst 10%",
+  "hero.atFloor": "Reaches the floor",
   "hero.atFloor.sub": "of lasting futures",
   "hero.compare": "Same plan, other rules:",
   "hero.chip": "{rule} {pct}",
@@ -350,25 +351,25 @@ export default {
   "chart.fail.hover": "%{x}: %{y:.2%} of futures run out",
   "grid.spending.title": "When can you stop, at which spending?",
   "grid.spending.desc":
-    "How often the money lasts for each FIRE year and spending level, on the same random markets throughout. Around 90% is a common target for a plan you can't easily undo. Tap a cell to try that plan.",
+    "How often the money lasts for each FIRE start and spending level, on the same random markets throughout. Around 90% is a common target for a plan you can't easily undo. Tap a cell to try that plan.",
   "grid.spending.axis": "Spending per year ({currency}, today's)",
   "grid.spending.hover": "Stop in %{y}, spend %{x} a year",
   "grid.floor.title": "When can you stop, with which floor?",
   "grid.floor.desc":
-    "The spend-down works out its own spending, so the columns are its floor: how often the floor could always be paid, for each FIRE year. Same random markets throughout. Tap a cell to try that plan.",
+    "The spend-down works out its own spending, so the columns are its floor: how often the floor could always be paid, for each FIRE start. Same random markets throughout. Tap a cell to try that plan.",
   "grid.floor.axis": "Floor: the least you'd spend ({currency}, today's)",
   "grid.floor.hover": "Stop in %{y}, never below %{x}",
   "grid.lasts": "money lasts in <b>%{z:.1%}</b>",
-  "safe.title": "Safe spending by FIRE year",
+  "safe.title": "Safe spending by FIRE start",
   "safe.desc":
     "The highest yearly spending that lasts in 90% and 95% of futures. Hover for the withdrawal rate it implies (spending ÷ median wealth at the start, retirement accounts included).",
-  "safe.spenddown.title": "What the spend-down allows, by FIRE year",
+  "safe.spenddown.title": "What the spend-down allows, by FIRE start",
   "safe.spenddown.desc":
     "The first year's spending the spend-down works out if you stop in each year: in a typical future, and when the years until then went badly or well (worst and best 10%). Below the floor you'd still spend the floor, with more risk.",
   "safe.hover": "{name}: %{customdata[0]} a year · %{customdata[1]} of median wealth",
-  "safe.typical": "typical",
-  "safe.bad": "bad 10%",
-  "safe.good": "good 10%",
+  "safe.median": "median",
+  "safe.worst": "worst 10%",
+  "safe.best": "best 10%",
   "safe.floor": "floor",
   "safe.lasts90": "lasts in 90%",
   "safe.lasts95": "lasts in 95%",
@@ -426,7 +427,6 @@ export default {
   "setup.household": "Who's in the household",
   "setup.pension": "State pension / yr",
   "setup.pensionAge": "from age",
-  "setup.pensionOf": "{name}'s state pension",
   "setup.optional": "optional",
   "setup.money": "Money",
   "setup.portfolio": "Invested today",
@@ -445,7 +445,7 @@ export default {
   "setup.error.noAmount": "{label}: enter an amount.",
   "setup.error.notAmount": "{label}: “{text}” isn't an amount.",
   "setup.error.born": "{name}: the birth year should be between {from} and {to}.",
-  "setup.error.pensionAge": "{name}'s state pension: the age should be between {from} and {to}.",
+  "setup.error.pensionAge": "State pension ({name}): the age should be between {from} and {to}.",
   "setup.error.spending": "Spending per year: it has to be more than 0.",
   "setup.error.fire": "Stop working in: a year from {year} on.",
   "setup.created":
@@ -496,11 +496,11 @@ export default {
   "run.fixBand": "Set floor and ceiling around this spending",
   "run.stopped": "The simulation stopped: {error}",
   "run.failed": "The simulation couldn't run: {error}",
-  "run.view.stopped": "The {view} view stopped: {error}",
-  "run.view.failed": "The {view} view couldn't run: {error}",
-  "run.view.grid": "grid",
-  "run.view.safe": "safe",
-  "run.view.stress": "stress",
+  "run.view.stopped": "{view} stopped: {error}",
+  "run.view.failed": "{view} couldn't run: {error}",
+  "run.view.grid": "The grid",
+  "run.view.safe": "The safe-spending chart",
+  "run.view.stress": "The stress test",
   "run.workerError": "worker error",
   "update.ready": "A new version is ready. Your plan stays as it is.",
   "update.reload": "Reload",
