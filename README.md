@@ -44,13 +44,13 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
 | Question                                      | Where to look                                                                                   |
 | --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Will the money last until the end?            | **Money lasts in**: the share of futures where it never runs out                                |
-| When could I stop, and at what spending?      | **The grid**: FIRE year × yearly spending, the success rate in every cell                       |
-| How much can I safely spend?                  | **Safe spending by FIRE year**: the highest spending that lasts in 90% and 95% of futures       |
-| What if the markets crash right after I stop? | **Stress test**: 2008, 2000–2002 and a lost decade, forced into the first FIRE years            |
-| What does being flexible buy me?              | **Same plan, other rules**: the success rate of each spending rule, side by side                |
+| When could I stop, and at what spending?      | **The grid**: FIRE start × yearly spending, how often the money lasts in every cell             |
+| How much can I safely spend?                  | **Safe spending by FIRE start**: the highest spending that lasts in 90% and 95% of futures      |
+| What if the markets crash right after I stop? | **Stress test**: 2008, 2000–2002 and a lost decade, forced into the first years after you stop  |
+| What does being flexible buy me?              | **Same plan, other rules**: how often the money lasts with each spending rule, side by side     |
 | How bad do the bad futures get?               | **Wealth over time**, plus the spread of wealth at the start and of the year the money runs out |
 
-![The grid of FIRE years and spending levels, and the safe spending for each FIRE year](docs/views.png)
+![The grid of FIRE starts and spending levels, and the safe spending for each FIRE start](docs/views.png)
 
 ## What you can model
 
@@ -118,7 +118,7 @@ Tips for reading the results:
   same crash twenty years later.
 - **Compare the rules.** If you could cut spending by 10–20% in bad years, a flexible rule often
   lets you stop years earlier.
-- **Click a cell in the grid** to try that FIRE year and spending.
+- **Click a cell in the grid** to try that FIRE start and spending.
 
 Numbers can be typed in the format you're used to: `1,234,567`, `1.234.567`, `1'234'567` or
 `1 234 567`, depending on the number format you pick. You can also type `250k` or `1.5M`.
@@ -193,7 +193,7 @@ stocks and one for bonds. A future fails in the first year the money you can rea
 bills, and the headline number is the share of futures that never fail.
 
 Every comparison runs on the same futures, so a difference between two options comes from the
-options, not from luck. At 10,000 futures, the success rate is within about ±1 point of the exact
+options, not from luck. At 10,000 futures, the share of futures that last is within about ±1 point of the exact
 answer for these assumptions, 19 times in 20.
 
 It is a tool for thinking about a plan, not a forecast, and not financial advice. The return you

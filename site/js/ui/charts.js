@@ -517,7 +517,7 @@ function renderHero() {
             fmt.money(first.p50),
             first.p90 - first.p10 < 1
               ? t("hero.first.same")
-              : t("hero.first.sub", { bad: fmt.money(first.p10), good: fmt.money(first.p90) }),
+              : t("hero.first.sub", { worst: fmt.money(first.p10), best: fmt.money(first.p90) }),
             "result.first",
           ),
         ]
@@ -709,9 +709,9 @@ function renderSafe() {
   });
   const traces = spendDown
     ? [
-        line("p50", accent, "solid", t("safe.typical")),
-        line("p10", accent, "dot", t("safe.bad")),
-        line("p90", accent, "dash", t("safe.good")),
+        line("p50", accent, "solid", t("safe.median")),
+        line("p10", accent, "dot", t("safe.worst")),
+        line("p90", accent, "dash", t("safe.best")),
         level(state.rule.floor, t("safe.floor")),
       ]
     : [
