@@ -29,8 +29,10 @@ branch are what gets fixed.
   them. The chart library is served with the site, and CI checks that it is, byte for byte, the
   file published on npm for its version. Other headers: `Referrer-Policy: no-referrer`,
   `X-Content-Type-Options: nosniff`, a `Permissions-Policy` that turns off the camera, the
-  microphone, location, payments and USB, and `Strict-Transport-Security`: after one visit,
-  browsers use only https for the site, for 180 days.
+  microphone, location, payments and USB, `Strict-Transport-Security`: after one visit,
+  browsers use only https for the site, for 180 days, and a `Cross-Origin-Opener-Policy`
+  (`same-origin`): a page on another site that opens this one, or that this one opens, gets no
+  handle on its window.
 
 - **Every plan from outside is untrusted.** Plans from local storage, a file or a share link go
   through `normalize()` (`site/js/plan.js`): every field gets its type and a value within bounds,

@@ -6,6 +6,7 @@
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Strict-Transport-Security: max-age=15552000
+  Cross-Origin-Opener-Policy: same-origin
 
 # The chart library's file name carries its version, so it can be kept for good.
 /vendor/*
