@@ -486,6 +486,26 @@ function incomeGroup() {
         what: t("form.income.indexed.what", { name: s.name }),
         help: "income.indexed",
       }),
+      numberField({
+        path: `${P}.change`,
+        label: t("form.income.change"),
+        what: t("form.income.change.what", { name: s.name }),
+        help: "income.change",
+        kind: "pct",
+        unit: t("unit.pctPerYear"),
+        min: -0.1,
+        max: 0.1,
+        hint: (v) => {
+          const line = state.income[i];
+          if (!line) return "";
+          const indexed = line.indexed !== false;
+          if (!v) return indexed ? t("form.income.change.flat") : t("form.income.change.flatMoney");
+          const amount = fmt.money(Math.abs(line.amount * (1 + v) ** 10));
+          return indexed
+            ? t("form.income.change.real", { amount })
+            : t("form.income.change.money", { amount });
+        },
+      }),
     );
   });
   const full = state.income.length >= LIMITS.income;

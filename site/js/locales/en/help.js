@@ -381,6 +381,17 @@ export default {
       A pension that pays the same amount of money for ever loses value every year: untick it, and
       enter the amount in money as it will be paid.</p>`,
   },
+  "income.change": {
+    title: "Changes by",
+    html: `<p>How much the line rises each year after its first, or falls if it's negative: on top
+      of inflation if it rises with inflation, in money if it doesn't. A line that started before
+      this year changes from this year on.</p>
+      <ul>
+        <li>A pension raised by less than prices: a negative change, such as −1%.</li>
+        <li>Costs that rise faster than prices, such as care late in life: a positive one.</li>
+      </ul>
+      <p class="ex">A cost of 6,000 from age 80, +3% a year → about 8,100 at 90.</p>`,
+  },
 
   // ---- one-off events ------------------------------------------------------------------------------
   events: {

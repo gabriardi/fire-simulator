@@ -53,7 +53,7 @@ export const GUIDE = [
     t("guide.accounts"),
     ["accounts", "account.contrib", "account.growth", "account.unlock_age", "account.tax"],
   ],
-  [t("guide.income"), ["income", "income.when", "income.indexed", "events"]],
+  [t("guide.income"), ["income", "income.when", "income.indexed", "income.change", "events"]],
   [t("guide.markets"), ["stock_return", "stock_vol", "inflation", "_tails"]],
   [
     t("guide.mix"),

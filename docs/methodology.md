@@ -21,7 +21,9 @@ from. In every simulated future, each year goes like this:
 2. **Money goes out, or comes in.**
    - One-off events happen in their year.
    - From the FIRE start, the spending rule sets the year's spending.
-   - Income lines that are active that year reduce what the portfolio has to pay.
+   - Income lines that are active that year reduce what the portfolio has to pay. A line can
+     rise or fall by a set share each year: on top of inflation, or in money for a line that
+     isn't indexed.
    - The money comes from cash first, then from the portfolio, grossed up for the withdrawal tax.
      If you keep a cash cushion, it moves into cash at the FIRE start.
 3. **A future fails** in the first year the money you can reach can't pay the bills, even if a
@@ -84,7 +86,6 @@ advice.
   the stock and bond returns.
 - **Not modelled**:
   - changes to pension rules;
-  - costs that rise faster than prices, such as health care late in life;
   - inflation that varies: it's the rate you set, in every year, and only the returns are random;
   - how long each person actually lives: the plan simply runs to the age you set;
   - currency risk, and fees beyond what you subtract from the returns.

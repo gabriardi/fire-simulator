@@ -152,6 +152,7 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
         from: { kind: "age", person: "alex", value: 67 },
         to: null,
         indexed: true,
+        change: 0,
       },
       {
         id: "sp-sam",
@@ -160,6 +161,7 @@ export function examplePlan({ currency = DEFAULT_CURRENCY, today = new Date() } 
         from: { kind: "age", person: "sam", value: 67 },
         to: null,
         indexed: true,
+        change: 0,
       },
     ],
     rule: { ...RULE_DEFAULTS, ...bandAround(64_000) },
@@ -196,6 +198,7 @@ export const newIncome = (plan, cost = false) =>
         from: { kind: "fire", value: 0 },
         to: { kind: "fire", value: 10 },
         indexed: true,
+        change: 0,
       }
     : {
         id: uid(),
@@ -204,6 +207,7 @@ export const newIncome = (plan, cost = false) =>
         from: { kind: "age", person: plan.people[0].id, value: 67 },
         to: null,
         indexed: true,
+        change: 0,
       };
 export const newEvent = (plan) => ({
   id: uid(),
@@ -302,6 +306,7 @@ export function normalize(raw, { currency = DEFAULT_CURRENCY, today = new Date()
       from: when(s.from, { kind: "fire", value: 0 }) ?? { kind: "fire", value: 0 },
       to: when(s.to, null),
       indexed: s.indexed !== false,
+      change: num(s.change, 0, -0.1, 0.1),
     })),
     events: list(r.events, LIMITS.events).map((e) => ({
       id: idOf(e.id),

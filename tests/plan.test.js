@@ -93,6 +93,20 @@ test("normalize keeps values in bounds and references pointing at people who exi
   assert.equal(p.income[0].to.kind, "year");
 });
 
+test("normalize gives an income line a yearly change: none if it had none, within ±10% a year", () => {
+  const p = normalize(
+    {
+      people: [{ id: "a", name: "A", birth_year: 1985 }],
+      income: [{ amount: 1000 }, { amount: 1000, change: -0.01 }, { amount: 1000, change: 3 }],
+    },
+    { today },
+  );
+  assert.deepEqual(
+    p.income.map((s) => s.change),
+    [0, -0.01, 0.1],
+  );
+});
+
 test("normalize gives every item a unique id", () => {
   const p = normalize(
     {
