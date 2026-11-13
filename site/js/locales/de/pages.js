@@ -117,7 +117,7 @@ export default {
   "page.how.limits.inflation":
     "Die Inflation ist der eingestellte Satz, in jedem Jahr: Nur die Renditen sind zufällig.",
   "page.how.limits.taxes":
-    "Steuern sind vereinfacht: ein fester Satz auf jedes Vorsorgekonto bei seinem Bezug und wahlweise ein effektiver Satz auf Entnahmen aus dem Depot. Alles andere (Einkommensteuer, Vermögensteuer, Krankenversicherung) gehört in die Ausgaben.",
+    "Steuern sind vereinfacht: ein fester Satz auf jedes Vorsorgekonto bei seinem Bezug und wahlweise ein effektiver Satz auf Entnahmen aus dem Depot. Einkommensteuer und Krankenversicherung gehören in die Ausgaben; eine Steuer auf das Vermögen ziehst du von den Renditen ab.",
   "page.how.limits.missing":
     "Nicht abgebildet: Rentenreformen, Kosten, die schneller steigen als die Preise, wie lange jede Person lebt (der Plan läuft einfach bis zum eingestellten Alter), Währungsrisiko.",
   "page.how.advice":

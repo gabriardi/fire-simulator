@@ -74,9 +74,14 @@ advice.
   stretches and recoveries. The stress test covers the worst case that matters most, a bad start.
 - **The return assumption dominates.** Compare a cautious case with an optimistic one before
   trusting any single number.
+- **Lower than the “4% rule”.** Studies of past markets find safe withdrawal rates of about 4%
+  over 30 years in the US, and 3–3.5% over longer plans or markets around the world. With its
+  default returns, which are below the past century's, and its independent years, the simulator
+  finds about 3% over 30 years and 2–2.5% over 45, in 90% of futures.
 - **Taxes are simplified.** There is a flat rate on each retirement account when it unlocks, and
   an optional effective rate on portfolio withdrawals. Put every other tax, plus health insurance,
-  into the spending.
+  into the spending, except a tax on wealth: it shrinks with the portfolio, so take its rate off
+  the stock and bond returns.
 - **Not modelled**:
   - changes to pension rules;
   - costs that rise faster than prices, such as health care late in life;

@@ -31,8 +31,13 @@ export default {
     title: "Safe withdrawal rate (SWR)",
     html: `<p>The share of your wealth you can take out in the first year, then keep spending the
       same real amount, and still not run out. The famous “4% rule” comes from 30-year US
-      retirements; for 40+ years it's lower, around 3–3.5%.</p>
-      <p class="ex">1,200,000 × 3.5% = 42,000 a year.</p>`,
+      retirements; for 40+ years, or for markets around the world, studies of the past find around
+      3–3.5%.</p>
+      <p>The simulator finds less with its default returns: about 3% over 30 years and 2–2.5% over
+      45, in 90% of futures. Its returns are below the past century's, and each year is drawn on
+      its own, so nothing pulls a bad decade back towards the average. “Safe spending by FIRE
+      start” shows the rate for your plan.</p>
+      <p class="ex">1,200,000 × 3% = 36,000 a year.</p>`,
   },
   "concept.privacy": {
     title: "Your numbers stay with you",
@@ -140,12 +145,15 @@ export default {
   spending: {
     title: "Spending per year",
     html: `<p>What the household will spend each year after stopping, in today's money,
-      <b>including</b> the taxes of those years (income tax on withdrawals, wealth tax, health
-      insurance you'll now pay yourself). Leave out costs that stop with work, such as commuting.</p>
+      <b>including</b> the taxes of those years (income tax on withdrawals, health insurance you'll
+      now pay yourself). Leave out costs that stop with work, such as commuting.</p>
       <p class="ex">40,000 a year = 3,333 a month. With a flexible rule this is the
       <b>starting</b> amount. The spend-down works out its own and doesn't use it.</p>
       <p>Costs that come and go (a mortgage until it's paid off, children's school) are better as
-      lines under “Income and costs after stopping”.</p>`,
+      lines under “Income and costs after stopping”.</p>
+      <p>A tax on wealth (a wealth tax, a yearly stamp duty on investments) shrinks as the portfolio
+      does: take its rate off the stock and bond returns instead.</p>
+      <p class="ex">A 0.3% wealth tax: stocks 6% → 5.7%, bonds 3% → 2.7%.</p>`,
   },
   end_person: {
     title: "Money must last until",
@@ -348,7 +356,8 @@ export default {
     title: "Income and costs after stopping",
     html: `<p>Money that comes in, or goes out on top of the spending, for a stretch of the
       retirement: a state pension, a company pension paid monthly, part-time work, rent from a flat;
-      or a mortgage until it's paid off, children at university.</p>
+      or a mortgage until it's paid off, children at university. In Switzerland, someone who stops
+      working before 65 still pays AHV contributions, set by their wealth: a cost until 65.</p>
       <ul>
         <li>A <b>positive</b> amount is income, a <b>negative</b> one an extra cost. Per year, in
           today's money.</li>
@@ -378,7 +387,9 @@ export default {
     title: "One-off events",
     html: `<p>A single amount in a single year, before or after the FIRE start: an inheritance or the
       sale of a house (positive), a new roof, a car, a wedding, help for a child (negative). In
-      today's money, after any tax. A cost the money can't pay is a failure in its year.</p>`,
+      today's money, after any tax. A cost the money can't pay is a failure in its year.</p>
+      <p>To leave money to someone, enter it as a cost in the year the plan ends: a future that
+      ends with less than that fails.</p>`,
   },
 
   // ---- markets -------------------------------------------------------------------------------------
@@ -389,6 +400,9 @@ export default {
       this rate (the simple average of the years is higher). The simulator subtracts inflation.</p>
       <p class="ex">6% with 2% inflation ≈ 3.9% real: around the middle of long-run forecasts for
       world stocks (about 3.5–5% real). World stocks have earned about 5% real a year since 1900.</p>
+      <p>A return from elsewhere may be the <b>simple average</b> of the years instead: for the
+      same stocks it's higher by about half the volatility squared.</p>
+      <p class="ex">An average of 7.4% with 17% volatility ≈ 6% here.</p>
       <p>This one input moves the result more than any other: try a cautious case.</p>`,
   },
   stock_vol: {
