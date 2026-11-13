@@ -13,7 +13,7 @@ import { base, fmt, settings, state } from "./state.js";
 export const syncers = [];
 export const invalid = new Set();
 
-// Every form field, for the "edited" marks and summaries: { path, label, show, node }.
+// Every form field, for the "edited" marks and summaries: { path, label, node }.
 export const FIELDS = [];
 export const groups = [];
 
@@ -156,15 +156,7 @@ export function numberField({
   );
   const node = el("div", { class: "field" }, head, range, box, hintEl);
   if (!setting) {
-    FIELDS.push({
-      path,
-      label: what ?? label,
-      node,
-      show: (v) =>
-        kind === "money"
-          ? fmt.money(v)
-          : `${toShow(v)}${unitText() === "%" ? "%" : unitText() ? ` ${unitText()}` : ""}`,
-    });
+    FIELDS.push({ path, label: what ?? label, node });
   }
   return node;
 }
@@ -193,10 +185,11 @@ export function textField({ path, label, what, help, oncommit, placeholder }) {
     help ? helpBtn(help) : null,
   );
   const node = el("div", { class: "field" }, head, el("div", { class: "input" }, input));
-  FIELDS.push({ path, label: what ?? label, node, show: (v) => `“${v}”` });
+  FIELDS.push({ path, label: what ?? label, node });
   return node;
 }
 
+// `toKey` turns a value of the plan into its option's value, where they differ.
 export function selectField({
   path,
   label,
@@ -205,7 +198,7 @@ export function selectField({
   onchange,
   help,
   what,
-  show,
+  toKey = (v) => String(v ?? ""),
   setting = false,
 }) {
   const target = () => (setting ? settings : state);
@@ -228,7 +221,7 @@ export function selectField({
   syncers.push(() => {
     fill();
     const v = getPath(target(), path);
-    sel.value = String(show ? show.toKey(v) : (v ?? ""));
+    sel.value = toKey(v);
     if (hintEl) hintEl.textContent = typeof hint === "function" ? hint() : hint;
   });
   const head = el(
@@ -238,11 +231,7 @@ export function selectField({
     helpBtn(help ?? path),
   );
   const node = el("div", { class: "field" }, head, el("div", { class: "input" }, sel), hintEl);
-  if (!setting) {
-    const optionText = (v) =>
-      options().find(([o]) => o === String(show ? show.toKey(v) : (v ?? "")))?.[1];
-    FIELDS.push({ path, label: what ?? label, node, show: show?.text ?? optionText });
-  }
+  if (!setting) FIELDS.push({ path, label: what ?? label, node });
   return node;
 }
 
@@ -266,24 +255,11 @@ export function checkField({ path, label, what, help }) {
       helpBtn(help),
     ),
   );
-  FIELDS.push({
-    path,
-    label: what ?? label,
-    node,
-    show: (v) => (v ? t("field.yes") : t("field.no")),
-  });
+  FIELDS.push({ path, label: what ?? label, node });
   return node;
 }
 
 // A moment: a calendar year, an age of someone, or years after the FIRE start (or never).
-function describeWhen(w) {
-  if (!w) return t("when.never");
-  if (w.kind === "fire")
-    return w.value === 0 ? t("when.atFire") : t("when.afterFire", { n: w.value });
-  if (w.kind === "age")
-    return t("when.turns", { name: personById(state, w.person).name, age: w.value });
-  return t("when.inYear", { year: w.value });
-}
 export function whenField({ path, label, what, never = false }) {
   const id = `f-${path.replace(/\./g, "-")}`;
   const sel = el("select", { id, "aria-label": t("when.how", { label }) });
@@ -377,7 +353,7 @@ export function whenField({ path, label, what, never = false }) {
     el("div", { class: "when" }, el("div", { class: "input" }, sel), valueBox),
     hintEl,
   );
-  FIELDS.push({ path, label: what ?? label, node, show: describeWhen, deep: true });
+  FIELDS.push({ path, label: what ?? label, node });
   return node;
 }
 

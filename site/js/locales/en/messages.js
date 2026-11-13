@@ -119,8 +119,6 @@ export default {
   "group.stress": "Stress test",
   "group.simulation": "Simulation",
   "field.slider": "{label} slider",
-  "field.yes": "yes",
-  "field.no": "no",
   "item.remove": "Remove",
   "unit.years": "years",
   "unit.yrs": "yrs",
@@ -132,14 +130,6 @@ export default {
   "when.option.fire": "FIRE start +",
   "when.option.year": "In the year",
   "when.option.age": "When {name} turns",
-  "when.never": "never",
-  "when.atFire": "at the FIRE start",
-  "when.afterFire": {
-    one: "{n} year after the FIRE start",
-    other: "{n} years after the FIRE start",
-  },
-  "when.turns": "when {name} turns {age}",
-  "when.inYear": "in {year}",
   "when.stopsFirst": "{year}: before it starts ({from}), so it never pays",
 
   // ---- the form, section by section -------------------------------------------------------------
@@ -253,11 +243,8 @@ export default {
   "form.inflation.hint": "Turns the nominal inputs into today's money.",
   "form.tails": "Extreme years",
   "form.tails.normal": "Normal distribution",
-  "form.tails.normal.what": "normal",
   "form.tails.fat": "Fat tails (t, {df})",
-  "form.tails.fat.what": "fat tails (t, {df})",
   "form.tails.veryFat": "Very fat tails (t, {df})",
-  "form.tails.veryFat.what": "very fat tails (t, {df})",
   "form.tails.hint":
     "Fat tails make −40% years about 8× more frequent, with calmer ordinary years.",
   "form.stockShare": "Stock share",
@@ -274,7 +261,6 @@ export default {
   "form.crash": "Force a crash at the FIRE start",
   "form.crash.what": "Crash at the start",
   "form.crash.customOption": "Custom…",
-  "form.crash.customWhat": "custom ({list}%)",
   "form.crash.custom": "Custom crash (real % per year, from the FIRE start)",
   "form.crash.custom.aria": "Custom crash, real returns in %",
   "form.crash.hint": "Random markets after it. The stress-test chart runs every scenario anyway.",
