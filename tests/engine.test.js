@@ -98,6 +98,70 @@ test("an income line that isn't indexed loses value to inflation", () => {
   assert.ok(Math.abs(inc[2040 - 2026] - 10_000 / 1.02 ** 14) < 1e-9);
 });
 
+test("a line's change makes it rise or fall each year after its first, in today's money or in money", () => {
+  const line = (id, amount, from, change, indexed = true) => ({
+    id,
+    name: id,
+    amount,
+    from,
+    to: null,
+    indexed,
+    change,
+  });
+  const plan = household({
+    income: [
+      line("pension", 10_000, { kind: "year", value: 2040 }, -0.01),
+      line("annuity", 10_000, { kind: "year", value: 2040 }, 0.02, false),
+      line("rent", 6_000, { kind: "year", value: 2020 }, 0.01),
+      line("care", -5_000, { kind: "fire", value: 2 }, 0.03),
+    ],
+  });
+  const years = Array.from({ length: 40 }, (_, k) => 2026 + k);
+  const each = (fire) =>
+    plan.income.map((s) => incomeByYear({ ...plan, income: [s] }, years, fire));
+  const [pension, annuity, rent, care] = each(2040);
+  const at = (arr, y) => arr[y - 2026];
+  const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} vs ${b}`);
+  near(at(pension, 2040), 10_000);
+  near(at(pension, 2050), 10_000 * 0.99 ** 10);
+  // Rising 2% in money with 2% inflation: the same in today's money every year.
+  near(at(annuity, 2040), 10_000 / 1.02 ** 14);
+  near(at(annuity, 2060), 10_000 / 1.02 ** 14);
+  // A line that started before this year changes from this year on.
+  near(at(rent, 2040), 6_000 * 1.01 ** 14);
+  // A line that starts with the FIRE start moves with it, and so does its change.
+  near(at(care, 2042), -5_000);
+  near(at(care, 2045), -5_000 * 1.03 ** 3);
+  near(at(each(2045)[3], 2047), -5_000);
+});
+
+test("without volatility, a cost that grows lasts exactly as long as its present value allows", () => {
+  // Pay c, then c (1 + h), c (1 + h)^2… at the start of each of N years, from W growing by g: the
+  // money lasts while W >= c (1 - q^N) / (1 - q), with q = (1 + h) / g.
+  const { plan, years } = annuityPlan();
+  const g = 1 + real(plan.stock_return, plan.inflation);
+  const h = 0.02;
+  const q = (1 + h) / g;
+  const most = (plan.portfolio * (1 - q)) / (1 - q ** years);
+  const cost = (c) => ({
+    ...plan,
+    spending: 0,
+    income: [
+      {
+        id: "c",
+        name: "Care",
+        amount: -c,
+        from: { kind: "fire", value: 0 },
+        to: null,
+        indexed: true,
+        change: h,
+      },
+    ],
+  });
+  assert.equal(lasts(cost(most * (1 - 1e-9))), 1);
+  assert.equal(lasts(cost(most * (1 + 1e-6))), 0);
+});
+
 test("income reduces what the portfolio pays: a pension covering all spending never fails", () => {
   const plan = household({
     portfolio: 0,

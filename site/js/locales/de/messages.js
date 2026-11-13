@@ -212,6 +212,12 @@ export default {
   "form.income.to.what": "Ende von {name}",
   "form.income.indexed": "Steigt mit der Inflation",
   "form.income.indexed.what": "{name} steigt mit der Inflation",
+  "form.income.change": "Ändert sich um",
+  "form.income.change.what": "{name} ändert sich um",
+  "form.income.change.flat": "jedes Jahr gleich, in heutiger Kaufkraft",
+  "form.income.change.flatMoney": "jedes Jahr gleich, als Geldbetrag",
+  "form.income.change.real": "über der Inflation: in 10 Jahren {amount} pro Jahr",
+  "form.income.change.money": "als Geldbetrag: in 10 Jahren {amount} pro Jahr",
   "form.add.income": "Einnahme hinzufügen",
   "form.add.cost": "Kosten hinzufügen",
   "form.events.hint":

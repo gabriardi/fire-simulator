@@ -419,6 +419,19 @@ export default {
       in heutiger Kaufkraft. Eine Rente, die für immer denselben Geldbetrag zahlt, verliert jedes
       Jahr an Wert: Nimm das Häkchen weg und gib den Betrag so ein, wie er ausbezahlt wird.</p>`,
   },
+  "income.change": {
+    title: "Ändert sich um",
+    html: `<p>Um wie viel der Posten jedes Jahr nach seinem ersten steigt, oder sinkt, wenn der Wert
+      negativ ist: zusätzlich zur Inflation, wenn er mit der Inflation steigt, sonst als
+      Geldbetrag. Ein Posten, der schon vor diesem Jahr begonnen hat, ändert sich ab diesem Jahr.</p>
+      <ul>
+        <li>Eine Rente, die weniger stark als die Preise angepasst wird: eine negative Änderung,
+          etwa −1 %.</li>
+        <li>Kosten, die schneller steigen als die Preise, etwa für Pflege im hohen Alter: eine
+          positive.</li>
+      </ul>
+      <p class="ex">Kosten von 6000 ab 80, +3 % pro Jahr → etwa 8100 mit 90.</p>`,
+  },
 
   // ---- one-off events ------------------------------------------------------------------------------
   events: {

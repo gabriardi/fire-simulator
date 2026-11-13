@@ -95,7 +95,7 @@ export default {
   "page.how.years.unlock":
     "Erreicht die Person, der es gehört, das Bezugsalter, wird ein Vorsorgekonto bezogen, versteuert und dem Depot zugeschlagen.",
   "page.how.years.income":
-    "Ab dem FIRE-Start zählen Einnahmen (Renten, Teilzeitarbeit) und zusätzliche Kosten, und einmalige Ereignisse geschehen in ihrem Jahr.",
+    "Ab dem FIRE-Start zählen Einnahmen (Renten, Teilzeitarbeit) und zusätzliche Kosten, jeder Posten auf Wunsch mit einer festen jährlichen Änderung, und einmalige Ereignisse geschehen in ihrem Jahr.",
   "page.how.years.fail":
     "Die Ausgaben kommen zuerst aus dem Bankguthaben, dann aus dem Depot. Ein Verlauf <strong>scheitert</strong> im ersten Jahr, in dem das verfügbare Geld die Rechnungen nicht bezahlen kann, auch wenn später ein Vorsorgekonto verfügbar würde.",
   "page.how.rules": "Entnahmeregeln",
@@ -119,7 +119,7 @@ export default {
   "page.how.limits.taxes":
     "Steuern sind vereinfacht: ein fester Satz auf jedes Vorsorgekonto bei seinem Bezug und wahlweise ein effektiver Satz auf Entnahmen aus dem Depot. Einkommensteuer und Krankenversicherung gehören in die Ausgaben; eine Steuer auf das Vermögen ziehst du von den Renditen ab.",
   "page.how.limits.missing":
-    "Nicht abgebildet: Rentenreformen, Kosten, die schneller steigen als die Preise, wie lange jede Person lebt (der Plan läuft einfach bis zum eingestellten Alter), Währungsrisiko.",
+    "Nicht abgebildet: Rentenreformen, wie lange jede Person lebt (der Plan läuft einfach bis zum eingestellten Alter), Währungsrisiko.",
   "page.how.advice":
     "Dies ist ein Werkzeug, um über einen Plan nachzudenken, keine Finanzberatung.",
   "page.foot.free":
