@@ -10,7 +10,7 @@ import { RULE_KINDS } from "../site/js/engine.js";
 import { ALIASES, GUIDE } from "../site/js/help.js";
 import { LANGS } from "../site/js/i18n.js";
 import HELP from "../site/js/locales/en/help.js";
-import { SETTINGS_KEY } from "../site/js/store.js";
+import { PLANS_KEY, SESSION_KEY, SETTINGS_KEY } from "../site/js/store.js";
 
 const ROOT = new URL("../site/", import.meta.url); // what is deployed
 const REPO = new URL("../", import.meta.url);
@@ -109,7 +109,7 @@ test("the workers load only the model: no page code, no catalog of texts", () =>
 test("the code uses no regular-expression syntax a supported browser lacks", () => {
   // A lookbehind, (?<=…) or (?<!…), is in Safari only from 16.4: before, the whole module, and
   // with it the page, fails to load. (CONTRIBUTING.md lists the browsers.)
-  const files = [...modulesFrom("js/app.js"), "sw.js", "js/ui/theme.js"];
+  const files = [...modulesFrom("js/app.js"), "sw.js", "js/ui/theme.js", "js/ui/welcome.js"];
   const found = files.filter((f) => /\(\?<[=!]/.test(read(f)));
   assert.deepEqual(found, []);
 });
@@ -197,6 +197,21 @@ test("the theme is on every page before it's drawn, read from where the settings
   }
 });
 
+test("the welcome box is decided before the page is drawn, from where the plans are kept", () => {
+  // js/ui/welcome.js runs before the page's modules, like theme.js: it can't import the keys.
+  const src = read("js/ui/welcome.js");
+  for (const key of [PLANS_KEY, SESSION_KEY, SETTINGS_KEY])
+    assert.ok(src.includes(`"${key}"`), `welcome.js reads ${key}`);
+  for (const folder of FOLDERS) {
+    const page = read(`${folder}index.html`);
+    const script = page.indexOf(`<script src="${folder ? "../" : ""}js/ui/welcome.js"></script>`);
+    assert.ok(script > 0, `${folder}index.html loads js/ui/welcome.js`);
+    assert.ok(script < page.indexOf("</head>"), `${folder}index.html: in the head`);
+    // The box starts hidden by nothing but the attribute welcome.js and plans.js set.
+    assert.match(page, /<section class="welcome" id="welcome">/);
+  }
+});
+
 test("dark mode has the same colours, whether the device or the theme switch picks it", () => {
   const css = read("app.css");
   const block = (selector) => {
@@ -219,7 +234,8 @@ test("the chart library is the same version everywhere", () => {
   const file = `vendor/${bundles[0]}`;
   // The version in the name is what lets _headers cache it for good.
   assert.match(file, /-\d+\.\d+\.\d+\.min\.js$/);
-  assert.ok(html.includes(`<script src="${file}">`), `index.html loads ${file}`);
+  // `async`: the page's code doesn't wait for it (js/ui/charts.js draws once it's there).
+  assert.ok(html.includes(`<script src="${file}" async></script>`), `index.html loads ${file}`);
   assert.ok(SHELL.includes(file), `sw.js keeps ${file}`);
   assert.ok(
     readFileSync(new URL("README.md", REPO), "utf8").includes(file),

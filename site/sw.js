@@ -26,6 +26,7 @@ const SHELL = [
   "js/ui/share.js",
   "js/ui/state.js",
   "js/ui/theme.js",
+  "js/ui/welcome.js",
   "js/ui/language.js",
   "js/ui/updates.js",
   "js/engine.js",

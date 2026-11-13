@@ -12,9 +12,12 @@ const KEYS = {
   groups: "fire-sim.groups.v1", // which form sections are open
   backup: "fire-sim.backup.v1", // { exported }: when the plans were last exported to a file
 };
+// The three read before the page is drawn, by plain scripts that can't import them: js/ui/theme.js
+// and language.js (the settings), welcome.js (all three).
 export const PLANS_KEY = KEYS.plans;
+export const SESSION_KEY = KEYS.session;
+export const SETTINGS_KEY = KEYS.settings;
 export const BACKUP_KEY = KEYS.backup;
-export const SETTINGS_KEY = KEYS.settings; // also read by js/ui/theme.js and language.js, before the page is drawn
 
 // A run: which futures (the seed) and how many. The viewer's choice, kept in the settings; a share
 // link only tells the person opening it which run the sharer used.

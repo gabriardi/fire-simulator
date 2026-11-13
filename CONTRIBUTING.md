@@ -53,6 +53,7 @@ In `site/`:
 | `js/ui/run.js`, `js/ui/charts.js`                    | Running the model in workers, and drawing what they return                                           |
 | `js/ui/messages.js`, `js/ui/dom.js`                  | Help and the guide, toasts and errors; small page helpers                                            |
 | `js/ui/theme.js`                                     | The theme picked in this browser, put on each page before it's drawn                                 |
+| `js/ui/welcome.js`                                   | Whether the welcome box shows, decided before the page is drawn                                      |
 | `js/ui/updates.js`                                   | Starting the service worker; loading a new version into a page left open                             |
 | `js/engine.js`                                       | The model: random draws, accounts, income, spending rules, one future at a time                      |
 | `js/views.js`                                        | Turns simulations into what each chart shows (percentiles, the grid, safe spending, the stress test) |
@@ -205,6 +206,11 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
   version.
 - **Storage keys and the file format** (`fire-sim.*` in `site/js/store.js`, `FILE_FORMAT`) stay as
   they are, whatever the site is called: changing them loses every plan already saved.
+- **The page doesn't move as it loads**: what the scripts change after it's first drawn takes the
+  room it will need from the start. The welcome box is decided in the head (`js/ui/welcome.js`),
+  and the results box holds stand-ins about the size of the usual results until they come
+  (`.ghost` in `site/index.html` and `app.css`): a change to its tiles or rules may need them
+  changed too. Plotly loads with `async`, and `draw()` in `js/ui/charts.js` waits for it.
 - **New modules**: a module the page or a worker imports has to be added to `SHELL` in
   `site/sw.js`, or the app won't work offline. `tests/site.test.js` fails until it is.
 - **The link-preview image** (`site/images/social.png`) is `docs/social-card.html` at
