@@ -316,7 +316,7 @@ function peopleGroup() {
         const list = CURRENCIES.includes(state.currency)
           ? CURRENCIES
           : [state.currency, ...CURRENCIES];
-        return list.map((c) => [c, `${c} · ${currencyName(c, fmt.locale)}`]);
+        return list.map((c) => [c, `${c} · ${currencyName(c, fmt.words)}`]);
       },
       onchange: (v) => {
         state.currency = v;

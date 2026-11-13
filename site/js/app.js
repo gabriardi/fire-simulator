@@ -1,7 +1,7 @@
 // The page's entry point: wires the buttons, menus and dialogs to the modules in ui/, then starts.
 // The numbers come from workers running the model (engine.js, views.js); nothing here talks to a
 // server.
-import { t } from "./i18n.js";
+import { LANG, t } from "./i18n.js";
 import { examplePlan, normalize } from "./plan.js";
 import * as store from "./store.js";
 import { renderAll, renderPaths, setUnit } from "./ui/charts.js";
@@ -116,6 +116,21 @@ function wireTheme() {
   });
 }
 
+// The page's language: each has its own pages (js/i18n.js). Picking one keeps it in this
+// browser's settings, so the site opens in it from now on (js/ui/language.js), and opens its page;
+// the plan on screen, unsaved changes included, is kept (the session, in store.js).
+const ROOT = new URL("../", import.meta.url);
+function wireLanguage() {
+  const sel = $("#language");
+  sel.value = LANG;
+  sel.addEventListener("change", () => {
+    settings.lang = sel.value;
+    store.saveSettings(settings);
+    persistSession();
+    location.assign(new URL(sel.value === "en" ? "./" : `${sel.value}/`, ROOT));
+  });
+}
+
 function wire() {
   document.addEventListener("click", (e) => {
     const b = e.target.closest?.("[data-help]");
@@ -145,6 +160,7 @@ function wire() {
   $("#shared-use").addEventListener("click", useSharedRun);
   $("#shared-close").addEventListener("click", forgetRun);
   wireMenu();
+  wireLanguage();
   wireTheme();
   $("#plan-pill").addEventListener("click", () => {
     if (isPhone()) $("#rail").classList.add("open");

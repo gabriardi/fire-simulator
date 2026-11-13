@@ -292,7 +292,7 @@ export function renderPlanBar() {
   } else {
     status.className = "scenario-state";
     const when = (ms) =>
-      new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium", timeStyle: "short" }).format(
+      new Intl.DateTimeFormat(fmt.words, { dateStyle: "medium", timeStyle: "short" }).format(
         new Date(ms),
       );
     status.textContent = saved.example
@@ -331,7 +331,7 @@ export function renderBackup() {
   box.hidden = !canStore || !newer.length;
   if (box.hidden) return;
   const day = (ms) =>
-    new Intl.DateTimeFormat(fmt.locale, { dateStyle: "medium" }).format(new Date(ms));
+    new Intl.DateTimeFormat(fmt.words, { dateStyle: "medium" }).format(new Date(ms));
   $("#backup-text").textContent = exported
     ? t("plans.backup.since", { day: day(exported) })
     : t("plans.backup.never");

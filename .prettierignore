@@ -3,3 +3,6 @@ site/vendor/
 tests/fixtures/
 # The empty lines under its headings leave room to write.
 .github/pull_request_template.md
+# Written by scripts (pages.js; strings.js --translated) each time, never by hand.
+site/de/
+tests/translated.json

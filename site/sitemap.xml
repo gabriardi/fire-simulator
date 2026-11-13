@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<!-- Each page, with its version in every language (the same list in each). -->
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
   <url>
     <loc>https://whencanistop.fyi/</loc>
-    <lastmod>2026-11-12</lastmod>
+    <lastmod>2026-11-13</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://whencanistop.fyi/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://whencanistop.fyi/de/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://whencanistop.fyi/" />
+  </url>
+  <url>
+    <loc>https://whencanistop.fyi/de/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://whencanistop.fyi/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://whencanistop.fyi/de/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://whencanistop.fyi/" />
   </url>
   <url>
     <loc>https://whencanistop.fyi/privacy</loc>
-    <lastmod>2026-11-12</lastmod>
+    <lastmod>2026-11-13</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://whencanistop.fyi/privacy" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://whencanistop.fyi/de/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://whencanistop.fyi/privacy" />
+  </url>
+  <url>
+    <loc>https://whencanistop.fyi/de/privacy</loc>
+    <lastmod>2026-11-13</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://whencanistop.fyi/privacy" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://whencanistop.fyi/de/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://whencanistop.fyi/privacy" />
   </url>
 </urlset>

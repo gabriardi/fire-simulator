@@ -3,6 +3,7 @@
   "short_name": "Can I stop?",
   "description": "When could you retire early, and how much could you spend? A Monte Carlo FIRE simulator, in today's money, entirely in your browser.",
   "id": "./",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

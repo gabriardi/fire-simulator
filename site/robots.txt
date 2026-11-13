@@ -1,4 +1,4 @@
-# Every page may be crawled. The site has two: the simulator and its privacy notice.
+# Every page may be crawled: the simulator and its privacy notice, in English and in German.
 User-agent: *
 Allow: /
 

@@ -4,8 +4,11 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { test } from "node:test";
+import { allPages } from "../scripts/pages.js";
+import { PAGES } from "../scripts/strings.js";
 import { RULE_KINDS } from "../site/js/engine.js";
 import { ALIASES, GUIDE } from "../site/js/help.js";
+import { LANGS } from "../site/js/i18n.js";
 import HELP from "../site/js/locales/en/help.js";
 import { SETTINGS_KEY } from "../site/js/store.js";
 
@@ -14,6 +17,8 @@ const REPO = new URL("../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), "utf8");
 const exists = (path) => existsSync(new URL(path, ROOT));
 const html = read("index.html");
+// Each language's folder: English at the root, the others in theirs (de/).
+const FOLDERS = LANGS.map((l) => (l === "en" ? "" : `${l}/`));
 // The page's code: js/app.js and the modules in js/ui/.
 const app = [
   "js/app.js",
@@ -24,12 +29,14 @@ const app = [
   .map(read)
   .join("\n");
 
-/** The paths in sw.js's SHELL list. */
-const SHELL = (() => {
-  const list = /const SHELL = \[([\s\S]*?)\];/.exec(read("sw.js"));
-  assert.ok(list, "sw.js has a SHELL list");
+/** The paths in one of sw.js's lists: SHELL, with its PAGES. */
+const listIn = (name) => {
+  const list = new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`).exec(read("sw.js"));
+  assert.ok(list, `sw.js has a ${name} list`);
   return [...list[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
-})();
+};
+const SW_PAGES = listIn("PAGES");
+const SHELL = [...SW_PAGES, ...listIn("SHELL")];
 
 /** Every module a module loads, its own imports and its workers, followed to the end. */
 function modulesFrom(entry) {
@@ -49,21 +56,40 @@ function modulesFrom(entry) {
   return [...seen];
 }
 
-test("everything the page needs offline is in the service worker's list", () => {
-  const page = [
-    ...[...html.matchAll(/<script [^>]*src="([^"]+)"/g)].map((m) => m[1]),
-    ...[...html.matchAll(/<link rel="(?:stylesheet|manifest|icon)" href="([^"]+)"/g)].map(
-      (m) => m[1],
-    ),
+/** What a page loads before its modules: scripts, styles, manifest, icon, preloads, from the root. */
+function pageFiles(folder) {
+  const src = read(`${folder}index.html`);
+  const refs = [
+    ...[...src.matchAll(/<script [^>]*src="([^"]+)"/g)].map((m) => m[1]),
+    ...[
+      ...src.matchAll(/<link rel="(?:stylesheet|manifest|icon|modulepreload)" href="([^"]+)"/g),
+    ].map((m) => m[1]),
   ];
+  return refs.map((r) => new URL(r, new URL(folder, ROOT)).pathname.slice(ROOT.pathname.length));
+}
+
+test("everything the pages need offline is in the service worker's list", () => {
+  assert.deepEqual(
+    SW_PAGES,
+    FOLDERS.map((f) => f || "./"),
+    "sw.js's PAGES: one per language",
+  );
+  const page = pageFiles("");
   assert.ok(
     page.includes("js/app.js") && page.includes("app.css"),
     "the page's own script and styles were found",
   );
-  const needed = new Set([...page, ...modulesFrom("js/app.js")]);
+  // The worker registers itself; each page takes its language's catalogs (js/i18n.js).
+  const needed = new Set([
+    ...FOLDERS.flatMap(pageFiles),
+    ...modulesFrom("js/app.js").filter((f) => f !== "sw.js"),
+    ...LANGS.flatMap((l) => [`js/locales/${l}/messages.js`, `js/locales/${l}/help.js`]),
+  ]);
   assert.ok(
-    needed.has("js/worker.js") && needed.has("js/engine.js"),
-    "the worker and what it imports were found",
+    needed.has("js/worker.js") &&
+      needed.has("js/engine.js") &&
+      needed.has("de/manifest.webmanifest"),
+    "the worker and what it imports, and the German page's files, were found",
   );
   const missing = [...needed].filter((f) => !SHELL.includes(f));
   assert.deepEqual(missing, [], "add these to SHELL in sw.js, or the app won't work offline");
@@ -90,16 +116,80 @@ test("the code uses no regular-expression syntax a supported browser lacks", () 
 
 test("every file in the service worker's list exists", () => {
   // One missing file fails the whole install: the app then doesn't work offline at all.
-  const missing = SHELL.filter((f) => f !== "./" && !exists(f));
+  const missing = SHELL.filter((f) => !exists(f.endsWith("/") ? `${f}index.html` : f));
   assert.deepEqual(missing, []);
+});
+
+test("each language's pages are made from the English ones, and are up to date", async () => {
+  // scripts/pages.js writes them; this is its --check.
+  const files = await allPages();
+  assert.ok(Object.keys(files).length >= 3 * (LANGS.length - 1), "the pages were made");
+  const stale = Object.entries(files)
+    .filter(([path, text]) => !exists(path) || read(path) !== text)
+    .map(([path]) => path);
+  assert.deepEqual(stale, [], "run npm run pages");
+});
+
+test("every page names its version in every language, and the sitemap lists them all", () => {
+  const sitemap = read("sitemap.xml");
+  const base = /<link rel="canonical" href="([^"]+)"/.exec(html)[1];
+  for (const file of PAGES) {
+    const path = file === "index.html" ? "" : file.replace(/\.html$/, "");
+    const url = (folder) => `${base}${folder}${path}`;
+    const links = [
+      ...LANGS.map((l, i) => `<link rel="alternate" hreflang="${l}" href="${url(FOLDERS[i])}" />`),
+      `<link rel="alternate" hreflang="x-default" href="${url("")}" />`,
+    ];
+    for (const folder of FOLDERS) {
+      const src = read(`${folder}${file}`);
+      for (const link of links) assert.ok(src.includes(link), `${folder}${file}: ${link}`);
+      assert.ok(
+        src.includes(`<link rel="canonical" href="${url(folder)}" />`),
+        `${folder}${file}: its canonical link`,
+      );
+      assert.ok(sitemap.includes(`<loc>${url(folder)}</loc>`), `sitemap.xml: ${url(folder)}`);
+    }
+    for (const link of links)
+      assert.equal(
+        sitemap.split(link.replace("<link", "<xhtml:link")).length - 1,
+        LANGS.length,
+        `sitemap.xml: ${link}, under each language's page`,
+      );
+  }
+});
+
+test("a language picked is followed before the page is drawn, in the languages the site has", () => {
+  // js/ui/language.js runs before the page's modules, like theme.js: it can't import either.
+  const src = read("js/ui/language.js");
+  assert.ok(src.includes(`"${SETTINGS_KEY}"`), "language.js reads SETTINGS_KEY");
+  const list = /const LANGS = (\[[^\]]*\]);/.exec(src);
+  assert.ok(list, "language.js has a LANGS list");
+  assert.deepEqual(JSON.parse(list[1]), LANGS, "language.js's LANGS are js/i18n.js's");
+  for (const folder of FOLDERS) {
+    const page = read(`${folder}index.html`);
+    const script = page.indexOf(`<script src="${folder ? "../" : ""}js/ui/language.js"></script>`);
+    assert.ok(script > 0, `${folder}index.html loads js/ui/language.js`);
+    assert.ok(
+      script < page.indexOf('<link rel="stylesheet"'),
+      `${folder}index.html: before the styles`,
+    );
+    assert.match(page, new RegExp(`<html lang="${folder.slice(0, -1) || "en"}">`));
+    const options = [...page.matchAll(/<option value="(\w+)" lang="\1" translate="no">/g)];
+    assert.deepEqual(
+      options.map((m) => m[1]),
+      LANGS,
+      `${folder}index.html: the switch has each language`,
+    );
+  }
 });
 
 test("the theme is on every page before it's drawn, read from where the settings are kept", () => {
   // js/ui/theme.js runs before the page's modules, so it can't import the key from store.js.
   assert.ok(read("js/ui/theme.js").includes(`"${SETTINGS_KEY}"`), "theme.js reads SETTINGS_KEY");
-  for (const page of ["index.html", "privacy.html"]) {
+  for (const page of FOLDERS.flatMap((f) => PAGES.map((p) => `${f}${p}`))) {
     const src = read(page);
-    const script = src.indexOf('<script src="js/ui/theme.js"></script>');
+    const up = page.includes("/") ? "../" : "";
+    const script = src.indexOf(`<script src="${up}js/ui/theme.js"></script>`);
     assert.ok(script > 0, `${page} loads js/ui/theme.js`);
     // In the head, after the colours of the browser's bar, which it sets, and before the styles.
     assert.ok(script > src.lastIndexOf('<meta name="theme-color"'), `${page}: after theme-color`);

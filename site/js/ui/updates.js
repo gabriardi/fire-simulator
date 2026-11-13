@@ -27,7 +27,8 @@ let touchedAt = 0; // when the user last clicked, tapped or typed
 
 export function startServiceWorker() {
   if (!("serviceWorker" in navigator) || location.protocol !== "https:") return;
-  navigator.serviceWorker.register("sw.js").catch(() => {});
+  // At the site's root, whichever language's folder the page is in: one for all of them.
+  navigator.serviceWorker.register(new URL("../../sw.js", import.meta.url).href).catch(() => {});
   setTimeout(check, FIRST);
   setInterval(() => {
     if (document.visibilityState === "visible") check();

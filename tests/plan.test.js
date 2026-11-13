@@ -335,17 +335,38 @@ test("typed lists of numbers: where the decimal mark is a comma, it isn't a sepa
   }
 });
 
+test("percentages as each number format writes them; dates in the page's language", () => {
+  // As Intl writes them (its data differs a little between versions): "86%", "86 %", "3,6 %".
+  for (const locale of ["en-US", "de-DE", "de-CH", "fr-FR", "fr-CH", "sv-SE"])
+    for (const d of [0, 1, 2]) {
+      const intl = new Intl.NumberFormat(locale, {
+        style: "percent",
+        minimumFractionDigits: d,
+        maximumFractionDigits: d,
+      });
+      for (const v of [0.857, 0.0355, -0.4])
+        assert.equal(makeFormat(locale, "CHF").pct(v, d), intl.format(v), `${locale} ${v} ${d}`);
+    }
+  assert.equal(makeFormat("en-US", "CHF").pct(0.857), "86%");
+  assert.match(makeFormat("de-DE", "CHF").pct(0.857), /^86\s%$/);
+  assert.equal(makeFormat("en-US", "CHF").pct(null), "–");
+  // Under Node the page's language is English: English words, in the number format's region.
+  assert.equal(makeFormat("de-CH", "CHF").words, "en-CH");
+  assert.equal(makeFormat("en-GB", "CHF").words, "en-GB");
+  assert.equal(makeFormat("ja", "CHF").words, "en-JP");
+});
+
 test("settings from storage: odd values put right, the rest kept", () => {
-  const plain = { seed: 42, n_sims: 10_000, locale: "", theme: "auto" };
+  const plain = { seed: 42, n_sims: 10_000, locale: "", theme: "auto", lang: "" };
   assert.deepEqual(cleanSettings(null), plain);
   assert.deepEqual(cleanSettings([1, 2]), plain);
-  assert.deepEqual(cleanSettings({ seed: -5, n_sims: 123_456, locale: 5, theme: "purple" }), {
-    ...plain,
-    n_sims: 50_000,
-  });
   assert.deepEqual(
-    cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH", theme: "dark" }),
-    { seed: 7, n_sims: 500, locale: "de-CH", theme: "dark" },
+    cleanSettings({ seed: -5, n_sims: 123_456, locale: 5, theme: "purple", lang: "xx" }),
+    { ...plain, n_sims: 50_000 },
+  );
+  assert.deepEqual(
+    cleanSettings({ seed: 2 ** 31 + 7, n_sims: 100, locale: "de-CH", theme: "dark", lang: "de" }),
+    { seed: 7, n_sims: 500, locale: "de-CH", theme: "dark", lang: "de" },
   );
   assert.deepEqual(cleanSettings({ seed: 1.5, n_sims: "many", welcomeClosed: true }), {
     ...plain,

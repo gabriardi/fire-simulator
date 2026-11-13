@@ -53,7 +53,8 @@ function parseHeaders() {
 const RULES = parseHeaders();
 
 createServer(async (req, res) => {
-  const path = decodeURIComponent(new URL(req.url, "http://x").pathname);
+  const url = new URL(req.url, "http://x");
+  const path = decodeURIComponent(url.pathname);
   let file = resolve(ROOT, `.${path}`);
   if (file !== ROOT && !file.startsWith(ROOT + sep)) return send(res, 403, "Forbidden");
   if (path.split("/").some((part) => part.startsWith("."))) return send(res, 404, "Not found");
@@ -63,7 +64,11 @@ createServer(async (req, res) => {
       file += ".html"; // as Cloudflare serves it: /privacy is privacy.html
       info = await stat(file);
     }
-    if (info?.isDirectory()) file = join(file, "index.html");
+    if (info?.isDirectory()) {
+      // As Cloudflare does: /de is /de/, so that the page's relative addresses work.
+      if (!path.endsWith("/")) return redirect(res, `${url.pathname}/${url.search}`);
+      file = join(file, "index.html");
+    }
     const body = await readFile(file);
     const headers = {
       "Content-Type": TYPES[extname(file)] ?? "application/octet-stream",
@@ -85,6 +90,11 @@ createServer(async (req, res) => {
     }
   }
 });
+
+function redirect(res, to) {
+  res.writeHead(307, { Location: to });
+  res.end();
+}
 
 function send(res, status, text) {
   res.writeHead(status, { "Content-Type": "text/plain; charset=utf-8" });

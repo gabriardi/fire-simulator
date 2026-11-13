@@ -1,17 +1,34 @@
 /**
  * The page's words, in one language. Every text the code shows is a message in a catalog, found
  * by its key: `t("plans.saved", { name })`. The catalogs are in locales/<language>/: messages.js
- * for the page's own texts, help.js for the "?" explanations and the guide. The pages' HTML
- * (index.html, privacy.html) keeps its English in place, each piece marked with its key; so do
- * the web app manifest and the pages' structured data, by the field. `npm run strings` lists the
- * whole English catalog, all of these together, and tests/i18n.test.js checks that nothing shown
- * is left out of it.
+ * for the page's own texts, help.js for the "?" explanations and the guide.
  *
- * Only English exists so far.
+ * Each language has pages of its own: English at the site's root, the others in a folder named
+ * after them (de/), made from the English pages by scripts/pages.js. The page says which language
+ * it's in (<html lang>), and the code takes that language's catalog. Under Node (the tests),
+ * there's no page: English.
+ *
+ * The English pages (index.html, privacy.html) keep their texts in place, each piece marked with
+ * its key; so do the web app manifest and the pages' structured data, by the field. `npm run
+ * strings` lists the whole catalog, and tests/i18n.test.js checks that nothing shown is left out
+ * of it, and that every language has all of it.
  */
-import messages from "./locales/en/messages.js";
 
-export const LANG = "en";
+/** The site's languages: English first, at the site's root. Each has its pages and catalogs. */
+export const LANGS = ["en", "de"];
+
+const asked = globalThis.document?.documentElement.lang;
+/** The page's language. */
+export const LANG = LANGS.includes(asked) ? asked : "en";
+
+// Each page also preloads its catalogs (<link rel="modulepreload">), so they don't wait for this.
+const [{ default: messages }, { default: help }] = await Promise.all([
+  import(`./locales/${LANG}/messages.js`),
+  import(`./locales/${LANG}/help.js`),
+]);
+
+/** The "?" explanations and the guide's cards, in the page's language: { title, html } by key. */
+export const HELP = help;
 
 const plural = new Intl.PluralRules(LANG);
 const and = new Intl.ListFormat(LANG, { type: "conjunction" });

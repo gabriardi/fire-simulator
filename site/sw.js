@@ -5,8 +5,12 @@
 // - A page left open asks it whether a new version has been deployed (js/ui/updates.js).
 // It stores nothing else: plans live in the page's own storage, never here.
 const CACHE = "fire-shell-v1";
+// The simulator's page in each language: English at the root, the others in their folders (de/).
+// Hosts redirect index.html to these, and a stored redirect can't answer a page load.
+const PAGES = ["./", "de/"];
 const SHELL = [
-  "./", // the page itself (hosts redirect index.html here, and a stored redirect can't answer a page load)
+  ...PAGES,
+  "de/manifest.webmanifest",
   "app.css",
   "js/app.js",
   "js/ui/charts.js",
@@ -22,6 +26,7 @@ const SHELL = [
   "js/ui/share.js",
   "js/ui/state.js",
   "js/ui/theme.js",
+  "js/ui/language.js",
   "js/ui/updates.js",
   "js/engine.js",
   "js/views.js",
@@ -33,14 +38,18 @@ const SHELL = [
   "js/i18n.js",
   "js/locales/en/messages.js",
   "js/locales/en/help.js",
+  "js/locales/de/messages.js",
+  "js/locales/de/help.js",
   "js/worker.js",
   "vendor/plotly-cartesian-4.1.1.min.js",
   "manifest.webmanifest",
   "icons/icon-192.png",
   "icons/favicon-64.png",
 ];
-// What a new version changes: the page and its code. (The chart library's name is in the page.)
-const CODE = SHELL.filter((p) => p === "./" || (/\.(js|css)$/.test(p) && !p.startsWith("vendor/")));
+// What a new version changes: the pages and their code. (The chart library's name is in them.)
+const CODE = SHELL.filter(
+  (p) => PAGES.includes(p) || (/\.(js|css)$/.test(p) && !p.startsWith("vendor/")),
+);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -85,10 +94,17 @@ async function networkFirst(req, url) {
   } catch (err) {
     const hit =
       (await cache.match(req, { ignoreSearch: true })) ||
-      (req.mode === "navigate" ? await cache.match("./") : null);
+      (req.mode === "navigate" ? await cache.match(pageFor(url)) : null);
     if (hit) return hit;
     throw err;
   }
+}
+
+// The simulator's page in the language of the address's folder: offline, it stands in for any page
+// of that language that isn't stored (the privacy notice).
+function pageFor(url) {
+  const folder = (p) => new URL(p, self.registration.scope).pathname;
+  return PAGES.findLast((p) => url.pathname.startsWith(folder(p)));
 }
 
 async function storedFirst(req) {
