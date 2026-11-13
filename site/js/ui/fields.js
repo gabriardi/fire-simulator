@@ -235,30 +235,6 @@ export function selectField({
   return node;
 }
 
-export function checkField({ path, label, what, help }) {
-  const id = `f-${path.replace(/\./g, "-")}`;
-  const box = el("input", { type: "checkbox", id });
-  box.addEventListener("change", () => {
-    setPath(state, path, box.checked);
-    changed();
-  });
-  syncers.push(() => {
-    box.checked = Boolean(getPath(state, path));
-  });
-  const node = el(
-    "div",
-    { class: "field check" },
-    el(
-      "div",
-      { class: "field-head" },
-      el("label", { for: id }, box, el("span", { text: label })),
-      helpBtn(help),
-    ),
-  );
-  FIELDS.push({ path, label: what ?? label, node });
-  return node;
-}
-
 // A moment: a calendar year, an age of someone, or years after the FIRE start (or never).
 export function whenField({ path, label, what, never = false }) {
   const id = `f-${path.replace(/\./g, "-")}`;

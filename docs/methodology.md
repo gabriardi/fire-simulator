@@ -22,8 +22,8 @@ from. In every simulated future, each year goes like this:
    - One-off events happen in their year.
    - From the FIRE start, the spending rule sets the year's spending.
    - Income lines that are active that year reduce what the portfolio has to pay. A line can
-     rise or fall by a set share each year: on top of inflation, or in money for a line that
-     isn't indexed.
+     rise with inflation, rise faster or slower than it by a set share a year, or stay fixed in
+     money.
    - The money comes from cash first, then from the portfolio, grossed up for the withdrawal tax.
      If you keep a cash cushion, it moves into cash at the FIRE start.
 3. **A future fails** in the first year the money you can reach can't pay the bills, even if a

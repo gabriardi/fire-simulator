@@ -74,8 +74,8 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
     start.
   - A line can be fixed in nominal terms, so inflation erodes it, like an unindexed pension or a
     fixed-rate mortgage.
-  - A line can rise or fall by a set share each year: a pension raised by less than inflation,
-    or care costs that rise faster than it.
+  - A line can rise faster or slower than inflation, by a set share a year: a pension that
+    falls behind inflation, or health insurance that gets dearer faster than it.
 - **One-off events**, up to 20: an inheritance, a house sale, a new roof or a car. Each happens
   in its year, before or after you stop.
 - **Spending rules**:

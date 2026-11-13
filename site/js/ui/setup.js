@@ -183,7 +183,7 @@ export function openSetup() {
             from: { kind: "age", person: plan.people[i].id, value: age },
             to: null,
             indexed: true,
-            change: 0,
+            change: null,
           },
         ];
       });

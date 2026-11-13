@@ -159,13 +159,15 @@ export default {
     title: "Ausgaben pro Jahr",
     html: `<p>Was der Haushalt nach dem Ausstieg jedes Jahr ausgeben wird, in heutiger Kaufkraft,
       <b>inklusive</b> der Steuern dieser Jahre (Einkommensteuer auf Entnahmen, Krankenversicherung,
-      die du nun selbst zahlst). Lass Kosten weg, die mit der Arbeit enden,
+      die du nun selbst zahlst, außer du gibst ihr unten einen eigenen Posten). Lass Kosten weg, die mit der Arbeit enden,
       etwa den Arbeitsweg.</p>
       <p class="ex">40 000 pro Jahr = 3333 pro Monat. Bei einer flexiblen Regel ist das der
       <b>anfängliche</b> Betrag. Der Kapitalverzehr berechnet seinen eigenen und verwendet ihn
       nicht.</p>
       <p>Kosten, die kommen und gehen (eine Hypothek, bis sie abbezahlt ist, die Schule der
-      Kinder), passen besser als Posten unter „Einnahmen und Kosten nach dem Ausstieg“.</p>
+      Kinder), passen besser als Posten unter „Einnahmen und Kosten nach dem Ausstieg“, ebenso
+      Kosten, die schneller steigen als die Inflation, etwa die Krankenversicherung. Was du als
+      Posten eingibst, lässt du bei den Ausgaben weg, sonst zählt es doppelt.</p>
       <p>Eine Steuer auf das Vermögen (eine Vermögensteuer, eine jährliche Stempelsteuer auf
       Wertpapiere) schrumpft mit dem Depot: Zieh ihren Satz stattdessen von der Aktien- und der
       Anleihenrendite ab.</p>
@@ -414,28 +416,23 @@ export default {
       5 Jahre lang.</p>`,
   },
   "income.indexed": {
-    title: "Steigt mit der Inflation",
-    html: `<p>Die meisten staatlichen Renten werden an die Preise angepasst: Sie behalten ihren Wert
-      in heutiger Kaufkraft. Eine Rente, die für immer denselben Geldbetrag zahlt, verliert jedes
-      Jahr an Wert: Nimm das Häkchen weg und gib den Betrag so ein, wie er ausbezahlt wird.</p>
-      <p>Steigt er stärker oder schwächer als die Inflation, oder um einen festen Prozentsatz als
-      Geldbetrag? Stell darunter seine Änderung pro Jahr ein.</p>`,
-  },
-  "income.change": {
-    title: "Änderung pro Jahr",
-    html: `<p>Wie sich der Betrag des Postens von Jahr zu Jahr bewegt. Im ersten Jahr gilt der
-      eingegebene Betrag, die Änderung beginnt im Jahr danach. Woran das Prozent gemessen wird,
-      legt „Steigt mit der Inflation“ fest, und der Name des Felds sagt es:</p>
+    title: "Jedes Jahr",
+    html: `<p>Wie sich der Betrag des Postens über die Jahre bewegt:</p>
       <ul>
-        <li><b>Mit Häkchen: Änderung gegenüber der Inflation.</b> 0 % hält mit der Inflation
-          Schritt. Ein positiver Wert steigt schneller als die Inflation, etwa Pflegekosten im
-          hohen Alter; ein negativer bleibt hinter ihr zurück, etwa eine Rente, die weniger stark
-          steigt als die Inflation.</li>
-        <li><b>Ohne Häkchen: Änderung als Geldbetrag.</b> 0 % ändert sich nie. Ein positiver Wert
-          ist eine jährliche Erhöhung, ein negativer eine Kürzung.</li>
+        <li><b>Steigt mit der Inflation</b>: Er behält seinen Wert in heutiger Kaufkraft, wie die
+          meisten staatlichen Renten.</li>
+        <li><b>Inflation plus oder minus</b>: Er steigt um das eingestellte Prozent
+          schneller oder langsamer als die Inflation, ab dem Jahr nach seinem ersten. Ein negativer
+          Wert bleibt hinter der Inflation zurück.</li>
+        <li><b>Fester Geldbetrag</b>: jedes Jahr derselbe Geldbetrag, sodass die Inflation seinen
+          Wert schmälert, wie bei einer Rente, die nie erhöht wird, oder einer Hypothek mit festem
+          Zins. Gib den Betrag so ein, wie er ausbezahlt wird.</li>
       </ul>
-      <p class="ex">Eine Rente von 20 000 mit Häkchen, −1 % → nach 10 Jahren etwa 18 100 in
-      heutiger Kaufkraft. Kosten von 6000 ab 80, mit Häkchen, +3 % → etwa 8100 mit 90.</p>
+      <p class="ex">Eine Rente, die hinter der Inflation zurückbleibt, −1 % pro Jahr: 20 000 sind
+      nach 10 Jahren etwa 18 100 in heutiger Kaufkraft wert.</p>
+      <p class="ex">Eine Krankenversicherung, die schneller teurer wird als die Inflation: Kosten
+      von −6000, +2 % pro Jahr → nach 10 Jahren etwa 7300 pro Jahr. Lass sie dann bei den
+      Ausgaben pro Jahr weg, sonst zählt sie doppelt.</p>
       <p>Ein Posten, der schon vor diesem Jahr begonnen hat, ändert sich ab diesem Jahr.</p>`,
   },
 

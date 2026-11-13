@@ -219,19 +219,21 @@ export default {
   "form.income.from.what": "{name} starts",
   "form.income.to": "Stops",
   "form.income.to.what": "{name} stops",
-  "form.income.indexed": "Rises with inflation",
-  "form.income.indexed.what": "{name} rises with inflation",
-  "form.income.change.real": "Change compared with inflation",
-  "form.income.change.money": "Change in money",
-  "form.income.change.what": "{name}, change per year",
-  "form.income.change.flatReal": "keeps up with inflation: the same in today's money every year",
-  "form.income.change.upReal":
+  "form.income.indexed": "Each year",
+  "form.income.indexed.what": "{name}, each year",
+  "form.income.indexed.inflation": "Rises with inflation",
+  "form.income.indexed.gap": "Faster or slower than inflation",
+  "form.income.indexed.fixed": "Fixed in money",
+  "form.income.indexed.hint.inflation": "keeps its value in today's money",
+  "form.income.indexed.hint.fixed":
+    "the same amount of money every year, as it will be paid: inflation shrinks its value",
+  "form.income.change": "Compared with inflation",
+  "form.income.change.what": "{name}, change compared with inflation",
+  "form.income.change.flat": "keeps up with inflation: the same in today's money every year",
+  "form.income.change.up":
     "rises {pct} a year faster than inflation: {amount} in today's money in 10 years",
-  "form.income.change.downReal":
+  "form.income.change.down":
     "falls {pct} a year behind inflation: {amount} in today's money in 10 years",
-  "form.income.change.flatMoney": "never raised: the same in money every year",
-  "form.income.change.upMoney": "raised {pct} a year: {amount} in money in 10 years",
-  "form.income.change.downMoney": "cut {pct} a year: {amount} in money in 10 years",
   "form.add.income": "Add income",
   "form.add.cost": "Add cost",
   "form.events.hint": "An inheritance, a house sale, a new roof: a single amount in a single year.",

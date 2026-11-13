@@ -95,7 +95,7 @@ export default {
   "page.how.years.unlock":
     "Erreicht die Person, der es gehört, das Bezugsalter, wird ein Vorsorgekonto bezogen, versteuert und dem Depot zugeschlagen.",
   "page.how.years.income":
-    "Ab dem FIRE-Start zählen Einnahmen (Renten, Teilzeitarbeit) und zusätzliche Kosten, jeder Posten auf Wunsch mit einer festen jährlichen Änderung, und einmalige Ereignisse geschehen in ihrem Jahr.",
+    "Ab dem FIRE-Start zählen Einnahmen (Renten, Teilzeitarbeit) und zusätzliche Kosten, jeder Posten steigt mit der Inflation, schneller oder langsamer als sie, oder bleibt ein fester Geldbetrag; einmalige Ereignisse geschehen in ihrem Jahr.",
   "page.how.years.fail":
     "Die Ausgaben kommen zuerst aus dem Bankguthaben, dann aus dem Depot. Ein Verlauf <strong>scheitert</strong> im ersten Jahr, in dem das verfügbare Geld die Rechnungen nicht bezahlen kann, auch wenn später ein Vorsorgekonto verfügbar würde.",
   "page.how.rules": "Entnahmeregeln",

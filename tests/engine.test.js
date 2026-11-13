@@ -98,7 +98,7 @@ test("an income line that isn't indexed loses value to inflation", () => {
   assert.ok(Math.abs(inc[2040 - 2026] - 10_000 / 1.02 ** 14) < 1e-9);
 });
 
-test("a line's change makes it rise or fall each year after its first, in today's money or in money", () => {
+test("a line can rise faster or slower than inflation from the year after its first; one fixed in money can't", () => {
   const line = (id, amount, from, change, indexed = true) => ({
     id,
     name: id,
@@ -124,9 +124,9 @@ test("a line's change makes it rise or fall each year after its first, in today'
   const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} vs ${b}`);
   near(at(pension, 2040), 10_000);
   near(at(pension, 2050), 10_000 * 0.99 ** 10);
-  // Rising 2% in money with 2% inflation: the same in today's money every year.
+  // Fixed in money: a change is ignored, and inflation shrinks it every year.
   near(at(annuity, 2040), 10_000 / 1.02 ** 14);
-  near(at(annuity, 2060), 10_000 / 1.02 ** 14);
+  near(at(annuity, 2060), 10_000 / 1.02 ** 34);
   // A line that started before this year changes from this year on.
   near(at(rent, 2040), 6_000 * 1.01 ** 14);
   // A line that starts with the FIRE start moves with it, and so does its change.

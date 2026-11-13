@@ -210,22 +210,22 @@ export default {
   "form.income.from.what": "Beginn von {name}",
   "form.income.to": "Endet",
   "form.income.to.what": "Ende von {name}",
-  "form.income.indexed": "Steigt mit der Inflation",
-  "form.income.indexed.what": "{name} steigt mit der Inflation",
-  "form.income.change.real": "Änderung gegenüber der Inflation",
-  "form.income.change.money": "Änderung als Geldbetrag",
-  "form.income.change.what": "{name}, Änderung pro Jahr",
-  "form.income.change.flatReal":
+  "form.income.indexed": "Jedes Jahr",
+  "form.income.indexed.what": "{name}, jedes Jahr",
+  "form.income.indexed.inflation": "Steigt mit der Inflation",
+  "form.income.indexed.gap": "Inflation plus oder minus",
+  "form.income.indexed.fixed": "Fester Geldbetrag",
+  "form.income.indexed.hint.inflation": "behält seinen Wert in heutiger Kaufkraft",
+  "form.income.indexed.hint.fixed":
+    "jedes Jahr derselbe Geldbetrag, so wie er ausbezahlt wird: Die Inflation schmälert seinen Wert",
+  "form.income.change": "Gegenüber der Inflation",
+  "form.income.change.what": "{name}, Änderung gegenüber der Inflation",
+  "form.income.change.flat":
     "hält mit der Inflation Schritt: jedes Jahr gleich in heutiger Kaufkraft",
-  "form.income.change.upReal":
+  "form.income.change.up":
     "steigt {pct} pro Jahr schneller als die Inflation: in 10 Jahren {amount} in heutiger Kaufkraft",
-  "form.income.change.downReal":
+  "form.income.change.down":
     "bleibt {pct} pro Jahr hinter der Inflation zurück: in 10 Jahren {amount} in heutiger Kaufkraft",
-  "form.income.change.flatMoney": "wird nie erhöht: jedes Jahr derselbe Geldbetrag",
-  "form.income.change.upMoney":
-    "wird um {pct} pro Jahr erhöht: in 10 Jahren {amount} als Geldbetrag",
-  "form.income.change.downMoney":
-    "wird um {pct} pro Jahr gekürzt: in 10 Jahren {amount} als Geldbetrag",
   "form.add.income": "Einnahme hinzufügen",
   "form.add.cost": "Kosten hinzufügen",
   "form.events.hint":
