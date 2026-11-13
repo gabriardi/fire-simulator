@@ -418,8 +418,8 @@ export default {
     html: `<p>Die meisten staatlichen Renten werden an die Preise angepasst: Sie behalten ihren Wert
       in heutiger Kaufkraft. Eine Rente, die für immer denselben Geldbetrag zahlt, verliert jedes
       Jahr an Wert: Nimm das Häkchen weg und gib den Betrag so ein, wie er ausbezahlt wird.</p>
-      <p>Wird er stärker oder schwächer als die Preise angepasst, oder um einen festen Prozentsatz
-      als Geldbetrag? Stell darunter seine Änderung pro Jahr ein.</p>`,
+      <p>Steigt er stärker oder schwächer als die Inflation, oder um einen festen Prozentsatz als
+      Geldbetrag? Stell darunter seine Änderung pro Jahr ein.</p>`,
   },
   "income.change": {
     title: "Änderung pro Jahr",
@@ -427,10 +427,10 @@ export default {
       eingegebene Betrag, die Änderung beginnt im Jahr danach. Woran das Prozent gemessen wird,
       legt „Steigt mit der Inflation“ fest, und der Name des Felds sagt es:</p>
       <ul>
-        <li><b>Mit Häkchen: Änderung gegenüber den Preisen.</b> 0 % hält mit den Preisen Schritt.
-          Ein positiver Wert steigt schneller als die Preise, etwa Pflegekosten im hohen Alter; ein
-          negativer bleibt hinter ihnen zurück, etwa eine Rente, die weniger stark als die Preise
-          angepasst wird.</li>
+        <li><b>Mit Häkchen: Änderung gegenüber der Inflation.</b> 0 % hält mit der Inflation
+          Schritt. Ein positiver Wert steigt schneller als die Inflation, etwa Pflegekosten im
+          hohen Alter; ein negativer bleibt hinter ihr zurück, etwa eine Rente, die weniger stark
+          steigt als die Inflation.</li>
         <li><b>Ohne Häkchen: Änderung als Geldbetrag.</b> 0 % ändert sich nie. Ein positiver Wert
           ist eine jährliche Erhöhung, ein negativer eine Kürzung.</li>
       </ul>

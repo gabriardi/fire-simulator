@@ -221,14 +221,14 @@ export default {
   "form.income.to.what": "{name} stops",
   "form.income.indexed": "Rises with inflation",
   "form.income.indexed.what": "{name} rises with inflation",
-  "form.income.change.real": "Change compared with prices",
+  "form.income.change.real": "Change compared with inflation",
   "form.income.change.money": "Change in money",
   "form.income.change.what": "{name}, change per year",
-  "form.income.change.flatReal": "keeps up with prices: the same in today's money every year",
+  "form.income.change.flatReal": "keeps up with inflation: the same in today's money every year",
   "form.income.change.upReal":
-    "rises {pct} a year faster than prices: {amount} in today's money in 10 years",
+    "rises {pct} a year faster than inflation: {amount} in today's money in 10 years",
   "form.income.change.downReal":
-    "falls {pct} a year behind prices: {amount} in today's money in 10 years",
+    "falls {pct} a year behind inflation: {amount} in today's money in 10 years",
   "form.income.change.flatMoney": "never raised: the same in money every year",
   "form.income.change.upMoney": "raised {pct} a year: {amount} in money in 10 years",
   "form.income.change.downMoney": "cut {pct} a year: {amount} in money in 10 years",

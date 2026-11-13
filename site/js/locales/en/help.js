@@ -380,8 +380,8 @@ export default {
     html: `<p>Most state pensions are raised with prices: they keep their value in today's money.
       A pension that pays the same amount of money for ever loses value every year: untick it, and
       enter the amount in money as it will be paid.</p>
-      <p>Raised by more or less than prices, or by a set % in money? Set its change per year,
-      under it.</p>`,
+      <p>Raised by more or less than inflation, or by a set % in money? Set its change per
+      year, under it.</p>`,
   },
   "income.change": {
     title: "Change per year",
@@ -389,9 +389,9 @@ export default {
       the amount you enter; the change starts the year after. What the % is measured against is
       set by “Rises with inflation”, and the field's name says which:</p>
       <ul>
-        <li><b>Ticked: change compared with prices.</b> 0% keeps up with prices. A positive % rises
-          faster than prices, like care costs late in life; a negative one falls behind them, like
-          a pension raised by less than prices.</li>
+        <li><b>Ticked: change compared with inflation.</b> 0% keeps up with inflation. A
+          positive % rises faster than inflation, like care costs late in life; a negative one
+          falls behind it, like a pension raised by less than inflation.</li>
         <li><b>Unticked: change in money.</b> 0% never changes. A positive % is a raise each year,
           a negative one a cut.</li>
       </ul>
