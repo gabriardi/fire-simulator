@@ -476,7 +476,10 @@ export default {
   bond_vol: {
     title: "Bond volatility",
     html: `<p>How much bond returns swing from year to year. Broad high-quality bond funds: roughly
-      4–7%.</p>`,
+      4–7%.</p>
+      <p>The simulator keeps inflation the same every year, so bonds swing less here than in years
+      when inflation jumps: in 2022, broad US bond funds lost about 13% before inflation. With
+      bonds in your mix, try a higher bond volatility for a cautious case.</p>`,
   },
   stock_bond_corr: {
     title: "Stock/bond correlation",

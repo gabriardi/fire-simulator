@@ -254,7 +254,7 @@
     "help.backup.title": "Backups",
     "help.bond_return.html": "<p>The compound yearly growth of the bond part, before inflation. What counts is the return\n      after inflation: high-quality bonds have often earned about 0–2% real.</p>",
     "help.bond_return.title": "Bond return (nominal)",
-    "help.bond_vol.html": "<p>How much bond returns swing from year to year. Broad high-quality bond funds: roughly\n      4–7%.</p>",
+    "help.bond_vol.html": "<p>How much bond returns swing from year to year. Broad high-quality bond funds: roughly\n      4–7%.</p>\n      <p>The simulator keeps inflation the same every year, so bonds swing less here than in years\n      when inflation jumps: in 2022, broad US bond funds lost about 13% before inflation. With\n      bonds in your mix, try a higher bond volatility for a cautious case.</p>",
     "help.bond_vol.title": "Bond volatility",
     "help.cash.html": "<p>Today's bank balances. They grow at the cash interest minus inflation, so in today's\n      money they usually shrink. Spending is paid from cash first.</p>",
     "help.cash.title": "Cash today",

@@ -520,7 +520,11 @@ export default {
   bond_vol: {
     title: "Anleihenvolatilität",
     html: `<p>Wie stark Anleihenrenditen von Jahr zu Jahr schwanken. Breite Fonds mit hochwertigen
-      Anleihen: ungefähr 4–7 %.</p>`,
+      Anleihen: ungefähr 4–7 %.</p>
+      <p>Der Simulator hält die Inflation jedes Jahr gleich, daher schwanken Anleihen hier weniger
+      als in Jahren, in denen die Inflation sprunghaft steigt: 2022 verloren breite US-Anleihenfonds
+      vor der Inflation etwa 13 %. Mit Anleihen in deinem Mix probier für einen vorsichtigen Fall
+      eine höhere Anleihenvolatilität aus.</p>`,
   },
   stock_bond_corr: {
     title: "Korrelation Aktien/Anleihen",
