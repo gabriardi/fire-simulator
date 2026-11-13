@@ -32,8 +32,13 @@ export default {
     html: `<p>Der Anteil deines Vermögens, den du im ersten Jahr entnehmen und danach jedes Jahr als
       denselben realen Betrag weiter ausgeben kannst, ohne dass das Geld ausgeht. Die bekannte
       „4-Prozent-Regel“ stammt aus 30-jährigen Ruhestandsphasen in den USA; für 40 Jahre und mehr
-      liegt sie niedriger, bei etwa 3–3,5 %.</p>
-      <p class="ex">1 200 000 × 3,5 % = 42 000 pro Jahr.</p>`,
+      oder für Märkte weltweit finden Studien der Vergangenheit etwa 3–3,5 %.</p>
+      <p>Mit seinen voreingestellten Renditen findet der Simulator weniger: etwa 3 % über 30 Jahre
+      und 2–2,5 % über 45, in 90 % der Verläufe. Seine Renditen liegen unter denen des letzten
+      Jahrhunderts, und jedes Jahr wird für sich gezogen, sodass nichts ein schlechtes Jahrzehnt
+      zum Durchschnitt zurückholt. „Sichere Ausgaben nach FIRE-Start“ zeigt die Entnahmerate für
+      deinen Plan.</p>
+      <p class="ex">1 200 000 × 3 % = 36 000 pro Jahr.</p>`,
   },
   "concept.privacy": {
     title: "Deine Zahlen bleiben bei dir",
@@ -153,14 +158,18 @@ export default {
   spending: {
     title: "Ausgaben pro Jahr",
     html: `<p>Was der Haushalt nach dem Ausstieg jedes Jahr ausgeben wird, in heutiger Kaufkraft,
-      <b>inklusive</b> der Steuern dieser Jahre (Einkommensteuer auf Entnahmen, Vermögensteuer,
-      Krankenversicherung, die du nun selbst zahlst). Lass Kosten weg, die mit der Arbeit enden,
+      <b>inklusive</b> der Steuern dieser Jahre (Einkommensteuer auf Entnahmen, Krankenversicherung,
+      die du nun selbst zahlst). Lass Kosten weg, die mit der Arbeit enden,
       etwa den Arbeitsweg.</p>
       <p class="ex">40 000 pro Jahr = 3333 pro Monat. Bei einer flexiblen Regel ist das der
       <b>anfängliche</b> Betrag. Der Kapitalverzehr berechnet seinen eigenen und verwendet ihn
       nicht.</p>
       <p>Kosten, die kommen und gehen (eine Hypothek, bis sie abbezahlt ist, die Schule der
-      Kinder), passen besser als Posten unter „Einnahmen und Kosten nach dem Ausstieg“.</p>`,
+      Kinder), passen besser als Posten unter „Einnahmen und Kosten nach dem Ausstieg“.</p>
+      <p>Eine Steuer auf das Vermögen (eine Vermögensteuer, eine jährliche Stempelsteuer auf
+      Wertpapiere) schrumpft mit dem Depot: Zieh ihren Satz stattdessen von der Aktien- und der
+      Anleihenrendite ab.</p>
+      <p class="ex">0,3 % Vermögensteuer: Aktien 6 % → 5,7 %, Anleihen 3 % → 2,7 %.</p>`,
   },
   end_person: {
     title: "Wie lange das Geld reichen muss",
@@ -383,7 +392,9 @@ export default {
     title: "Einnahmen und Kosten nach dem Ausstieg",
     html: `<p>Geld, das für eine Zeit des Ruhestands hereinkommt oder zusätzlich zu den Ausgaben
       hinausgeht: eine staatliche Rente, eine monatlich ausbezahlte Betriebsrente, Teilzeitarbeit,
-      Miete aus einer Wohnung; oder eine Hypothek, bis sie abbezahlt ist, Kinder im Studium.</p>
+      Miete aus einer Wohnung; oder eine Hypothek, bis sie abbezahlt ist, Kinder im Studium. In der
+      Schweiz zahlt, wer vor 65 aufhört zu arbeiten, weiter AHV-Beiträge, die sich nach dem
+      Vermögen richten: Kosten bis 65.</p>
       <ul>
         <li>Ein <b>positiver</b> Betrag ist eine Einnahme, ein <b>negativer</b> zusätzliche Kosten.
           Pro Jahr, in heutiger Kaufkraft.</li>
@@ -415,7 +426,9 @@ export default {
     html: `<p>Ein einzelner Betrag in einem einzelnen Jahr, vor oder nach dem FIRE-Start: eine
       Erbschaft oder der Verkauf eines Hauses (positiv), ein neues Dach, ein Auto, eine Hochzeit,
       Hilfe für ein Kind (negativ). In heutiger Kaufkraft, nach allfälligen Steuern. Kosten, die das
-      Geld nicht bezahlen kann, lassen den Verlauf in ihrem Jahr scheitern.</p>`,
+      Geld nicht bezahlen kann, lassen den Verlauf in ihrem Jahr scheitern.</p>
+      <p>Willst du Geld hinterlassen, gib den Betrag als Kosten im Jahr ein, in dem der Plan endet:
+      Ein Verlauf, der mit weniger endet, scheitert.</p>`,
   },
 
   // ---- markets -------------------------------------------------------------------------------------
@@ -428,6 +441,9 @@ export default {
       <p class="ex">6 % bei 2 % Inflation ≈ 3,9 % real: etwa in der Mitte der langfristigen
       Prognosen für Aktien weltweit (etwa 3,5–5 % real). Aktien weltweit haben seit 1900 rund 5 %
       real pro Jahr erzielt.</p>
+      <p>Eine Rendite aus anderer Quelle ist vielleicht der <b>einfache Durchschnitt</b> der Jahre:
+      Für dieselben Aktien liegt er um etwa die Hälfte der quadrierten Volatilität höher.</p>
+      <p class="ex">Ein Durchschnitt von 7,4 % bei 17 % Volatilität ≈ 6 % hier.</p>
       <p>Diese eine Eingabe bewegt das Ergebnis mehr als jede andere: Probiere einen vorsichtigen
       Fall aus.</p>`,
   },
