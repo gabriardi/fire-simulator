@@ -63,6 +63,7 @@
     <meta name="theme-color" content="#1f5f9e" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#151d25" media="(prefers-color-scheme: dark)" />
     <script src="js/ui/theme.js"></script>
+    <script src="js/ui/welcome.js"></script>
     <link rel="icon" href="icons/favicon-64.png" type="image/png" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -271,7 +272,6 @@
             ></button>
           </div>
           <div class="top-right">
-            <span class="sub" id="sub" data-i18n="page.sub">Today's money · Monte Carlo</span>
             <button
               class="btn"
               id="new-seed"
@@ -306,9 +306,10 @@
               <option value="dark" data-i18n="page.theme.dark">Theme: dark</option>
             </select>
           </div>
+          <span class="sub" id="sub" data-i18n="page.sub">Today's money · Monte Carlo</span>
         </header>
 
-        <section class="welcome hidden" id="welcome">
+        <section class="welcome" id="welcome">
           <div>
             <h2 data-i18n="page.welcome.title">
               When can you stop working, and how much can you spend?
@@ -358,10 +359,31 @@
               </button></span
             >
             <span class="big" id="k-success">–</span>
-            <span class="what" id="k-what"></span>
+            <span class="what" id="k-what"><span class="ghost" aria-hidden="true"></span></span>
           </div>
-          <div class="tiles" id="tiles"></div>
-          <div class="compare" id="compare"></div>
+          <!-- Until the first results: stand-ins of about their size (app.css, .ghost), so that the
+           results fill the box instead of growing it and pushing the charts down. -->
+          <div class="tiles" id="tiles">
+            <div class="tile ghost" aria-hidden="true">
+              <span class="k"></span><span class="v">–</span><span class="s"></span>
+            </div>
+            <div class="tile ghost" aria-hidden="true">
+              <span class="k"></span><span class="v">–</span><span class="s"></span>
+            </div>
+            <div class="tile ghost" aria-hidden="true">
+              <span class="k"></span><span class="v">–</span><span class="s"></span>
+            </div>
+            <div class="tile ghost" aria-hidden="true">
+              <span class="k"></span><span class="v">–</span><span class="s"></span>
+            </div>
+          </div>
+          <div class="compare" id="compare">
+            <span class="ghost" aria-hidden="true"></span
+            ><span class="ghost" aria-hidden="true"></span
+            ><span class="ghost" aria-hidden="true"></span
+            ><span class="ghost" aria-hidden="true"></span
+            ><span class="ghost" aria-hidden="true"></span>
+          </div>
         </section>
 
         <section class="card" id="c-paths">
@@ -806,7 +828,8 @@
       </button>
     </div>
 
-    <script src="vendor/plotly-cartesian-4.1.1.min.js"></script>
+    <!-- The chart library: on its own, not before the page's code (js/ui/charts.js waits for it). -->
+    <script src="vendor/plotly-cartesian-4.1.1.min.js" async></script>
     <script type="module" src="js/app.js"></script>
   </body>
 </html>

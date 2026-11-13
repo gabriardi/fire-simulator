@@ -63,15 +63,6 @@ function layout(extra = {}) {
     yaxis: { ...axis, ...(extra.yaxis || {}) },
   };
 }
-// Plotly's own words, in the page's language. Its dictionary is keyed by its English texts.
-Plotly.register({
-  moduleType: "locale",
-  name: LANG,
-  dictionary: {
-    "Double-click to zoom back out": t("chart.tip.zoom"),
-    "Double-click on legend to isolate one trace": t("chart.tip.legend"),
-  },
-});
 const CONFIG = {
   responsive: true,
   displaylogo: false,
@@ -79,6 +70,35 @@ const CONFIG = {
   scrollZoom: false,
   locale: LANG,
 };
+
+// The chart library loads on its own (`async` in index.html), so the page's code, the workers and
+// the numbers above the charts don't wait for it. A chart drawn before it's there is drawn once it
+// is: the latest drawing asked for each, then what follows it (`then`).
+const LIBRARY = document.querySelector('script[src*="vendor/plotly"]');
+const waiting = new Map(); // chart id → [traces, its layout, then]
+function draw(id, traces, chartLayout, then) {
+  if (!window.Plotly) {
+    waiting.set(id, [traces, chartLayout, then]);
+    return;
+  }
+  Plotly.react(id, traces, chartLayout, CONFIG);
+  then?.();
+}
+function libraryLoaded() {
+  // Plotly's own words, in the page's language. Its dictionary is keyed by its English texts.
+  Plotly.register({
+    moduleType: "locale",
+    name: LANG,
+    dictionary: {
+      "Double-click to zoom back out": t("chart.tip.zoom"),
+      "Double-click on legend to isolate one trace": t("chart.tip.legend"),
+    },
+  });
+  for (const [id, args] of waiting) draw(id, ...args);
+  waiting.clear();
+}
+if (window.Plotly) libraryLoaded();
+else LIBRARY.addEventListener("load", libraryLoaded, { once: true });
 
 // Short names for the age rows under the year axis: as short as they can be while still telling
 // everyone apart. First letters (A, S); else the initials of each word, numbers kept whole (M, P2,
@@ -272,7 +292,7 @@ export function renderPaths() {
     $("#ch-paths").clientWidth - room.l - room.r,
     room,
   );
-  Plotly.react(
+  draw(
     "ch-paths",
     traces,
     layout({
@@ -300,7 +320,6 @@ export function renderPaths() {
         bgcolor: "rgba(0,0,0,0)",
       },
     }),
-    CONFIG,
   );
 }
 
@@ -364,7 +383,7 @@ function renderSpending() {
     ...flat(s.ceiling, "", "dot"),
     showlegend: false,
   });
-  Plotly.react(
+  draw(
     "ch-spending",
     traces,
     layout({
@@ -383,7 +402,6 @@ function renderSpending() {
         font: { size: 11, color: css("--muted") },
       },
     }),
-    CONFIG,
   );
 }
 
@@ -393,7 +411,7 @@ function renderDist() {
   const e = d.start_hist.edges;
   const centers = e.slice(0, -1).map((v, i) => (v + e[i + 1]) / 2);
   const median = d.summary.start_median;
-  Plotly.react(
+  draw(
     "ch-start",
     [
       {
@@ -440,10 +458,9 @@ function renderDist() {
         },
       ],
     }),
-    CONFIG,
   );
   const f = d.fail_hist;
-  Plotly.react(
+  draw(
     "ch-fail",
     [
       {
@@ -468,7 +485,6 @@ function renderDist() {
         false,
       ).shapes,
     }),
-    CONFIG,
   );
 }
 
@@ -646,7 +662,7 @@ function renderGrid() {
       y1: i + 0.5,
       line: { color: css("--ink"), width: 2.5 },
     });
-  Plotly.react(
+  draw(
     "ch-grid",
     [
       {
@@ -683,9 +699,8 @@ function renderGrid() {
       shapes,
       dragmode: false,
     }),
-    CONFIG,
+    wireGridClicks, // Plotly's own events: only once it has drawn the chart
   );
-  wireGridClicks();
 }
 
 const SAFE_TEXT = {
@@ -734,7 +749,7 @@ function renderSafe() {
         line("95", accent, "dot", t("safe.lasts95")),
         level(state.spending, t("safe.yours")),
       ];
-  Plotly.react(
+  draw(
     "ch-safe",
     traces,
     layout({
@@ -761,7 +776,6 @@ function renderSafe() {
         font: { size: 11, color: css("--muted") },
       },
     }),
-    CONFIG,
   );
 }
 
@@ -787,7 +801,7 @@ function renderStress() {
     cliponaxis: false,
     hovertemplate: `${t("stress.hover", { rule: t(`rule.short.${k}`) })}<extra></extra>`,
   }));
-  Plotly.react(
+  draw(
     "ch-stress",
     traces,
     layout({
@@ -804,7 +818,6 @@ function renderStress() {
       legend: { orientation: "h", x: 0, y: -0.14, traceorder: "normal" },
       dragmode: false,
     }),
-    CONFIG,
   );
 }
 export const RENDER = { grid: renderGrid, safe: renderSafe, stress: renderStress };

@@ -316,7 +316,11 @@ export function renderPlanBar() {
       ? t("plans.pill.editedLabel", { name: base.name })
       : t("plans.pill.label", { name: base.name }),
   );
-  $("#welcome").classList.toggle("hidden", !(saved?.example && !settings.welcomeClosed));
+  // The welcome box: js/ui/welcome.js put it on the page before it was drawn, by the same rule.
+  document.documentElement.toggleAttribute(
+    "data-welcome",
+    Boolean(saved?.example && !settings.welcomeClosed),
+  );
   renderBackup();
   renderShared();
 }
