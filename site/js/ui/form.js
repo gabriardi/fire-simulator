@@ -442,7 +442,7 @@ function accountsGroup() {
 
 /**
  * An income line's change per year. What its % is measured against is "Rises with inflation":
- * prices if ticked, money if not. So its label follows the checkbox, and its hint says in words
+ * inflation if ticked, money if not. So its label follows the checkbox, and its hint says in words
  * what the line does and what it's worth in 10 years.
  */
 function changeField(i) {

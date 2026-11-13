@@ -35,7 +35,7 @@ Where the texts are: [CONTRIBUTING.md](../CONTRIBUTING.md#notes-for-changes) (th
 | **spending**                             | What the household spends in a year after stopping, taxes included.                                                                                         | withdrawal (that's the money taken out) |
 | **saved per year**, **paid in per year** | What goes into the portfolio, and into a retirement account, each year until the FIRE start. **Saving rises by**: how much more each year, above inflation. | savings growth                          |
 | **income line**, **cost line**           | A yearly amount, coming in or going out, from when it starts to when it stops. A **line** for short.                                                        |                                         |
-| **change per year**                      | How much a line rises (or falls) each year: **compared with prices** if it rises with inflation, **in money** if not.                                       | growth                                  |
+| **change per year**                      | How much a line rises (or falls) each year: **compared with inflation** if it rises with inflation, **in money** if not.                                    | growth                                  |
 | **one-off event**                        | A single amount in a single year.                                                                                                                           |                                         |
 
 ### The simulation
@@ -148,7 +148,7 @@ translations of the English.
 | Saving rises by                              | Sparrate steigt um                                       |
 | income line, cost line; a line               | Einnahme, Kosten; ein Posten                             |
 | change per year                              | Änderung pro Jahr                                        |
-| compared with prices; in money               | gegenüber den Preisen; als Geldbetrag                    |
+| compared with inflation; in money            | gegenüber der Inflation; als Geldbetrag                  |
 | one-off event                                | einmaliges Ereignis                                      |
 | future, simulated future                     | Verlauf, simulierter Verlauf                             |
 | the money lasts; a lasting future            | das Geld reicht; ein erfolgreicher Verlauf               |

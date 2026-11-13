@@ -212,15 +212,15 @@ export default {
   "form.income.to.what": "Ende von {name}",
   "form.income.indexed": "Steigt mit der Inflation",
   "form.income.indexed.what": "{name} steigt mit der Inflation",
-  "form.income.change.real": "Änderung gegenüber den Preisen",
+  "form.income.change.real": "Änderung gegenüber der Inflation",
   "form.income.change.money": "Änderung als Geldbetrag",
   "form.income.change.what": "{name}, Änderung pro Jahr",
   "form.income.change.flatReal":
-    "hält mit den Preisen Schritt: jedes Jahr gleich in heutiger Kaufkraft",
+    "hält mit der Inflation Schritt: jedes Jahr gleich in heutiger Kaufkraft",
   "form.income.change.upReal":
-    "steigt {pct} pro Jahr schneller als die Preise: in 10 Jahren {amount} in heutiger Kaufkraft",
+    "steigt {pct} pro Jahr schneller als die Inflation: in 10 Jahren {amount} in heutiger Kaufkraft",
   "form.income.change.downReal":
-    "bleibt {pct} pro Jahr hinter den Preisen zurück: in 10 Jahren {amount} in heutiger Kaufkraft",
+    "bleibt {pct} pro Jahr hinter der Inflation zurück: in 10 Jahren {amount} in heutiger Kaufkraft",
   "form.income.change.flatMoney": "wird nie erhöht: jedes Jahr derselbe Geldbetrag",
   "form.income.change.upMoney":
     "wird um {pct} pro Jahr erhöht: in 10 Jahren {amount} als Geldbetrag",
