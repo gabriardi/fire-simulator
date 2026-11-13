@@ -51,7 +51,7 @@ export function openSetup() {
       "select",
       {},
       ...CURRENCIES.map((c) =>
-        el("option", { value: c, text: `${c} · ${currencyName(c, fmt.locale)}` }),
+        el("option", { value: c, text: `${c} · ${currencyName(c, fmt.words)}` }),
       ),
     );
     cur.value = money.currency;

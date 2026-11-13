@@ -315,6 +315,9 @@ export default {
 
   // ---- the charts -------------------------------------------------------------------------------
   "chart.na": "n/a",
+  // Plotly's own words: its tips after a zoom, and after a click on a legend.
+  "chart.tip.zoom": "Double-click to zoom back out",
+  "chart.tip.legend": "Double-click on legend to isolate one trace",
   "chart.age": "age {age}", // under the year axis, with one person in the plan
   "chart.fireStart": "FIRE start",
   "chart.ends": "{name} ends",

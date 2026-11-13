@@ -1,11 +1,13 @@
 // Every text the site shows is in the catalog, by key, so it can be translated: the code's in
 // site/js/locales/en/, the pages' marked in place (scripts/strings.js says where each kind is).
-// These tests check that nothing shown is left out of it, and that nothing in it is left unused.
+// These tests check that nothing shown is left out of it, that nothing in it is left unused, and
+// that every other language has all of it, up to date.
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
-import { catalog } from "../scripts/strings.js";
+import { catalog, problemsOf } from "../scripts/strings.js";
 import { RULE_KINDS } from "../site/js/engine.js";
+import { LANGS } from "../site/js/i18n.js";
 import { LIMITS } from "../site/js/plan.js";
 import { STRESS_SCENARIOS } from "../site/js/views.js";
 import messages from "../site/js/locales/en/messages.js";
@@ -25,6 +27,13 @@ test("the English catalog holds every text on the pages, each key with one text"
   assert.deepEqual(problems, []);
   assert.ok(Object.keys(strings).length > 600, "the catalog was found");
 });
+
+for (const lang of LANGS.slice(1))
+  test(`the ${lang} catalog has every English text, translated from the English as it is now`, async () => {
+    // Every key, with the same values to fill in, the same markup and the forms per number its
+    // language has; none whose English changed since (scripts/strings.js, `--translated`).
+    assert.deepEqual(await problemsOf(lang), []);
+  });
 
 // ---- the code's messages -------------------------------------------------------------------------
 
@@ -221,6 +230,9 @@ const NOT_TEXT = new Set([
   "input, select, textarea",
   // An error the service worker catches itself, never shown (sw.js).
   "${…} can't be read",
+  // Plotly's English texts, the keys of its dictionary of translations (js/ui/charts.js).
+  "Double-click to zoom back out",
+  "Double-click on legend to isolate one trace",
 ]);
 
 /** The literals of the code that look like words, and aren't in NOT_TEXT: { text, at }. */

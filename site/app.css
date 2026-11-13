@@ -383,8 +383,9 @@ input[type="range"] {
   font-size: 1.15rem;
   line-height: 1;
 }
-/* The theme switch: a select that looks like the buttons beside it, with a small chevron. */
-select.btn.theme-select {
+/* The language and theme switches: selects that look like the buttons beside them, with a small
+   chevron. */
+.btn.btn-select {
   appearance: none;
   -webkit-appearance: none;
   color: inherit;
@@ -401,6 +402,46 @@ select.btn.theme-select {
 .btn:disabled {
   opacity: 0.55;
   cursor: default;
+}
+/* The language switch shows the page's language, by name (on a phone, by its code), with the
+   select over it, unseen: it takes no more room than that, and its list names each language in
+   that language. */
+.lang-pick {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.lang-pick select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font: inherit;
+}
+.lang-pick:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.lang-pick .lang-code {
+  display: none;
+}
+@media (max-width: 600px) {
+  .lang-pick .lang-name {
+    display: none;
+  }
+  .lang-pick .lang-code {
+    display: inline;
+  }
+  header.top .top-right {
+    gap: 8px;
+  }
+  .btn.btn-select {
+    padding-right: 24px;
+    background-position:
+      calc(100% - 13px) 52%,
+      calc(100% - 8px) 52%;
+  }
 }
 
 .error {

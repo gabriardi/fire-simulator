@@ -1,6 +1,6 @@
 // The charts, drawn with Plotly from what the workers return, and the headline numbers above them.
 import { RULE_KINDS, personById } from "../engine.js";
-import { t, tParts } from "../i18n.js";
+import { LANG, t, tParts } from "../i18n.js";
 import { $, css, el, esc, isPhone } from "./dom.js";
 import { followBand } from "./form.js";
 import { helpBtn } from "./messages.js";
@@ -63,7 +63,22 @@ function layout(extra = {}) {
     yaxis: { ...axis, ...(extra.yaxis || {}) },
   };
 }
-const CONFIG = { responsive: true, displaylogo: false, displayModeBar: false, scrollZoom: false };
+// Plotly's own words, in the page's language. Its dictionary is keyed by its English texts.
+Plotly.register({
+  moduleType: "locale",
+  name: LANG,
+  dictionary: {
+    "Double-click to zoom back out": t("chart.tip.zoom"),
+    "Double-click on legend to isolate one trace": t("chart.tip.legend"),
+  },
+});
+const CONFIG = {
+  responsive: true,
+  displaylogo: false,
+  displayModeBar: false,
+  scrollZoom: false,
+  locale: LANG,
+};
 
 // Short names for the age rows under the year axis: as short as they can be while still telling
 // everyone apart. First letters (A, S); else the initials of each word, numbers kept whole (M, P2,

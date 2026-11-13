@@ -25,6 +25,8 @@ Use it at **[whencanistop.fyi](https://whencanistop.fyi)**, or [run your own cop
 - **Local first.** Plans are saved in your browser. You can export them to a file, or send one to
   someone as a link.
 - **Made for any household.** One to four people, any currency, any pension system.
+- **In English and German** ([whencanistop.fyi/de](https://whencanistop.fyi/de/)): it opens in
+  your browser's language, and keeps the one you pick.
 
 ## Contents
 
@@ -266,9 +268,11 @@ how to reach you, and which host you use. A few files point at this project, and
 - `site/privacy.html`: the operator, the contact, the host and the logs. It's this project's notice,
   not a template that fits every copy.
 - `site/index.html`: the footer's links (the code, Buy me a coffee), and the address in its `<head>`
-  (the canonical link, the link-preview tags and the structured data).
+  (the canonical link, the language links, the link-preview tags and the structured data).
 - `site/js/locales/en/help.js`: the guide's last card, "Free and open source", with the same links.
 - `site/robots.txt`, `site/sitemap.xml`: the address.
+- The same in German: `site/js/locales/de/help.js` and `pages.js`. Then `npm run pages` writes the
+  German pages (`site/de/`) again.
 
 ## Contributing
 

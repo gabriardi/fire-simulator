@@ -1,8 +1,9 @@
 /**
  * Numbers on screen: in the viewer's number format (or one they pick) and the plan's currency.
- * Also the reverse, reading what someone typed, which in many locales means "1.234,5".
+ * Also the reverse, reading what someone typed, which in many locales means "1.234,5". Dates and
+ * the currencies' names are words: in the page's language, with the number format's region.
  */
-import { t } from "./i18n.js";
+import { LANG, t } from "./i18n.js";
 
 export const CURRENCIES = [
   "USD",
@@ -59,9 +60,10 @@ export const LOCALES = [
   }),
 ];
 
-export function currencyName(code, locale) {
+/** The currency's name, in `words` (a format's locale for words). */
+export function currencyName(code, words) {
   try {
-    return new Intl.DisplayNames(locale || undefined, { type: "currency" }).of(code);
+    return new Intl.DisplayNames(words, { type: "currency" }).of(code);
   } catch {
     return code;
   }
@@ -96,6 +98,23 @@ export function makeFormat(locale, currency) {
   // Some languages (German, for one) only abbreviate millions: below that, whole amounts.
   const thousands = compact.formatToParts(1500).some((p) => p.type === "compact");
   const symbol = money.formatToParts(1).find((p) => p.type === "currency")?.value ?? currency;
+  const percents = [0, 1, 2].map(
+    (d) =>
+      new Intl.NumberFormat(loc, {
+        style: "percent",
+        minimumFractionDigits: d,
+        maximumFractionDigits: d,
+      }),
+  );
+  // The page's language, in the number format's region: en-CH writes "13 Nov 2026", de-DE
+  // "13.11.2026". A region its language doesn't know falls back to the language alone.
+  let words = LANG;
+  try {
+    const region = new Intl.Locale(loc).maximize().region;
+    if (region) words = new Intl.Locale(LANG, { region }).toString();
+  } catch {
+    /* the language alone */
+  }
   const dash = "–";
   const ok = (v) => v != null && Number.isFinite(v);
 
@@ -127,6 +146,8 @@ export function makeFormat(locale, currency) {
 
   return {
     locale: loc,
+    /** The locale for words, such as dates and the currencies' names. */
+    words,
     currency,
     symbol,
     group,
@@ -142,7 +163,8 @@ export function makeFormat(locale, currency) {
         : Math.abs(v) < 1e6 && !thousands
           ? money.format(Math.round(v))
           : compact.format(v),
-    pct: (v, d = 0) => (ok(v) ? `${(v * 100).toFixed(d).replace(".", decimal)}%` : dash),
+    /** A fraction in %, with `d` decimals (0 to 2), written as the number format writes it. */
+    pct: (v, d = 0) => (ok(v) ? percents[d].format(v) : dash),
     parse,
     /** A typed list of numbers ("-15, -20, -25"), each read by `parse`: NaN where one isn't. */
     parseList: (s, kind = "num") =>

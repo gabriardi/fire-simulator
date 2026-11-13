@@ -61,8 +61,11 @@ In `site/`:
 | `js/plan.js`                                         | The plan format: defaults, the example, cleaning a plan that comes from storage, a file or a link    |
 | `js/store.js`                                        | Local storage, export and import files, share links                                                  |
 | `js/format.js`                                       | Currencies, number formats, and parsing typed numbers                                                |
-| `js/i18n.js`                                         | The page's words: `t()` finds each text in the catalog, by key                                       |
+| `js/i18n.js`                                         | The page's words: `t()` finds each text in the catalog of the page's language, by key                |
 | `js/locales/en/`                                     | The English catalog: the code's messages, and every "?" text and guide card                          |
+| `js/locales/de/`                                     | The German catalog: the same, and the texts of the pages (`pages.js`)                                |
+| `de/`                                                | The German pages, made from the English ones by `scripts/pages.js`: not edited by hand               |
+| `js/ui/language.js`                                  | Opens the simulator in the language picked, or else the browser's, before it's drawn                 |
 | `js/help.js`                                         | The guide's sections, and the order of their cards                                                   |
 | `sw.js`, `manifest.webmanifest`                      | Offline use, installing as an app, and telling a page left open about a new version                  |
 | `vendor/`                                            | Plotly's cartesian bundle (charts)                                                                   |
@@ -76,7 +79,8 @@ Around it:
 | File                                  | What it does                                                                                                                  |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `scripts/serve.js`                    | The local server, with the production headers                                                                                 |
-| `scripts/strings.js`                  | Every text the site shows, by key, from the code and the pages: `npm run strings`                                             |
+| `scripts/strings.js`                  | Every text the site shows, by key, from the code and the pages: `npm run strings`; each language's checked against it         |
+| `scripts/pages.js`                    | Each language's pages, made from the English ones and its texts: `npm run pages`                                              |
 | `wrangler.jsonc`                      | Hosting on Cloudflare: `site/` as static files, and the logs                                                                  |
 | `tests/`                              | The tests, below                                                                                                              |
 | `docs/`                               | How the simulation works, the site's terms and style, the README's screenshots, and the link-preview card                     |
@@ -123,7 +127,8 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
   - number and list parsing in several locales.
 - `tests/i18n.test.js` checks that every text the site shows is in the catalog, by key (the
   notes below say where): none left in the code or unmarked on a page, none asked for and
-  missing, none in the catalog and unused.
+  missing, none in the catalog and unused. And that every other language has all of it, with the
+  same values to fill in and the same markup, translated from the English as it is now.
 - `tests/site.test.js` checks what the notes below would otherwise leave to memory:
   - every file the page and its workers load is in the service worker's list, and every file
     in that list exists;
@@ -160,9 +165,9 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
   `docs/methodology.md`, briefly on the page (`site/index.html`, "How the simulation works"),
   and input by input in the guide (`site/js/locales/en/help.js`). A change to the model updates
   all three, and the README's short "How it works" if it's affected.
-- **Text is in the catalog, never in the code**, so that it can be translated. Only English
-  exists so far. [docs/terminology.md](docs/terminology.md) has the site's terms (one word for
-  each idea) and its style; a new text uses them.
+- **Text is in the catalog, never in the code**, so that it can be translated: the site is in
+  English and German. [docs/terminology.md](docs/terminology.md) has the site's terms (one word
+  for each idea), in both, and its style; a new text uses them.
   - A text the code shows is a message, `t("plans.saved", { name })`, with its English in
     `site/js/locales/en/messages.js`. A "?" explanation or a guide card is in
     `site/js/locales/en/help.js`.
@@ -175,6 +180,20 @@ and that the bundled Plotly is, byte for byte, the file published on npm for its
     part of the message, as they differ too.
   - `npm run strings` lists the whole catalog, and `tests/i18n.test.js` fails on text left out of
     it, a key nothing uses, or the same key with two texts.
+- **Every language has every text.** A new or changed English text needs its German too, in
+  `site/js/locales/de/` (the same file names as the English; the pages' texts are in `pages.js`):
+  1. `npm run strings -- --check` lists what's missing, and each text whose English changed since
+     it was translated, with the English it was translated from.
+  2. Once the German is right, `npm run strings -- --translated de` records the English it now
+     matches (`tests/translated.json`).
+  3. A change to a page (`site/index.html`, `site/privacy.html`) or to the manifest: `npm run pages`
+     writes the German pages again (`site/de/`). The tests fail while they're out of date.
+
+  A new language: add it to `LANGS` in `site/js/i18n.js` and `site/js/ui/language.js`, copy
+  `site/js/locales/de/` to its own folder and translate it, run `npm run pages`, then add its
+  pages to `sw.js`, the `hreflang` links of both pages, `sitemap.xml` and the switch in
+  `site/index.html`. The tests say what's still missing.
+
 - **The default currency** is `DEFAULT_CURRENCY` in `site/js/plan.js`.
 - **Plans are versioned** (`schema` in `site/js/plan.js`). Anything loaded from storage, a file or
   a link goes through `normalize()`, which fills in missing fields, clamps values and repairs

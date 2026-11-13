@@ -1,0 +1,768 @@
+<!doctype html>
+<!-- Made by scripts/pages.js from ../index.html and js/locales/de/: don't edit it, change those and run npm run pages. -->
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title data-i18n="meta.title">When can I stop? · Monte-Carlo-FIRE-Rechner</title>
+    <meta
+      name="description"
+      data-i18n-content="meta.description"
+      content="Wann könntest du in Frührente gehen, und wie viel könntest du ausgeben? Ein kostenloser Monte-Carlo-FIRE-Rechner, der in deinem Browser läuft: Nichts, was du eingibst, verlässt dein Gerät."
+    />
+    <link rel="canonical" href="https://whencanistop.fyi/de/" />
+    <!-- The page in each language (scripts/pages.js makes the others from this one). -->
+    <link rel="alternate" hreflang="en" href="https://whencanistop.fyi/" />
+    <link rel="alternate" hreflang="de" href="https://whencanistop.fyi/de/" />
+    <link rel="alternate" hreflang="x-default" href="https://whencanistop.fyi/" />
+    <!-- Link previews (Open Graph, X) and search engines' description of the site. A copy of your own
+     changes the addresses here, and the operator in privacy.html. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" data-i18n-content="app.name" content="When can I stop?" />
+    <meta property="og:url" content="https://whencanistop.fyi/de/" />
+    <meta
+      property="og:title"
+      data-i18n-content="meta.title"
+      content="When can I stop? · Monte-Carlo-FIRE-Rechner"
+    />
+    <meta
+      property="og:description"
+      data-i18n-content="meta.description"
+      content="Wann könntest du in Frührente gehen, und wie viel könntest du ausgeben? Ein kostenloser Monte-Carlo-FIRE-Rechner, der in deinem Browser läuft: Nichts, was du eingibst, verlässt dein Gerät."
+    />
+    <meta property="og:image" content="https://whencanistop.fyi/images/social.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      data-i18n-content="meta.imageAlt"
+      content="When can I stop? Ein Monte-Carlo-FIRE-Rechner, neben einem Screenshot: Das Geld reicht in 78 % von 10 000 Verläufen."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "When can I stop?",
+        "alternateName": "When can I stop? Monte-Carlo-FIRE-Rechner",
+        "url": "https://whencanistop.fyi/de/",
+        "inLanguage": "de",
+        "description": "Wann könntest du in Frührente gehen, und wie viel könntest du ausgeben? Ein kostenloser Monte-Carlo-FIRE-Rechner, der in deinem Browser läuft: Nichts, was du eingibst, verlässt dein Gerät.",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Alle: läuft in einem Webbrowser",
+        "browserRequirements": "Erfordert JavaScript",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "image": "https://whencanistop.fyi/images/social.png",
+        "author": {
+          "@type": "Person",
+          "name": "Gabriele Ardizzone"
+        },
+        "license": "https://opensource.org/license/mit",
+        "sameAs": [
+          "https://github.com/gabriardi/fire-simulator"
+        ]
+      }
+    </script>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <script src="../js/ui/language.js"></script>
+    <meta name="theme-color" content="#1f5f9e" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#151d25" media="(prefers-color-scheme: dark)" />
+    <script src="../js/ui/theme.js"></script>
+    <link rel="icon" href="../icons/favicon-64.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-title"
+      data-i18n-content="app.shortName"
+      content="Can I stop?"
+    />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="stylesheet" href="../app.css" />
+    <link rel="modulepreload" href="../js/locales/de/messages.js" />
+    <link rel="modulepreload" href="../js/locales/de/help.js" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail" id="rail" aria-label="Parameter" data-i18n-aria-label="page.parameters">
+        <div class="rail-head">
+          <div class="rail-top">
+            <div>
+              <h2 data-i18n="page.parameters">Parameter</h2>
+              <div class="rail-live" id="rail-live" data-i18n="page.loading">Wird geladen…</div>
+            </div>
+            <button class="btn sheet-close" id="sheet-close" type="button" data-i18n="page.done">
+              Fertig
+            </button>
+          </div>
+          <div class="scenario" id="scenario">
+            <div class="scenario-label">
+              <label for="plan-select" data-i18n="page.plan">Plan</label>
+              <button
+                class="help"
+                type="button"
+                data-help="plans"
+                aria-label="Erklärung: Pläne"
+                data-i18n-aria-label="page.help.plans"
+              >
+                ?
+              </button>
+            </div>
+            <div class="scenario-row">
+              <div class="input"><select id="plan-select"></select></div>
+              <div class="menu-wrap">
+                <button
+                  class="btn icon"
+                  id="plan-more"
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-controls="plan-menu"
+                  aria-label="Aktionen für den Plan"
+                  data-i18n-aria-label="page.planActions"
+                  title="Aktionen für den Plan"
+                  data-i18n-title="page.planActions"
+                >
+                  ⋯
+                </button>
+                <div
+                  class="menu"
+                  id="plan-menu"
+                  role="menu"
+                  aria-label="Aktionen für den Plan"
+                  data-i18n-aria-label="page.planActions"
+                  hidden
+                >
+                  <button type="button" role="menuitem" data-act="new" data-i18n="page.menu.new">
+                    Neuer Plan…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="save-as"
+                    data-i18n="page.menu.saveAs"
+                  >
+                    Als Kopie speichern…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="rename"
+                    data-i18n="page.menu.rename"
+                  >
+                    Umbenennen…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="delete"
+                    class="danger"
+                    data-i18n="page.menu.delete"
+                  >
+                    Löschen
+                  </button>
+                  <hr />
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="share"
+                    data-i18n="page.menu.share"
+                  >
+                    Link teilen…
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="export"
+                    data-i18n="page.menu.export"
+                  >
+                    Pläne exportieren
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    data-act="import"
+                    data-i18n="page.menu.import"
+                  >
+                    Pläne importieren…
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="scenario-status">
+              <span class="scenario-state" id="plan-state"></span>
+              <button
+                class="btn quiet"
+                id="plan-revert"
+                type="button"
+                data-i18n="page.revert"
+                hidden
+              >
+                Zurücksetzen
+              </button>
+              <button
+                class="btn primary"
+                id="plan-save"
+                type="button"
+                data-i18n="plans.save"
+                hidden
+              >
+                Speichern
+              </button>
+            </div>
+            <div class="backup" id="backup" hidden>
+              <span class="backup-text" id="backup-text"></span>
+              <button
+                class="btn small"
+                id="backup-export"
+                type="button"
+                data-i18n="page.backup.export"
+              >
+                Exportieren
+              </button>
+              <button
+                class="help"
+                type="button"
+                data-help="backup"
+                aria-label="Erklärung: Sicherungen"
+                data-i18n-aria-label="page.help.backup"
+              >
+                ?
+              </button>
+            </div>
+            <div class="backup shared-note" id="shared-note" role="status" hidden>
+              <span class="backup-text" id="shared-text"></span>
+              <button class="btn small" id="shared-use" type="button" data-i18n="page.shared.use">
+                Dieselben verwenden
+              </button>
+              <button
+                class="btn quiet small"
+                id="shared-close"
+                type="button"
+                aria-label="Hinweis schließen"
+                data-i18n-aria-label="page.shared.dismiss"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="rail-body">
+          <div class="notice" id="notice" role="status"></div>
+          <form id="form" autocomplete="off" novalidate></form>
+          <div class="error" id="error" role="alert">
+            <span id="error-text"></span
+            ><button class="btn" id="error-fix" type="button" hidden></button>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <noscript
+          ><p class="noscript" data-i18n="page.noscript">
+            <b>When can I stop?</b> ist ein Monte-Carlo-FIRE-Rechner, der in deinem Browser läuft, und braucht deshalb JavaScript. Nichts, was du eingibst, wird jemals irgendwohin gesendet.
+          </p></noscript
+        >
+        <header class="top">
+          <div class="title">
+            <h1 data-i18n="app.name">When can I stop?</h1>
+            <button
+              class="scenario-pill"
+              id="plan-pill"
+              type="button"
+              title="Der angezeigte Plan"
+              data-i18n-title="page.pill"
+            ></button>
+          </div>
+          <div class="top-right">
+            <span class="sub" id="sub" data-i18n="page.sub">Heutige Kaufkraft · Monte Carlo</span>
+            <button
+              class="btn"
+              id="new-seed"
+              type="button"
+              title="Eine andere Menge zufälliger Verläufe ziehen"
+              data-i18n-title="page.newSeed.title"
+              data-i18n="form.newSeed"
+            >
+              Neuer Seed
+            </button>
+            <button class="btn" id="guide" type="button" data-i18n="guide.title">Anleitung</button>
+            <span class="btn btn-select lang-pick">
+              <span class="lang-name" aria-hidden="true" data-i18n="page.language.name"
+                >Deutsch</span
+              >
+              <span class="lang-code" aria-hidden="true" data-i18n="page.language.code">DE</span>
+              <select id="language" aria-label="Sprache" data-i18n-aria-label="page.language">
+                <option value="en" lang="en" translate="no">English</option>
+                <option value="de" lang="de" translate="no">Deutsch</option>
+              </select>
+            </span>
+            <select
+              class="btn btn-select"
+              id="theme"
+              aria-label="Design"
+              data-i18n-aria-label="page.theme"
+              title="Hell, dunkel oder wie auf dem Gerät eingestellt"
+              data-i18n-title="page.theme.title"
+            >
+              <option value="auto" data-i18n="page.theme.auto">Design: automatisch</option>
+              <option value="light" data-i18n="page.theme.light">Design: hell</option>
+              <option value="dark" data-i18n="page.theme.dark">Design: dunkel</option>
+            </select>
+          </div>
+        </header>
+
+        <section class="welcome hidden" id="welcome">
+          <div>
+            <h2 data-i18n="page.welcome.title">
+              Wann kannst du aufhören zu arbeiten, und wie viel kannst du ausgeben?
+            </h2>
+            <p data-i18n="page.welcome.text">
+              Der Simulator spielt deinen Plan in Tausenden möglicher Marktverläufe durch und sagt dir, wie oft das Geld reicht. Die Zahlen unten gehören Alex und Sam, einem erfundenen Haushalt, und zeigen, wie es funktioniert. Lege deinen eigenen Plan an, um deine Zahlen zu sehen: Alles, was du eingibst, bleibt in diesem Browser, und nichts wird irgendwohin gesendet.
+            </p>
+          </div>
+          <div class="welcome-actions">
+            <button
+              class="btn primary"
+              id="welcome-setup"
+              type="button"
+              data-i18n="page.welcome.setup"
+            >
+              Meinen Plan anlegen
+            </button>
+            <button class="btn" id="welcome-import" type="button" data-i18n="page.welcome.import">
+              Pläne importieren
+            </button>
+            <button
+              class="btn quiet"
+              id="welcome-close"
+              type="button"
+              data-i18n="page.welcome.close"
+            >
+              Weiter erkunden
+            </button>
+          </div>
+        </section>
+
+        <section class="hero" aria-live="polite">
+          <div class="verdict">
+            <span class="label"
+              ><span data-i18n="page.hero.label">Geld reicht in</span>
+              <button
+                class="help"
+                type="button"
+                data-help="result.success"
+                aria-label="Erklärung: Geld reicht in"
+                data-i18n-aria-label="page.help.success"
+              >
+                ?
+              </button></span
+            >
+            <span class="big" id="k-success">–</span>
+            <span class="what" id="k-what"></span>
+          </div>
+          <div class="tiles" id="tiles"></div>
+          <div class="compare" id="compare"></div>
+        </section>
+
+        <section class="card" id="c-paths">
+          <div class="card-head">
+            <div>
+              <h3>
+                <span data-i18n="page.paths.title">Vermögen im Lauf der Zeit</span>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.paths"
+                  aria-label="Erklärung: Vermögen im Lauf der Zeit"
+                  data-i18n-aria-label="page.help.paths"
+                >
+                  ?
+                </button>
+              </h3>
+              <p class="desc" data-i18n="page.paths.desc">
+                Jede dünne Linie ist ein simulierter Verlauf, gefärbt vom ärmsten (violett) bis zum reichsten (gelb); bei roten Linien geht das Geld aus. Die schwarze Linie ist der Median, die schattierten Flächen enthalten die mittleren 50 % und 80 % der Verläufe.
+              </p>
+            </div>
+            <div class="tools">
+              <div class="seg" role="group" aria-label="Einheit" data-i18n-aria-label="page.unit">
+                <button
+                  type="button"
+                  data-unit="years"
+                  aria-pressed="true"
+                  data-i18n="page.unit.years"
+                >
+                  Jahresausgaben
+                </button>
+                <button
+                  type="button"
+                  data-unit="money"
+                  aria-pressed="false"
+                  id="unit-money"
+                  data-i18n="page.unit.money"
+                >
+                  Geld
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="chart" id="ch-paths"></div>
+        </section>
+
+        <section class="card hidden" id="c-spending">
+          <div class="card-head">
+            <div>
+              <h3>
+                <span data-i18n="page.spending.title">Was du ausgeben könntest</span>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.spending"
+                  aria-label="Erklärung zu dieser Grafik"
+                  data-i18n-aria-label="page.help.chart"
+                >
+                  ?
+                </button>
+              </h3>
+              <p class="desc" data-i18n="page.spending.desc">
+                Der Preis der Flexibilität: Jede Linie zeigt die jährlichen Ausgaben eines Verlaufs (rote enden, wenn das Geld ausgeht). Die schattierte Fläche enthält 80 % der Verläufe, in denen das Geld reicht.
+              </p>
+            </div>
+          </div>
+          <div class="chart mid" id="ch-spending"></div>
+        </section>
+
+        <section class="card" id="c-grid">
+          <div class="card-head">
+            <div>
+              <h3>
+                <span id="grid-title" data-i18n="grid.spending.title"
+                  >Wann kannst du aufhören, mit welchen Ausgaben?</span
+                >
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.grid"
+                  aria-label="Erklärung zu dieser Grafik"
+                  data-i18n-aria-label="page.help.chart"
+                >
+                  ?
+                </button>
+              </h3>
+              <p class="desc" id="grid-desc"></p>
+            </div>
+          </div>
+          <div class="chart mid" id="ch-grid"></div>
+        </section>
+
+        <section class="card" id="c-safe">
+          <div class="card-head">
+            <div>
+              <h3>
+                <span id="safe-title" data-i18n="safe.title">Sichere Ausgaben nach FIRE-Start</span>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.safe"
+                  aria-label="Erklärung zu dieser Grafik"
+                  data-i18n-aria-label="page.help.chart"
+                >
+                  ?
+                </button>
+              </h3>
+              <p class="desc" id="safe-desc"></p>
+            </div>
+          </div>
+          <div class="chart small" id="ch-safe"></div>
+        </section>
+
+        <section class="card" id="c-stress">
+          <div class="card-head">
+            <div>
+              <h3>
+                <span data-i18n="page.stress.title">Stresstest: ein Crash gleich nach dem Ausstieg</span>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.stress"
+                  aria-label="Erklärung zu dieser Grafik"
+                  data-i18n-aria-label="page.help.chart"
+                >
+                  ?
+                </button>
+              </h3>
+              <p class="desc" data-i18n="page.stress.desc">
+                Ein Crash nach historischem Vorbild in den ersten Jahren nach dem FIRE-Start, danach zufällige Märkte. Ein schlechter Start ist es, was einen Entnahmeplan zerstört: Du verkaufst zu niedrigen Kursen, um die Rechnungen zu bezahlen, und dieses Geld erholt sich nie mehr.
+              </p>
+            </div>
+          </div>
+          <div class="chart small" id="ch-stress"></div>
+        </section>
+
+        <section class="card" id="c-dist">
+          <div class="two">
+            <div>
+              <h3>
+                <span data-i18n="page.dist.start">Vermögen beim FIRE-Start</span>
+                <button
+                  class="help"
+                  type="button"
+                  data-help="chart.dist"
+                  aria-label="Erklärung zu diesen Grafiken"
+                  data-i18n-aria-label="page.help.charts"
+                >
+                  ?
+                </button>
+              </h3>
+              <div class="chart small" id="ch-start"></div>
+            </div>
+            <div>
+              <h3 data-i18n="page.dist.fail">Jahr, in dem das Geld ausgeht</h3>
+              <div class="chart small" id="ch-fail"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card how">
+          <details>
+            <summary data-i18n="page.how.summary">
+              Wie die Simulation funktioniert, und was sie nicht sieht
+            </summary>
+            <h4 data-i18n="page.how.money">Alles in heutiger Kaufkraft</h4>
+            <p data-i18n="page.how.money.text">
+              Die Renditen werden nach Inflation gezogen, Ausgaben von 40 000 pro Jahr bedeuten also in jedem Jahr heutige Kaufkraft. Nominale Eingaben (Renditen, Zinsen) werden mit der eingestellten Inflation umgerechnet.
+            </p>
+            <h4 data-i18n="page.how.years">Ein Jahr nach dem anderen</h4>
+            <ul>
+              <li data-i18n="page.how.years.portfolio">
+                Das Depot und die gleich angelegten Vorsorgekonten sind ein Mix aus Aktien und Anleihen, der jedes Jahr neu ausgeglichen wird (Rebalancing). Aktien und Anleihen erhalten je eine zufällige Rendite pro Jahr, unabhängig voneinander gezogen aus einer Log-Normalverteilung mit dem eingestellten Median und der eingestellten Streuung (oder aus einer mit Fat Tails).
+              </li>
+              <li data-i18n="page.how.years.cash">
+                Bankguthaben und Konten mit festem Zins wachsen mit ihrem Zins minus Inflation. Bis zum FIRE-Start sparst du weiter.
+              </li>
+              <li data-i18n="page.how.years.unlock">
+                Erreicht die Person, der es gehört, das Bezugsalter, wird ein Vorsorgekonto bezogen, versteuert und dem Depot zugeschlagen.
+              </li>
+              <li data-i18n="page.how.years.income">
+                Ab dem FIRE-Start zählen Einnahmen (Renten, Teilzeitarbeit) und zusätzliche Kosten, und einmalige Ereignisse geschehen in ihrem Jahr.
+              </li>
+              <li data-i18n="page.how.years.fail">
+                Die Ausgaben kommen zuerst aus dem Bankguthaben, dann aus dem Depot. Ein Verlauf <strong>scheitert</strong> im ersten Jahr, in dem das verfügbare Geld die Rechnungen nicht bezahlen kann, auch wenn später ein Vorsorgekonto verfügbar würde.
+              </li>
+            </ul>
+            <h4 data-i18n="page.how.rules">Entnahmeregeln</h4>
+            <ul>
+              <li data-i18n="page.how.rules.fixed">
+                <strong>Konstant:</strong> jedes Jahr derselbe reale Betrag (die klassische sichere Entnahmerate).
+              </li>
+              <li data-i18n="page.how.rules.guardrails">
+                <strong>Guardrails</strong> (Guyton &amp; Klinger): Ausgaben kürzen, wenn die Entnahmerate um mehr als das Toleranzband über ihren Anfangswert steigt, und erhöhen, wenn sie darunter fällt.
+              </li>
+              <li data-i18n="page.how.rules.vanguard">
+                <strong>Vanguard dynamisch:</strong> zielt auf einen festen Anteil am Vermögen, ändert die Ausgaben aber um höchstens +Erhöhung / −Kürzung pro Jahr.
+              </li>
+              <li data-i18n="page.how.rules.spenddown">
+                <strong>Kapitalverzehr</strong> (Die with Zero): Angestrebt wird jedes Jahr, was bis zum Ende jedes Jahr ausgegeben werden könnte, wenn das Geld die angenommene Rendite erzielte; die noch nicht verfügbaren Konten und künftige Einnahmen zählen dabei als Geld von heute, aber bis ein Konto verfügbar wird, bezahlt nur das verfügbare Geld. Die Ausgaben bewegen sich um höchstens +Erhöhung / −Kürzung pro Jahr darauf zu.
+              </li>
+              <li data-i18n="page.how.rules.band">
+                Die flexiblen Regeln bleiben zwischen der Untergrenze (Kosten, die du nicht senken kannst) und der Obergrenze. Sie scheitern nur, wenn nicht einmal die Untergrenze bezahlt werden kann.
+              </li>
+            </ul>
+            <h4 data-i18n="page.how.limits">Was sie nicht sieht</h4>
+            <ul>
+              <li data-i18n="page.how.limits.markets">
+                Echte Märkte haben lange schlechte Phasen und Erholungen; unabhängige zufällige Jahre sind eine Vereinfachung. Für schlechte Starts gibt es den Stresstest.
+              </li>
+              <li data-i18n="page.how.limits.returns">
+                Die Annahme zur Rendite bewegt das Ergebnis mehr als alles andere. Probiere einen vorsichtigen Fall aus.
+              </li>
+              <li data-i18n="page.how.limits.inflation">
+                Die Inflation ist der eingestellte Satz, in jedem Jahr: Nur die Renditen sind zufällig.
+              </li>
+              <li data-i18n="page.how.limits.taxes">
+                Steuern sind vereinfacht: ein fester Satz auf jedes Vorsorgekonto bei seinem Bezug und wahlweise ein effektiver Satz auf Entnahmen aus dem Depot. Alles andere (Einkommensteuer, Vermögensteuer, Krankenversicherung) gehört in die Ausgaben.
+              </li>
+              <li data-i18n="page.how.limits.missing">
+                Nicht abgebildet: Rentenreformen, Kosten, die schneller steigen als die Preise, wie lange jede Person lebt (der Plan läuft einfach bis zum eingestellten Alter), Währungsrisiko.
+              </li>
+            </ul>
+            <p data-i18n="page.how.advice">
+              Dies ist ein Werkzeug, um über einen Plan nachzudenken, keine Finanzberatung.
+            </p>
+          </details>
+        </section>
+        <footer class="site-foot">
+          <p data-i18n="page.foot.free">
+            Kostenlos, ohne Werbung und ohne Tracking. Wenn es dir nützt: <a class="coffee" href="https://buymeacoffee.com/gabriardif" target="_blank" rel="noopener"><span aria-hidden="true">☕</span> Spendier mir einen Kaffee</a>
+          </p>
+          <p data-i18n="page.foot.links">
+            Open Source (<a href="https://github.com/gabriardi/fire-simulator/blob/main/LICENSE" target="_blank" rel="noopener">MIT-Lizenz</a>) · <a href="https://github.com/gabriardi/fire-simulator" target="_blank" rel="noopener">Code und Issues auf GitHub</a> · Feedback: <a href="mailto:hello@whencanistop.fyi">hello@whencanistop.fyi</a> · <a href="privacy">Datenschutz</a>
+          </p>
+        </footer>
+      </main>
+    </div>
+    <button class="fab" id="fab" type="button" data-i18n="page.fab">Parameter anpassen</button>
+    <input type="file" id="import-file" accept=".json,application/json" hidden />
+
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <div class="help-head">
+        <h2 id="help-title" data-i18n="page.help.title">Hilfe</h2>
+        <button class="btn" id="help-close" type="button" data-i18n="page.close">Schließen</button>
+      </div>
+      <div class="help-body" id="help-body"></div>
+    </dialog>
+
+    <dialog class="panel" id="name-dialog" aria-labelledby="name-title">
+      <form id="name-form" method="dialog" novalidate>
+        <h2 id="name-title" data-i18n="page.name.title">Plan speichern</h2>
+        <p class="panel-text" id="name-text"></p>
+        <label for="name-input" data-i18n="form.name">Name</label>
+        <div class="input">
+          <input
+            id="name-input"
+            type="text"
+            maxlength="60"
+            autocomplete="off"
+            enterkeyhint="done"
+            aria-describedby="name-error"
+          />
+        </div>
+        <div class="field-error" id="name-error" role="alert"></div>
+        <div class="dialog-actions">
+          <button class="btn" id="name-cancel" type="button" data-i18n="dialog.cancel">
+            Abbrechen
+          </button>
+          <button class="btn primary" id="name-ok" type="submit" data-i18n="plans.save">
+            Speichern
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="panel wide" id="setup-dialog" aria-labelledby="setup-title">
+      <form id="setup-form" method="dialog" novalidate>
+        <h2 id="setup-title" data-i18n="page.setup.title">Plan anlegen</h2>
+        <p class="panel-text" data-i18n="page.setup.text">
+          Das Wesentliche, für eine erste Antwort. Vorsorgekonten, weitere Einnahmen, einmalige Ereignisse und die Annahmen zu den Märkten kannst du danach unter Parameter ergänzen.
+        </p>
+        <div id="setup-fields" class="setup-fields"></div>
+        <div class="field-error" id="setup-error" role="alert"></div>
+        <div class="dialog-actions">
+          <button class="btn" id="setup-cancel" type="button" data-i18n="dialog.cancel">
+            Abbrechen
+          </button>
+          <button class="btn primary" type="submit" data-i18n="page.setup.create">
+            Plan anlegen
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="panel" id="share-dialog" aria-labelledby="share-title">
+      <div class="panel-body">
+        <h2 id="share-title" data-i18n="page.share.title">Diesen Plan teilen</h2>
+        <p class="panel-text" data-i18n="page.share.text">
+          Ein Link, der eine Kopie des angezeigten Plans öffnet, ungespeicherte Änderungen inklusive. Der Plan steckt im Link selbst, nach dem „#“, den Browser nie an die Website senden: Nichts wird hochgeladen. <strong>Wer den Link hat, sieht jede Zahl darin</strong>, außer du schützt ihn mit einem Passwort.
+        </p>
+        <div class="share-field" id="share-lock">
+          <label for="share-password" data-i18n="page.share.password">Passwort (optional)</label>
+          <div class="input">
+            <input
+              id="share-password"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              enterkeyhint="done"
+              aria-describedby="share-lock-note"
+            />
+          </div>
+          <div class="hint" id="share-lock-note" aria-live="polite"></div>
+        </div>
+        <div class="share-field">
+          <label for="share-url" data-i18n="page.share.link">Link</label>
+          <div class="input"><input id="share-url" type="text" readonly /></div>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn" id="share-close" type="button" data-i18n="page.close">Schließen</button>
+          <button class="btn" id="share-native" type="button" data-i18n="page.share.native" hidden>
+            Teilen…
+          </button>
+          <button class="btn primary" id="share-copy" type="button" data-i18n="page.share.copy">
+            Link kopieren
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="panel" id="unlock-dialog" aria-labelledby="unlock-title">
+      <form id="unlock-form" method="dialog" novalidate>
+        <h2 id="unlock-title" data-i18n="open.title">Geteilten Plan öffnen?</h2>
+        <p class="panel-text" data-i18n="page.unlock.text">
+          Jemand hat einen Plan geteilt, der mit einem Passwort geschützt ist: Frag nach dem Passwort. Er wird als neuer Plan in diesem Browser geöffnet; deine eigenen Pläne bleiben, wie sie sind.
+        </p>
+        <label for="unlock-input" data-i18n="page.unlock.password">Passwort</label>
+        <div class="input">
+          <input
+            id="unlock-input"
+            type="text"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            enterkeyhint="go"
+            aria-describedby="unlock-error"
+          />
+        </div>
+        <div class="field-error" id="unlock-error" role="alert"></div>
+        <div class="dialog-actions">
+          <button class="btn" id="unlock-cancel" type="button" data-i18n="open.cancel">
+            Nicht jetzt
+          </button>
+          <button class="btn primary" id="unlock-ok" type="submit" data-i18n="unlock.ok">
+            Öffnen
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="panel" id="confirm-dialog" aria-labelledby="confirm-title">
+      <div class="panel-body">
+        <h2 id="confirm-title"></h2>
+        <p class="panel-text" id="confirm-text"></p>
+        <div class="dialog-actions">
+          <button class="btn" id="confirm-cancel" type="button" data-i18n="dialog.cancel">
+            Abbrechen
+          </button>
+          <button class="btn primary" id="confirm-ok" type="button" data-i18n="dialog.ok">
+            OK
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="sr-only" id="announce" role="status" aria-live="polite"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <span id="toast-text"></span>
+      <button class="toast-action" id="toast-action" type="button" data-i18n="toast.undo" hidden>
+        Rückgängig
+      </button>
+      <button
+        class="toast-close"
+        id="toast-close"
+        type="button"
+        aria-label="Schließen"
+        data-i18n-aria-label="page.dismiss"
+      >
+        ×
+      </button>
+    </div>
+
+    <script src="../vendor/plotly-cartesian-4.1.1.min.js"></script>
+    <script type="module" src="../js/app.js"></script>
+  </body>
+</html>

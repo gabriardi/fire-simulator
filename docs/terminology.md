@@ -99,8 +99,9 @@ Where the texts are: [CONTRIBUTING.md](../CONTRIBUTING.md#notes-for-changes) (th
 
 - **The meaning, not the words.** "Future" also means a financial contract in English: take the
   word your language uses for a possible course of events.
-- **Left as they are**: FIRE, Vanguard and Guyton & Klinger (names), Monte Carlo, the product
-  names (GitHub, Cloudflare, Safari, iCloud). The site's name is still to be decided.
+- **Left as they are**: the site's name (When can I stop?, and Can I stop? on a phone's home
+  screen), FIRE, Vanguard and Guyton & Klinger (names), Monte Carlo, the product names (GitHub,
+  Cloudflare, Safari, iCloud).
 - **Decide once per language**, with the reviewer: the informal or formal "you" (du or Sie, tu or
   vous, tu or Lei, tú or usted), and whether the rules' names (Guardrails, Spend-down) are
   translated or kept.
@@ -109,3 +110,62 @@ Where the texts are: [CONTRIBUTING.md](../CONTRIBUTING.md#notes-for-changes) (th
   such as the FDPIC's `/en`).
 - **The language's own typography**: its quotes („…“, « … »), the space French puts before
   `: ; ? !`, its number separators in the examples.
+
+## German (Deutsch)
+
+The German texts are in `site/js/locales/de/`. They follow the terms and the style above, in the
+words German-speaking investors already use (Entnahmerate, Aktienquote, Depot), not word-for-word
+translations of the English.
+
+**Decided once:**
+
+- **"du"**, lower case, as German finance apps and the FIRE community write.
+- **Standard German spelling, with ß** (Deutschland, Österreich, Schweiz alike): "Maßgeblich",
+  "außer". Swiss readers read it without trouble; the Swiss "ss" would be a change in one place.
+- **Quotes**: „…“ (the opening one low). **Numbers** in the texts: a space between groups of three
+  digits, from five digits on (40 000, but 4000), the decimal comma (3,5), a space before % (85 %).
+  These spaces are no-break spaces, so a number never breaks across lines. Numbers the page works
+  out follow the number format the viewer picked, as in English.
+- **Kept in English**: the site's name (When can I stop?), FIRE, Guardrails, Fat Tails, Bond Tent,
+  Seed, Die with Zero: the names German speakers know them by. Each is explained in its "?".
+- **Translated**: the other rules' names (Konstant, Vanguard dynamisch, Kapitalverzehr).
+- **The privacy notice** says the English one is authoritative.
+
+| English                                      | Deutsch                                                  |
+| -------------------------------------------- | -------------------------------------------------------- |
+| stop, stop working; after stopping           | aufhören (zu arbeiten), der Ausstieg; nach dem Ausstieg  |
+| FIRE start                                   | FIRE-Start                                               |
+| today's money; real, nominal                 | heutige Kaufkraft (in heutiger Kaufkraft); real, nominal |
+| plan; household, people                      | Plan; Haushalt, Personen                                 |
+| portfolio; Invested today                    | Depot; Heute investiert                                  |
+| cash; cash interest                          | Bankguthaben; Guthabenzins                               |
+| cash cushion                                 | Liquiditätsreserve                                       |
+| retirement account; unlocks; unlock age      | Vorsorgekonto; wird verfügbar, wird bezogen; Bezugsalter |
+| reachable money; the bridge                  | das verfügbare Geld; die Überbrückung                    |
+| wealth; spending; withdrawal                 | Vermögen; Ausgaben; Entnahme                             |
+| saved per year; paid in per year             | Sparrate pro Jahr; Einzahlung pro Jahr                   |
+| Saving rises by                              | Sparrate steigt um                                       |
+| income line, cost line; a line               | Einnahme, Kosten; ein Posten                             |
+| one-off event                                | einmaliges Ereignis                                      |
+| future, simulated future                     | Verlauf, simulierter Verlauf                             |
+| the money lasts; a lasting future            | das Geld reicht; ein erfolgreicher Verlauf               |
+| runs out, fails                              | geht aus, scheitert                                      |
+| seed                                         | Seed (Zufalls-Seed)                                      |
+| stress test, crash, scenario                 | Stresstest, Crash, Szenario                              |
+| extreme years, fat tails                     | Extremjahre, Fat Tails                                   |
+| median; worst 10%, best 10%; 10th percentile | Median; schlechteste 10 %, beste 10 %; 10. Perzentil     |
+| spending rule; flexible rules                | Entnahmeregel; flexible Regeln                           |
+| Fixed, Guardrails, Vanguard dynamic          | Konstant, Guardrails, Vanguard dynamisch                 |
+| Spend-down (die with zero)                   | Kapitalverzehr (Die with Zero)                           |
+| floor, ceiling                               | Untergrenze, Obergrenze                                  |
+| guardrail band; Cut / raise by               | Toleranzband; Kürzung / Erhöhung um                      |
+| max raise, max cut; +raise / −cut            | max. Erhöhung, max. Kürzung; +Erhöhung / −Kürzung        |
+| withdrawal rate; starting; safe (SWR)        | Entnahmerate; anfängliche; sichere Entnahmerate (SWR)    |
+| the 4% rule                                  | die 4-Prozent-Regel                                      |
+| assumed return; stock share; bond tent       | angenommene Rendite; Aktienquote; Bond Tent              |
+| Parameters; Adjust parameters                | Parameter; Parameter anpassen                            |
+| the grid; safe spending                      | das Raster; sichere Ausgaben                             |
+| Guide                                        | Anleitung                                                |
+| share link; locked                           | Link zum Teilen; mit Passwort geschützt                  |
+| Export plans, Import plans; backup           | Pläne exportieren, Pläne importieren; Sicherung          |
+| Theme                                        | Design                                                   |

@@ -1,8 +1,7 @@
 // What the page tells the viewer: the "?" explanations and the guide, toasts, notices, errors and
 // the confirm box.
 import { ALIASES, GUIDE } from "../help.js";
-import { t } from "../i18n.js";
-import HELP from "../locales/en/help.js";
+import { HELP, t } from "../i18n.js";
 import { $, el } from "./dom.js";
 
 export const helpEntry = (key) => HELP[ALIASES[key] ?? key];
