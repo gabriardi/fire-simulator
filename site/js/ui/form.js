@@ -134,12 +134,7 @@ function ruleGroup() {
     seg,
     el("div", { class: "hint-row" }, hintEl, ruleHelp),
   );
-  FIELDS.push({
-    path: "rule.kind",
-    label: t("form.rule"),
-    show: (k) => t(`rule.short.${k}`),
-    node: kindField,
-  });
+  FIELDS.push({ path: "rule.kind", label: t("form.rule"), node: kindField });
   syncers.push(() => {
     const k = state.rule.kind;
     seg
@@ -189,12 +184,6 @@ function stressGroup() {
     state.stress_returns = parts.map((x) => x / 100);
     changed();
   });
-  const label = (r) => {
-    const s = STRESS_SCENARIOS.find((x) => keyOf(x.returns) === keyOf(r));
-    return s
-      ? t(`stress.label.${s.id}`)
-      : t("form.crash.customWhat", { list: r.map((x) => +(x * 100).toFixed(1)).join(", ") });
-  };
   const sel = selectField({
     path: "stress_returns",
     label: t("form.crash"),
@@ -204,12 +193,9 @@ function stressGroup() {
       ...STRESS_SCENARIOS.map((s, i) => [String(i), t(`stress.label.${s.id}`)]),
       ["custom", t("form.crash.customOption")],
     ],
-    show: {
-      toKey: (r) => {
-        const i = STRESS_SCENARIOS.findIndex((s) => keyOf(s.returns) === keyOf(r));
-        return wantCustom || i < 0 ? "custom" : String(i);
-      },
-      text: label,
+    toKey: (r) => {
+      const i = STRESS_SCENARIOS.findIndex((s) => keyOf(s.returns) === keyOf(r));
+      return wantCustom || i < 0 ? "custom" : String(i);
     },
     hint: t("form.crash.hint"),
     onchange: (v) => {
@@ -738,15 +724,6 @@ export function buildForm() {
           ["5", t("form.tails.fat", { df: 5 })],
           ["4", t("form.tails.veryFat", { df: 4 })],
         ],
-        show: {
-          toKey: (v) => (v == null ? "" : String(v)),
-          text: (v) =>
-            v == null
-              ? t("form.tails.normal.what")
-              : v === 4
-                ? t("form.tails.veryFat.what", { df: v })
-                : t("form.tails.fat.what", { df: v }),
-        },
         hint: t("form.tails.hint"),
         onchange: (v) => {
           state.fat_tails_df = v === "" ? null : Number(v);
