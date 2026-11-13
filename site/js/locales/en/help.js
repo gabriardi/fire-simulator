@@ -438,7 +438,12 @@ export default {
     title: "Extreme years",
     html: `<p>With a normal distribution, a −40% year almost never happens. “Fat tails” make extreme
       years several times more frequent (and ordinary years a bit calmer), capped at −60% and +60%
-      real in a year. A stress test, not a forecast.</p>
+      real in a year.</p>
+      <p>Over a long plan they change the result very little, usually by less than a point: the
+      years swing as much as before on average, and a few extreme years even out over decades.
+      What breaks a plan is a crash right after you stop, and the stress test shows that.</p>
+      <p class="ex">30,000 a year from 1,000,000, from age 50 to 95: the money lasts in about 76%
+      of futures, with fat tails (t, 6) too; with a −40% first year, in about 36%.</p>
       <p>The number in “(t, 6)” sets how fat: it's a Student-t distribution with that many degrees
       of freedom. The lower it is, the fatter the tails.</p>`,
   },

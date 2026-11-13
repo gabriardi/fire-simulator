@@ -480,7 +480,13 @@ export default {
     title: "Extremjahre",
     html: `<p>Bei einer Normalverteilung kommt ein Jahr mit −40 % fast nie vor. „Fat Tails“ machen
       extreme Jahre um ein Mehrfaches häufiger (und gewöhnliche Jahre etwas ruhiger), begrenzt auf
-      −60 % und +60 % real in einem Jahr. Ein Stresstest, keine Prognose.</p>
+      −60 % und +60 % real in einem Jahr.</p>
+      <p>Über einen langen Plan ändern sie das Ergebnis kaum, meist um weniger als einen Punkt: Die
+      Jahre schwanken im Durchschnitt so stark wie vorher, und einige extreme Jahre gleichen sich
+      über Jahrzehnte aus. Was einen Plan scheitern lässt, ist ein Crash gleich nach dem Ausstieg,
+      und den zeigt der Stresstest.</p>
+      <p class="ex">30 000 pro Jahr aus 1 000 000, von 50 bis 95: Das Geld reicht in etwa 76 % der
+      Verläufe, mit Fat Tails (t, 6) ebenso; mit −40 % im ersten Jahr in etwa 36 %.</p>
       <p>Die Zahl in „(t, 6)“ legt fest, wie ausgeprägt: Es ist eine Student-t-Verteilung mit so
       vielen Freiheitsgraden. Je kleiner sie ist, desto häufiger die Extreme.</p>`,
   },
