@@ -417,20 +417,26 @@ export default {
     title: "Steigt mit der Inflation",
     html: `<p>Die meisten staatlichen Renten werden an die Preise angepasst: Sie behalten ihren Wert
       in heutiger Kaufkraft. Eine Rente, die für immer denselben Geldbetrag zahlt, verliert jedes
-      Jahr an Wert: Nimm das Häkchen weg und gib den Betrag so ein, wie er ausbezahlt wird.</p>`,
+      Jahr an Wert: Nimm das Häkchen weg und gib den Betrag so ein, wie er ausbezahlt wird.</p>
+      <p>Wird er stärker oder schwächer als die Preise angepasst, oder um einen festen Prozentsatz
+      als Geldbetrag? Stell darunter seine Änderung pro Jahr ein.</p>`,
   },
   "income.change": {
-    title: "Ändert sich um",
-    html: `<p>Um wie viel der Posten jedes Jahr nach seinem ersten steigt, oder sinkt, wenn der Wert
-      negativ ist: zusätzlich zur Inflation, wenn er mit der Inflation steigt, sonst als
-      Geldbetrag. Ein Posten, der schon vor diesem Jahr begonnen hat, ändert sich ab diesem Jahr.</p>
+    title: "Änderung pro Jahr",
+    html: `<p>Wie sich der Betrag des Postens von Jahr zu Jahr bewegt. Im ersten Jahr gilt der
+      eingegebene Betrag, die Änderung beginnt im Jahr danach. Woran das Prozent gemessen wird,
+      legt „Steigt mit der Inflation“ fest, und der Name des Felds sagt es:</p>
       <ul>
-        <li>Eine Rente, die weniger stark als die Preise angepasst wird: eine negative Änderung,
-          etwa −1 %.</li>
-        <li>Kosten, die schneller steigen als die Preise, etwa für Pflege im hohen Alter: eine
-          positive.</li>
+        <li><b>Mit Häkchen: Änderung gegenüber den Preisen.</b> 0 % hält mit den Preisen Schritt.
+          Ein positiver Wert steigt schneller als die Preise, etwa Pflegekosten im hohen Alter; ein
+          negativer bleibt hinter ihnen zurück, etwa eine Rente, die weniger stark als die Preise
+          angepasst wird.</li>
+        <li><b>Ohne Häkchen: Änderung als Geldbetrag.</b> 0 % ändert sich nie. Ein positiver Wert
+          ist eine jährliche Erhöhung, ein negativer eine Kürzung.</li>
       </ul>
-      <p class="ex">Kosten von 6000 ab 80, +3 % pro Jahr → etwa 8100 mit 90.</p>`,
+      <p class="ex">Eine Rente von 20 000 mit Häkchen, −1 % → nach 10 Jahren etwa 18 100 in
+      heutiger Kaufkraft. Kosten von 6000 ab 80, mit Häkchen, +3 % → etwa 8100 mit 90.</p>
+      <p>Ein Posten, der schon vor diesem Jahr begonnen hat, ändert sich ab diesem Jahr.</p>`,
   },
 
   // ---- one-off events ------------------------------------------------------------------------------

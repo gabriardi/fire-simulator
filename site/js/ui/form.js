@@ -440,6 +440,48 @@ function accountsGroup() {
   );
 }
 
+/**
+ * An income line's change per year. What its % is measured against is "Rises with inflation":
+ * prices if ticked, money if not. So its label follows the checkbox, and its hint says in words
+ * what the line does and what it's worth in 10 years.
+ */
+function changeField(i) {
+  const indexed = () => state.income[i]?.indexed !== false;
+  const label = () => (indexed() ? t("form.income.change.real") : t("form.income.change.money"));
+  const node = numberField({
+    path: `income.${i}.change`,
+    label: label(),
+    what: t("form.income.change.what", { name: state.income[i].name }),
+    help: "income.change",
+    kind: "pct",
+    unit: t("unit.pctPerYear"),
+    min: -0.1,
+    max: 0.1,
+    hint: (v) => {
+      const line = state.income[i];
+      if (!line) return "";
+      if (!v)
+        return indexed() ? t("form.income.change.flatReal") : t("form.income.change.flatMoney");
+      const a = Math.abs(v);
+      const pct = fmt.pct(a, Math.round(a * 1000) % 10 ? 1 : 0);
+      const amount = fmt.money(Math.abs(line.amount * (1 + v) ** 10));
+      if (indexed())
+        return v > 0
+          ? t("form.income.change.upReal", { pct, amount })
+          : t("form.income.change.downReal", { pct, amount });
+      return v > 0
+        ? t("form.income.change.upMoney", { pct, amount })
+        : t("form.income.change.downMoney", { pct, amount });
+    },
+  });
+  syncers.push(() => {
+    if (!state.income[i]) return;
+    node.querySelector("label").querySelector("span").textContent = label();
+    node.querySelector("input").setAttribute("aria-label", label());
+  });
+  return node;
+}
+
 function incomeGroup() {
   const cards = state.income.map((s, i) => {
     const P = `income.${i}`;
@@ -486,26 +528,7 @@ function incomeGroup() {
         what: t("form.income.indexed.what", { name: s.name }),
         help: "income.indexed",
       }),
-      numberField({
-        path: `${P}.change`,
-        label: t("form.income.change"),
-        what: t("form.income.change.what", { name: s.name }),
-        help: "income.change",
-        kind: "pct",
-        unit: t("unit.pctPerYear"),
-        min: -0.1,
-        max: 0.1,
-        hint: (v) => {
-          const line = state.income[i];
-          if (!line) return "";
-          const indexed = line.indexed !== false;
-          if (!v) return indexed ? t("form.income.change.flat") : t("form.income.change.flatMoney");
-          const amount = fmt.money(Math.abs(line.amount * (1 + v) ** 10));
-          return indexed
-            ? t("form.income.change.real", { amount })
-            : t("form.income.change.money", { amount });
-        },
-      }),
+      changeField(i),
     );
   });
   const full = state.income.length >= LIMITS.income;
