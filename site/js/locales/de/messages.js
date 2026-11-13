@@ -212,12 +212,20 @@ export default {
   "form.income.to.what": "Ende von {name}",
   "form.income.indexed": "Steigt mit der Inflation",
   "form.income.indexed.what": "{name} steigt mit der Inflation",
-  "form.income.change": "Ändert sich um",
-  "form.income.change.what": "{name} ändert sich um",
-  "form.income.change.flat": "jedes Jahr gleich, in heutiger Kaufkraft",
-  "form.income.change.flatMoney": "jedes Jahr gleich, als Geldbetrag",
-  "form.income.change.real": "über der Inflation: in 10 Jahren {amount} pro Jahr",
-  "form.income.change.money": "als Geldbetrag: in 10 Jahren {amount} pro Jahr",
+  "form.income.change.real": "Änderung gegenüber den Preisen",
+  "form.income.change.money": "Änderung als Geldbetrag",
+  "form.income.change.what": "{name}, Änderung pro Jahr",
+  "form.income.change.flatReal":
+    "hält mit den Preisen Schritt: jedes Jahr gleich in heutiger Kaufkraft",
+  "form.income.change.upReal":
+    "steigt {pct} pro Jahr schneller als die Preise: in 10 Jahren {amount} in heutiger Kaufkraft",
+  "form.income.change.downReal":
+    "bleibt {pct} pro Jahr hinter den Preisen zurück: in 10 Jahren {amount} in heutiger Kaufkraft",
+  "form.income.change.flatMoney": "wird nie erhöht: jedes Jahr derselbe Geldbetrag",
+  "form.income.change.upMoney":
+    "wird um {pct} pro Jahr erhöht: in 10 Jahren {amount} als Geldbetrag",
+  "form.income.change.downMoney":
+    "wird um {pct} pro Jahr gekürzt: in 10 Jahren {amount} als Geldbetrag",
   "form.add.income": "Einnahme hinzufügen",
   "form.add.cost": "Kosten hinzufügen",
   "form.events.hint":

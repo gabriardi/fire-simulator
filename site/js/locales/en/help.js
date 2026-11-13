@@ -379,18 +379,25 @@ export default {
     title: "Rises with inflation",
     html: `<p>Most state pensions are raised with prices: they keep their value in today's money.
       A pension that pays the same amount of money for ever loses value every year: untick it, and
-      enter the amount in money as it will be paid.</p>`,
+      enter the amount in money as it will be paid.</p>
+      <p>Raised by more or less than prices, or by a set % in money? Set its change per year,
+      under it.</p>`,
   },
   "income.change": {
-    title: "Changes by",
-    html: `<p>How much the line rises each year after its first, or falls if it's negative: on top
-      of inflation if it rises with inflation, in money if it doesn't. A line that started before
-      this year changes from this year on.</p>
+    title: "Change per year",
+    html: `<p>How the line's amount moves from one year to the next. In its first year the line is
+      the amount you enter; the change starts the year after. What the % is measured against is
+      set by “Rises with inflation”, and the field's name says which:</p>
       <ul>
-        <li>A pension raised by less than prices: a negative change, such as −1%.</li>
-        <li>Costs that rise faster than prices, such as care late in life: a positive one.</li>
+        <li><b>Ticked: change compared with prices.</b> 0% keeps up with prices. A positive % rises
+          faster than prices, like care costs late in life; a negative one falls behind them, like
+          a pension raised by less than prices.</li>
+        <li><b>Unticked: change in money.</b> 0% never changes. A positive % is a raise each year,
+          a negative one a cut.</li>
       </ul>
-      <p class="ex">A cost of 6,000 from age 80, +3% a year → about 8,100 at 90.</p>`,
+      <p class="ex">A pension of 20,000, ticked, −1% → about 18,100 in today's money after 10
+      years. A cost of 6,000 from age 80, ticked, +3% → about 8,100 at 90.</p>
+      <p>A line that started before this year changes from this year on.</p>`,
   },
 
   // ---- one-off events ------------------------------------------------------------------------------
