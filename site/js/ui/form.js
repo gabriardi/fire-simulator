@@ -19,7 +19,6 @@ import {
   FIELDS,
   addButtons,
   ages,
-  checkField,
   group,
   groups,
   invalid,
@@ -440,45 +439,61 @@ function accountsGroup() {
   );
 }
 
+/** How an income line moves each year: one of three ways, with a % only for the middle one. */
+const lineMode = (s) => (s?.indexed === false ? "fixed" : s?.change == null ? "inflation" : "gap");
+
+function indexedField(i) {
+  return selectField({
+    path: `income.${i}.indexed`,
+    label: t("form.income.indexed"),
+    what: t("form.income.indexed.what", { name: state.income[i].name }),
+    help: "income.indexed",
+    options: () => [
+      ["inflation", t("form.income.indexed.inflation")],
+      ["gap", t("form.income.indexed.gap")],
+      ["fixed", t("form.income.indexed.fixed")],
+    ],
+    toKey: () => lineMode(state.income[i]),
+    onchange: (k) => {
+      const s = state.income[i];
+      s.indexed = k !== "fixed";
+      s.change = k === "gap" ? (s.change ?? 0) : null;
+    },
+    hint: () => {
+      const mode = lineMode(state.income[i]);
+      if (mode === "inflation") return t("form.income.indexed.hint.inflation");
+      if (mode === "fixed") return t("form.income.indexed.hint.fixed");
+      return "";
+    },
+  });
+}
+
 /**
- * An income line's change per year. What its % is measured against is "Rises with inflation":
- * inflation if ticked, money if not. So its label follows the checkbox, and its hint says in words
- * what the line does and what it's worth in 10 years.
+ * How much faster (or, negative, slower) than inflation a line rises, shown only when it's set
+ * to. Its hint says it in words, with what the line is worth in 10 years.
  */
 function changeField(i) {
-  const indexed = () => state.income[i]?.indexed !== false;
-  const label = () => (indexed() ? t("form.income.change.real") : t("form.income.change.money"));
   const node = numberField({
     path: `income.${i}.change`,
-    label: label(),
+    label: t("form.income.change"),
     what: t("form.income.change.what", { name: state.income[i].name }),
-    help: "income.change",
+    help: "income.indexed",
     kind: "pct",
     unit: t("unit.pctPerYear"),
     min: -0.1,
     max: 0.1,
     hint: (v) => {
       const line = state.income[i];
-      if (!line) return "";
-      if (!v)
-        return indexed() ? t("form.income.change.flatReal") : t("form.income.change.flatMoney");
+      if (!line || !v) return t("form.income.change.flat");
       const a = Math.abs(v);
       const pct = fmt.pct(a, Math.round(a * 1000) % 10 ? 1 : 0);
       const amount = fmt.money(Math.abs(line.amount * (1 + v) ** 10));
-      if (indexed())
-        return v > 0
-          ? t("form.income.change.upReal", { pct, amount })
-          : t("form.income.change.downReal", { pct, amount });
       return v > 0
-        ? t("form.income.change.upMoney", { pct, amount })
-        : t("form.income.change.downMoney", { pct, amount });
+        ? t("form.income.change.up", { pct, amount })
+        : t("form.income.change.down", { pct, amount });
     },
   });
-  syncers.push(() => {
-    if (!state.income[i]) return;
-    node.querySelector("label").querySelector("span").textContent = label();
-    node.querySelector("input").setAttribute("aria-label", label());
-  });
+  syncers.push(() => node.classList.toggle("hidden", lineMode(state.income[i]) !== "gap"));
   return node;
 }
 
@@ -522,12 +537,7 @@ function incomeGroup() {
         what: t("form.income.to.what", { name: s.name }),
         never: true,
       }),
-      checkField({
-        path: `${P}.indexed`,
-        label: t("form.income.indexed"),
-        what: t("form.income.indexed.what", { name: s.name }),
-        help: "income.indexed",
-      }),
+      indexedField(i),
       changeField(i),
     );
   });

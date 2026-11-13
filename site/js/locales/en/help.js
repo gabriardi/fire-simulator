@@ -146,11 +146,14 @@ export default {
     title: "Spending per year",
     html: `<p>What the household will spend each year after stopping, in today's money,
       <b>including</b> the taxes of those years (income tax on withdrawals, health insurance you'll
-      now pay yourself). Leave out costs that stop with work, such as commuting.</p>
+      now pay yourself, unless you give it a line of its own below). Leave out costs that stop
+      with work, such as commuting.</p>
       <p class="ex">40,000 a year = 3,333 a month. With a flexible rule this is the
       <b>starting</b> amount. The spend-down works out its own and doesn't use it.</p>
       <p>Costs that come and go (a mortgage until it's paid off, children's school) are better as
-      lines under “Income and costs after stopping”.</p>
+      lines under “Income and costs after stopping”, and so are costs that rise faster than
+      inflation, such as health insurance. A cost entered as a line is left out of the spending,
+      or it counts twice.</p>
       <p>A tax on wealth (a wealth tax, a yearly stamp duty on investments) shrinks as the portfolio
       does: take its rate off the stock and bond returns instead.</p>
       <p class="ex">A 0.3% wealth tax: stocks 6% → 5.7%, bonds 3% → 2.7%.</p>`,
@@ -376,27 +379,22 @@ export default {
       <p>A line stops <b>in</b> its stop year: stopping at “FIRE start + 5” pays for 5 years.</p>`,
   },
   "income.indexed": {
-    title: "Rises with inflation",
-    html: `<p>Most state pensions are raised with prices: they keep their value in today's money.
-      A pension that pays the same amount of money for ever loses value every year: untick it, and
-      enter the amount in money as it will be paid.</p>
-      <p>Raised by more or less than inflation, or by a set % in money? Set its change per
-      year, under it.</p>`,
-  },
-  "income.change": {
-    title: "Change per year",
-    html: `<p>How the line's amount moves from one year to the next. In its first year the line is
-      the amount you enter; the change starts the year after. What the % is measured against is
-      set by “Rises with inflation”, and the field's name says which:</p>
+    title: "Each year",
+    html: `<p>How the line's amount moves over the years:</p>
       <ul>
-        <li><b>Ticked: change compared with inflation.</b> 0% keeps up with inflation. A
-          positive % rises faster than inflation, like care costs late in life; a negative one
-          falls behind it, like a pension raised by less than inflation.</li>
-        <li><b>Unticked: change in money.</b> 0% never changes. A positive % is a raise each year,
-          a negative one a cut.</li>
+        <li><b>Rises with inflation</b>: it keeps its value in today's money, like most state
+          pensions.</li>
+        <li><b>Faster or slower than inflation</b>: it rises by the % you set compared with
+          inflation, from the year after its first. A negative % falls behind inflation.</li>
+        <li><b>Fixed in money</b>: the same amount of money every year, so inflation shrinks its
+          value, like a pension that is never raised or a fixed-rate mortgage. Enter the amount
+          as it will be paid.</li>
       </ul>
-      <p class="ex">A pension of 20,000, ticked, −1% → about 18,100 in today's money after 10
-      years. A cost of 6,000 from age 80, ticked, +3% → about 8,100 at 90.</p>
+      <p class="ex">A pension that falls behind inflation, −1% a year: 20,000 is worth about
+      18,100 in today's money after 10 years.</p>
+      <p class="ex">Health insurance that gets dearer faster than inflation: a cost line of
+      −6,000, +2% a year → about 7,300 a year after 10 years. Then leave it out of the spending
+      per year, or it counts twice.</p>
       <p>A line that started before this year changes from this year on.</p>`,
   },
 

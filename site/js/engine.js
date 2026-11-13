@@ -4,7 +4,7 @@
  *
  * One step is one calendar year, and everything is in today's money: returns are drawn net of
  * inflation, so spending, savings and income stay constant unless a spending rule changes them
- * (or an income line is not inflation-indexed, or has a yearly change).
+ * (or an income line is not inflation-indexed, or rises faster or slower than inflation).
  *
  * Year by year, in each simulated future:
  * - the portfolio, and the retirement accounts invested like it, is a stock/bond mix rebalanced
@@ -51,16 +51,16 @@ export function yearOf(plan, when, fireYear = plan.fire_year) {
  * Income minus extra costs in each year, in today's money. A line counts from the FIRE year on
  * (before it, the savings already reflect what comes in), from its start until the year it stops.
  * A line that isn't inflation-indexed keeps its amount in money, so it loses value every year.
- * A line's `change` makes it rise (or fall) by that share each year after it starts (or after the
- * start year, for a line that started before): on top of inflation if it's indexed, in money if
- * it isn't.
+ * A line that rises with inflation can rise faster or slower than it: `change` a year compared
+ * with inflation, from the year after it starts (or after the start year, for a line that started
+ * before). A line fixed in money has no change.
  */
 export function incomeByYear(plan, years, fireYear = plan.fire_year) {
   const out = new Float64Array(years.length);
   for (const s of plan.income) {
     const from = yearOf(plan, s.from, fireYear) ?? fireYear;
     const to = yearOf(plan, s.to, fireYear); // the first year it no longer pays
-    const g = 1 + (s.change || 0);
+    const g = s.indexed === false ? 1 : 1 + (s.change || 0);
     const since = Math.max(from, plan.start_year);
     for (let t = 0; t < years.length; t++) {
       const y = years[t];
