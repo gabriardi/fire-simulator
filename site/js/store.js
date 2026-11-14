@@ -26,7 +26,7 @@ export const SIMS = { min: 500, max: 50_000 };
 /** The page's colours: the device's light or dark ("auto"), or always one of them. */
 export const THEMES = ["auto", "light", "dark"];
 // `lang`: the language picked with the page's switch, "" if none (then the browser's: js/ui/language.js).
-const DEFAULT_SETTINGS = { seed: 42, n_sims: 10_000, locale: "", theme: "auto", lang: "" };
+export const DEFAULT_SETTINGS = { seed: 42, n_sims: 10_000, locale: "", theme: "auto", lang: "" };
 
 function read(key, fallback) {
   try {

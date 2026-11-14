@@ -97,9 +97,20 @@
               <h2 data-i18n="page.parameters">Parameter</h2>
               <div class="rail-live" id="rail-live" data-i18n="page.loading">Wird geladen…</div>
             </div>
-            <button class="btn sheet-close" id="sheet-close" type="button" data-i18n="page.done">
-              Fertig
-            </button>
+            <div class="rail-actions">
+              <button
+                class="btn quiet small"
+                id="close-all"
+                type="button"
+                data-i18n="page.closeAll"
+                hidden
+              >
+                Alle schließen
+              </button>
+              <button class="btn sheet-close" id="sheet-close" type="button" data-i18n="page.done">
+                Fertig
+              </button>
+            </div>
           </div>
           <div class="scenario" id="scenario">
             <div class="scenario-label">
@@ -281,16 +292,6 @@
             ></button>
           </div>
           <div class="top-right">
-            <button
-              class="btn"
-              id="new-seed"
-              type="button"
-              title="Eine andere Menge zufälliger Verläufe ziehen"
-              data-i18n-title="page.newSeed.title"
-              data-i18n="form.newSeed"
-            >
-              Neuer Seed
-            </button>
             <button class="btn" id="guide" type="button" data-i18n="guide.title">Anleitung</button>
             <span class="btn btn-select lang-pick">
               <span class="lang-name" aria-hidden="true" data-i18n="page.language.name"

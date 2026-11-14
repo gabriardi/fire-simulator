@@ -23,6 +23,7 @@ import {
   groups,
   invalid,
   itemCard,
+  more,
   numberField,
   row2,
   selectField,
@@ -150,7 +151,15 @@ function ruleGroup() {
     vang.classList.toggle("hidden", k !== "vanguard");
     down.classList.toggle("hidden", k !== "spenddown");
   });
-  return group("rule", true, kindField, flexible, guard, vang, down);
+  return group(
+    "rule",
+    { open: false, sum: () => t(`rule.name.${state.rule.kind}`) },
+    kindField,
+    flexible,
+    guard,
+    vang,
+    down,
+  );
 }
 
 function stressGroup() {
@@ -213,7 +222,11 @@ function stressGroup() {
         .map((x) => String(+(x * 100).toFixed(1)).replace(".", fmt.decimal))
         .join(", ");
   });
-  return group("stress", false, sel, customBox);
+  const sum = () => {
+    const i = STRESS_SCENARIOS.findIndex((s) => keyOf(s.returns) === keyOf(state.stress_returns));
+    return i < 0 ? t("summary.stress.custom") : t(`stress.short.${STRESS_SCENARIOS[i].id}`);
+  };
+  return group("stress", { open: false, sum }, sel, customBox);
 }
 
 function marketHint(nominal) {
@@ -310,7 +323,12 @@ function peopleGroup() {
   );
   return group(
     "household",
-    { open: true, list: "people" },
+    {
+      open: false,
+      list: "people",
+      sum: () =>
+        t("summary.household", { people: ages(state.start_year), currency: state.currency }),
+    },
     selectField({
       path: "currency",
       label: t("form.currency"),
@@ -425,7 +443,15 @@ function accountsGroup() {
   });
   return group(
     "accounts",
-    { open: state.accounts.length > 0, list: "accounts" },
+    {
+      open: false,
+      list: "accounts",
+      sum: () => {
+        const n = state.accounts.length;
+        const total = state.accounts.reduce((s, a) => s + a.balance, 0);
+        return n ? t("summary.accounts", { n, total: fmt.short(total) }) : t("summary.none");
+      },
+    },
     el(
       "div",
       { class: "hint-row" },
@@ -547,7 +573,19 @@ function incomeGroup() {
   const full = state.income.length >= LIMITS.income;
   return group(
     "income",
-    { open: state.income.length > 0, list: "income" },
+    {
+      open: false,
+      list: "income",
+      sum: () => {
+        const ins = state.income.filter((s) => s.amount >= 0).length;
+        const outs = state.income.length - ins;
+        const parts = [
+          ins && t("summary.income.in", { n: ins }),
+          outs && t("summary.income.out", { n: outs }),
+        ].filter(Boolean);
+        return parts.length ? andList(parts) : t("summary.none");
+      },
+    },
     el(
       "div",
       { class: "hint-row" },
@@ -602,7 +640,14 @@ function eventsGroup() {
   );
   return group(
     "events",
-    { open: state.events.length > 0, list: "events" },
+    {
+      open: false,
+      list: "events",
+      sum: () => {
+        const n = state.events.length;
+        return n ? t("summary.events", { n }) : t("summary.none");
+      },
+    },
     el(
       "div",
       { class: "hint-row" },
@@ -619,6 +664,23 @@ function eventsGroup() {
   );
 }
 
+// The headings the sections are grouped under, after the plan's own: what you have, what you
+// decide, what the world is assumed to do.
+const part = (text) => el("h3", { class: "form-part", text });
+
+// "Close all", in the panel's header: there once two or more sections are open.
+const syncCloseAll = () => {
+  $("#close-all").hidden = groups.filter((d) => d.open).length < 2;
+};
+export function initCloseAll() {
+  $("#close-all").addEventListener("click", () => {
+    for (const d of groups) d.open = false;
+    groups[0]?.querySelector("summary").focus(); // the button it was on is gone
+  });
+  // A section's "toggle" doesn't bubble: it's caught on its way down instead.
+  $("#form").addEventListener("toggle", syncCloseAll, true);
+}
+
 export function buildForm() {
   const form = $("#form");
   const focused = document.activeElement?.id;
@@ -630,7 +692,13 @@ export function buildForm() {
   form.append(
     group(
       "plan",
-      true,
+      {
+        open: true,
+        sum: () =>
+          state.rule.kind === "spenddown"
+            ? t("summary.plan.spenddown", { year: state.fire_year })
+            : t("summary.plan", { year: state.fire_year, spending: fmt.money(state.spending) }),
+      },
       numberField({
         path: "fire_year",
         label: t("form.fireYear"),
@@ -681,12 +749,19 @@ export function buildForm() {
       ),
     ),
   );
-  form.append(ruleGroup());
-  form.append(peopleGroup());
+  form.append(part(t("form.part.situation")), peopleGroup());
   form.append(
     group(
       "savings",
-      true,
+      {
+        open: false,
+        sum: () => {
+          const total = fmt.short(state.portfolio + state.cash);
+          return state.contrib > 0
+            ? t("summary.savings", { total, contrib: fmt.short(state.contrib) })
+            : t("summary.savings.none", { total });
+        },
+      },
       numberField({ path: "portfolio", label: t("form.portfolio"), min: 0 }),
       numberField({ path: "cash", label: t("form.cash"), min: 0 }),
       numberField({
@@ -695,102 +770,66 @@ export function buildForm() {
         min: 0,
         hint: (v) => t("form.contrib.hint", { month: fmt.money(v / 12) }),
       }),
-      row2(
-        numberField({
-          path: "contrib_growth",
-          label: t("form.contribGrowth"),
-          kind: "pct",
-          unit: t("unit.pctPerYear"),
-          min: -0.5,
-          max: 0.5,
-          hint: t("form.contribGrowth.hint"),
-        }),
-        numberField({
-          path: "cash_interest",
-          label: t("form.cashInterest"),
-          kind: "pct",
-          min: -0.5,
-          max: 1,
-          hint: (v) => t("form.real", { pct: fmt.pct(realOf(v), 1) }),
-        }),
-      ),
-      row2(
-        numberField({
-          path: "cash_buffer_years",
-          label: t("form.cushion"),
-          kind: "num",
-          unit: t("unit.yrs"),
-          min: 0,
-          max: 20,
-          hint: t("form.cushion.hint"),
-        }),
-        numberField({
-          path: "portfolio_tax",
-          label: t("form.portfolioTax"),
-          kind: "pct",
-          min: 0,
-          max: 0.9,
-          help: "portfolio_tax",
-          hint: t("form.portfolioTax.hint"),
-        }),
+      more(
+        "savings",
+        row2(
+          numberField({
+            path: "contrib_growth",
+            label: t("form.contribGrowth"),
+            kind: "pct",
+            unit: t("unit.pctPerYear"),
+            min: -0.5,
+            max: 0.5,
+            hint: t("form.contribGrowth.hint"),
+          }),
+          numberField({
+            path: "cash_interest",
+            label: t("form.cashInterest"),
+            kind: "pct",
+            min: -0.5,
+            max: 1,
+            hint: (v) => t("form.real", { pct: fmt.pct(realOf(v), 1) }),
+          }),
+        ),
+        row2(
+          numberField({
+            path: "cash_buffer_years",
+            label: t("form.cushion"),
+            kind: "num",
+            unit: t("unit.yrs"),
+            min: 0,
+            max: 20,
+            hint: t("form.cushion.hint"),
+          }),
+          numberField({
+            path: "portfolio_tax",
+            label: t("form.portfolioTax"),
+            kind: "pct",
+            min: 0,
+            max: 0.9,
+            help: "portfolio_tax",
+            hint: t("form.portfolioTax.hint"),
+          }),
+        ),
       ),
     ),
   );
   form.append(accountsGroup());
   form.append(incomeGroup());
   form.append(eventsGroup());
-  form.append(
-    group(
-      "markets",
-      false,
-      numberField({
-        path: "stock_return",
-        label: t("form.stockReturn"),
-        kind: "pct",
-        min: -0.5,
-        max: 1,
-        slider: { min: 0, max: 12, step: 0.1 },
-        hint: marketHint,
-      }),
-      numberField({
-        path: "stock_vol",
-        label: t("form.stockVol"),
-        kind: "pct",
-        min: 0,
-        max: 1,
-        slider: { min: 5, max: 30, step: 0.5 },
-        hint: t("form.stockVol.hint"),
-      }),
-      numberField({
-        path: "inflation",
-        label: t("form.inflation"),
-        kind: "pct",
-        min: -0.2,
-        max: 1,
-        slider: { min: 0, max: 6, step: 0.1 },
-        hint: t("form.inflation.hint"),
-      }),
-      selectField({
-        path: "fat_tails_df",
-        label: t("form.tails"),
-        help: "_tails",
-        options: () => [
-          ["", t("form.tails.normal")],
-          ["6", t("form.tails.fat", { df: 6 })],
-          ["5", t("form.tails.fat", { df: 5 })],
-          ["4", t("form.tails.veryFat", { df: 4 })],
-        ],
-        hint: t("form.tails.hint"),
-        onchange: (v) => {
-          state.fat_tails_df = v === "" ? null : Number(v);
-        },
-      }),
-    ),
-  );
+  form.append(part(t("form.part.choices")), ruleGroup());
   form.append(
     group(
       "mix",
-      false,
+      {
+        open: false,
+        sum: () => {
+          const stocks = fmt.pct(state.stock_share);
+          return state.tent_share < state.stock_share
+            ? t("summary.mix.tent", { stocks, tent: fmt.pct(state.tent_share) })
+            : t("summary.mix", { stocks });
+        },
+      },
       numberField({
         path: "stock_share",
         label: t("form.stockShare"),
@@ -812,77 +851,126 @@ export function buildForm() {
             ? t("form.tentShare.tent", { mix: mixHint(state.tent_share) })
             : t("form.tentShare.none"),
       }),
-      row2(
+      more(
+        "mix",
+        row2(
+          numberField({
+            path: "tent_years_before",
+            label: t("form.tentBefore"),
+            kind: "int",
+            unit: t("unit.yrs"),
+            help: "tent_years",
+            min: 0,
+            max: 40,
+          }),
+          numberField({
+            path: "tent_years_after",
+            label: t("form.tentAfter"),
+            kind: "int",
+            unit: t("unit.yrs"),
+            help: "tent_years",
+            min: 0,
+            max: 40,
+          }),
+        ),
+        row2(
+          numberField({
+            path: "bond_return",
+            label: t("form.bondReturn"),
+            kind: "pct",
+            min: -0.5,
+            max: 1,
+            hint: (v) => t("form.real", { pct: fmt.pct(realOf(v), 2) }),
+          }),
+          numberField({
+            path: "bond_vol",
+            label: t("form.bondVol"),
+            kind: "pct",
+            min: 0,
+            max: 1,
+          }),
+        ),
         numberField({
-          path: "tent_years_before",
-          label: t("form.tentBefore"),
-          kind: "int",
-          unit: t("unit.yrs"),
-          help: "tent_years",
-          min: 0,
-          max: 40,
-        }),
-        numberField({
-          path: "tent_years_after",
-          label: t("form.tentAfter"),
-          kind: "int",
-          unit: t("unit.yrs"),
-          help: "tent_years",
-          min: 0,
-          max: 40,
+          path: "stock_bond_corr",
+          label: t("form.corr"),
+          kind: "num",
+          unit: "",
+          min: -1,
+          max: 1,
+          hint: t("form.corr.hint"),
         }),
       ),
-      row2(
-        numberField({
-          path: "bond_return",
-          label: t("form.bondReturn"),
-          kind: "pct",
-          min: -0.5,
-          max: 1,
-          hint: (v) => t("form.real", { pct: fmt.pct(realOf(v), 2) }),
-        }),
-        numberField({
-          path: "bond_vol",
-          label: t("form.bondVol"),
-          kind: "pct",
-          min: 0,
-          max: 1,
-        }),
-      ),
+    ),
+  );
+  form.append(part(t("form.part.assumptions")));
+  form.append(
+    group(
+      "markets",
+      {
+        open: false,
+        sum: () => {
+          const real = fmt.pct(realOf(state.stock_return), 1);
+          const inflation = fmt.pct(state.inflation, 1);
+          return state.fat_tails_df
+            ? t("summary.markets.tails", { real, inflation })
+            : t("summary.markets", { real, inflation });
+        },
+      },
       numberField({
-        path: "stock_bond_corr",
-        label: t("form.corr"),
-        kind: "num",
-        unit: "",
-        min: -1,
+        path: "stock_return",
+        label: t("form.stockReturn"),
+        kind: "pct",
+        min: -0.5,
         max: 1,
-        hint: t("form.corr.hint"),
+        slider: { min: 0, max: 12, step: 0.1 },
+        hint: marketHint,
       }),
+      numberField({
+        path: "inflation",
+        label: t("form.inflation"),
+        kind: "pct",
+        min: -0.2,
+        max: 1,
+        slider: { min: 0, max: 6, step: 0.1 },
+        hint: t("form.inflation.hint"),
+      }),
+      more(
+        "markets",
+        numberField({
+          path: "stock_vol",
+          label: t("form.stockVol"),
+          kind: "pct",
+          min: 0,
+          max: 1,
+          slider: { min: 5, max: 30, step: 0.5 },
+          hint: t("form.stockVol.hint"),
+        }),
+        selectField({
+          path: "fat_tails_df",
+          label: t("form.tails"),
+          help: "_tails",
+          options: () => [
+            ["", t("form.tails.normal")],
+            ["6", t("form.tails.fat", { df: 6 })],
+            ["5", t("form.tails.fat", { df: 5 })],
+            ["4", t("form.tails.veryFat", { df: 4 })],
+          ],
+          hint: t("form.tails.hint"),
+          onchange: (v) => {
+            state.fat_tails_df = v === "" ? null : Number(v);
+          },
+        }),
+      ),
     ),
   );
   form.append(stressGroup());
   form.append(
     group(
       "simulation",
-      false,
-      row2(
-        numberField({
-          path: "start_year",
-          label: t("form.startYear"),
-          kind: "year",
-          min: 1900,
-          max: 2200,
-        }),
-        numberField({
-          path: "start_month",
-          label: t("form.startMonth"),
-          kind: "int",
-          unit: "",
-          min: 1,
-          max: 12,
-          hint: t("form.startMonth.hint"),
-        }),
-      ),
+      {
+        open: false,
+        sum: () => t("summary.simulation", { n: fmt.num(settings.n_sims), seed: settings.seed }),
+      },
       selectField({
         path: "n_sims",
         label: t("form.nSims"),
@@ -898,17 +986,38 @@ export function buildForm() {
           store.saveSettings(settings);
         },
       }),
-      row2(
-        numberField({
-          path: "seed",
-          label: t("form.seed"),
-          kind: "int",
-          unit: "",
-          setting: true,
-          min: 0,
-          max: store.SEEDS - 1,
-          onchange: () => store.saveSettings(settings),
-        }),
+      numberField({
+        path: "seed",
+        label: t("form.seed"),
+        kind: "int",
+        unit: "",
+        setting: true,
+        min: 0,
+        max: store.SEEDS - 1,
+        onchange: () => store.saveSettings(settings),
+      }),
+      addButtons([t("form.newSeed"), newSeed]),
+      el("div", { class: "hint", text: t("form.simulation.hint") }),
+      more(
+        "simulation",
+        row2(
+          numberField({
+            path: "start_year",
+            label: t("form.startYear"),
+            kind: "year",
+            min: 1900,
+            max: 2200,
+          }),
+          numberField({
+            path: "start_month",
+            label: t("form.startMonth"),
+            kind: "int",
+            unit: "",
+            min: 1,
+            max: 12,
+            hint: t("form.startMonth.hint"),
+          }),
+        ),
         selectField({
           path: "locale",
           label: t("form.locale"),
@@ -922,12 +1031,11 @@ export function buildForm() {
           },
         }),
       ),
-      addButtons([t("form.newSeed"), newSeed]),
-      el("div", { class: "hint", text: t("form.simulation.hint") }),
     ),
   );
   syncAll();
   renderPlanBar();
+  syncCloseAll();
   if (focused) document.getElementById(focused)?.focus();
 }
 function rebuild() {
@@ -997,7 +1105,7 @@ function removePerson(i) {
   );
 }
 
-export function newSeed() {
+function newSeed() {
   let seed;
   do seed = 1 + Math.floor(Math.random() * 99_999);
   while (seed === settings.seed);

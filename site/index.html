@@ -87,9 +87,20 @@
               <h2 data-i18n="page.parameters">Parameters</h2>
               <div class="rail-live" id="rail-live" data-i18n="page.loading">Loading…</div>
             </div>
-            <button class="btn sheet-close" id="sheet-close" type="button" data-i18n="page.done">
-              Done
-            </button>
+            <div class="rail-actions">
+              <button
+                class="btn quiet small"
+                id="close-all"
+                type="button"
+                data-i18n="page.closeAll"
+                hidden
+              >
+                Close all
+              </button>
+              <button class="btn sheet-close" id="sheet-close" type="button" data-i18n="page.done">
+                Done
+              </button>
+            </div>
           </div>
           <div class="scenario" id="scenario">
             <div class="scenario-label">
@@ -272,16 +283,6 @@
             ></button>
           </div>
           <div class="top-right">
-            <button
-              class="btn"
-              id="new-seed"
-              type="button"
-              title="Draw a different set of random futures"
-              data-i18n-title="page.newSeed.title"
-              data-i18n="form.newSeed"
-            >
-              New seed
-            </button>
             <button class="btn" id="guide" type="button" data-i18n="guide.title">Guide</button>
             <span class="btn btn-select lang-pick">
               <span class="lang-name" aria-hidden="true" data-i18n="page.language.name"

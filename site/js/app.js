@@ -7,7 +7,7 @@ import * as store from "./store.js";
 import { renderAll, renderPaths, setUnit } from "./ui/charts.js";
 import { $, clone, eq, isPhone } from "./ui/dom.js";
 import { exportPlans, importPlans } from "./ui/files.js";
-import { buildForm, newSeed } from "./ui/form.js";
+import { buildForm, initCloseAll } from "./ui/form.js";
 import { openGuide, openHelp, toast, wireToast } from "./ui/messages.js";
 import {
   addPlan,
@@ -152,7 +152,6 @@ function wire() {
       if (sim) renderPaths();
     }),
   );
-  $("#new-seed").addEventListener("click", newSeed);
   $("#plan-select").addEventListener("change", (e) => switchTo(e.target.value));
   $("#plan-save").addEventListener("click", saveCurrent);
   $("#plan-revert").addEventListener("click", revert);
@@ -252,6 +251,7 @@ function start() {
   refreshFormat();
   spawnMain();
   buildForm();
+  initCloseAll();
   persistSession();
   if (!canStore) storageProblem();
   // Installable as an app, usable offline once loaded, and up to date when left open.
