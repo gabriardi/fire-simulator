@@ -3,12 +3,13 @@
 // for the "edited" marks.
 import { personById, yearOf } from "../engine.js";
 import { t } from "../i18n.js";
+import { blankPlan } from "../plan.js";
 import * as store from "../store.js";
-import { el, getPath, setPath } from "./dom.js";
+import { el, eq, getPath, setPath } from "./dom.js";
 import { helpBtn } from "./messages.js";
 import { moveControls } from "./reorder.js";
 import { changed } from "./run.js";
-import { base, fmt, settings, state } from "./state.js";
+import { base, fmt, settings, state, today } from "./state.js";
 
 export const syncers = [];
 export const invalid = new Set();
@@ -154,7 +155,7 @@ export function numberField({
     el("label", { for: id }, el("span", { text: label })),
     helpBtn(help ?? path),
   );
-  const node = el("div", { class: "field" }, head, range, box, hintEl);
+  const node = el("div", { class: "field", ...marks(path, setting) }, head, range, box, hintEl);
   if (!setting) {
     FIELDS.push({ path, label: what ?? label, node });
   }
@@ -230,7 +231,13 @@ export function selectField({
     el("label", { for: id, text: label }),
     helpBtn(help ?? path),
   );
-  const node = el("div", { class: "field" }, head, el("div", { class: "input" }, sel), hintEl);
+  const node = el(
+    "div",
+    { class: "field", ...marks(path, setting) },
+    head,
+    el("div", { class: "input" }, sel),
+    hintEl,
+  );
   if (!setting) FIELDS.push({ path, label: what ?? label, node });
   return node;
 }
@@ -372,6 +379,52 @@ export function itemCard({ title, key, move, onremove, removeLabel }, ...fields)
   );
 }
 export const row2 = (...kids) => el("div", { class: "row2" }, ...kids);
+
+// A field says what it edits, for `more` to find: a path in the plan, or in the viewer's settings.
+const marks = (path, setting) => ({ "data-path": path, "data-setting": setting });
+
+/**
+ * The fields few people change, at the end of a section, behind "Show 3 more". A field stays in
+ * view anyway when it differs from its default or from the saved plan, or holds a typing error:
+ * what changes the result is never hidden. Opened or closed, it's remembered with the sections.
+ */
+export function more(id, ...kids) {
+  const key = `${SECTIONS[id]} · more`;
+  let open = store.loadGroups()[key] ?? false;
+  const btn = el("button", { type: "button", class: "more-toggle" });
+  const box = el("div", { class: "more" }, ...kids, btn);
+  const fieldsOf = (kid) =>
+    kid.matches("[data-path]") ? [kid] : [...kid.querySelectorAll("[data-path]")];
+  const sync = () => {
+    const blank = blankPlan({ currency: state.currency, today: today() });
+    const asIs = (f) => {
+      const { path } = f.dataset;
+      if (f.hasAttribute("data-setting"))
+        return eq(getPath(settings, path), getPath(store.DEFAULT_SETTINGS, path));
+      const v = getPath(state, path);
+      return !invalid.has(path) && eq(v, getPath(blank, path)) && eq(v, getPath(base.values, path));
+    };
+    let hideable = 0;
+    for (const kid of kids) {
+      const fields = fieldsOf(kid);
+      const quiet = fields.every(asIs);
+      if (quiet) hideable += fields.length;
+      kid.classList.toggle("hidden", quiet && !open);
+    }
+    btn.textContent = open ? t("form.more.less") : t("form.more.show", { n: hideable });
+    btn.setAttribute("aria-expanded", String(open));
+    btn.classList.toggle("hidden", !hideable);
+  };
+  btn.addEventListener("click", () => {
+    open = !open;
+    const g = store.loadGroups();
+    g[key] = open;
+    store.saveGroups(g);
+    sync();
+  });
+  syncers.push(sync);
+  return box;
+}
 export function addButtons(...buttons) {
   return el(
     "div",
@@ -401,15 +454,26 @@ const SECTIONS = {
 };
 
 // Every section starts in its default state; opening or closing one is remembered in this browser.
-export function group(id, open, ...fields) {
-  const list = typeof open === "object" ? open.list : null;
-  if (typeof open === "object") open = open.open;
+// `sum`: what the section holds, in a few words, shown under its title while it's closed.
+export function group(id, opts, ...fields) {
+  const { open, list = null, sum = null } = typeof opts === "object" ? opts : { open: opts };
   const remember = SECTIONS[id];
   const remembered = store.loadGroups()[remember];
+  const sumEl = sum ? el("span", { class: "group-sum" }) : null;
+  if (sum) syncers.push(() => (sumEl.textContent = sum()));
   const d = el(
     "details",
     { class: "group", open: remembered ?? open },
-    el("summary", {}, el("span", { class: "group-title", text: t(`group.${id}`) })),
+    el(
+      "summary",
+      {},
+      el(
+        "span",
+        { class: "group-head" },
+        el("span", { class: "group-title", text: t(`group.${id}`) }),
+        sumEl,
+      ),
+    ),
     el("div", { class: "fields" }, ...fields),
   );
   if (list) d.dataset.list = list;

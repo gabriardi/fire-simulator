@@ -123,6 +123,11 @@ select {
   justify-content: space-between;
   gap: 12px;
 }
+.rail-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .rail-head h2 {
   margin: 0;
   font-size: 1rem;
@@ -189,34 +194,109 @@ header.top h1 {
 }
 
 /* ---- form ---- */
+/* A line between the sections of a group; the space above a heading separates the groups. */
 details.group {
-  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+}
+#form > details.group:first-child,
+.form-part + details.group {
+  border-top: 0;
 }
 details.group > summary {
   list-style: none;
   cursor: pointer;
-  padding: 14px 0;
+  padding: 12px 0;
   font-weight: 650;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 details.group > summary::-webkit-details-marker {
   display: none;
 }
+/* A caret, down while closed and up while open: the clearest sign that a row opens in place. */
 details.group > summary::after {
-  content: "+";
-  color: var(--faint);
-  font-weight: 400;
-  font-size: 1.1rem;
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-right: 4px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-2px) rotate(45deg);
 }
 details.group[open] > summary::after {
-  content: "–";
+  transform: translateY(2px) rotate(-135deg);
 }
 details.group > summary:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
+}
+.group-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+/* What a closed section holds; open, its fields say it. */
+.group-sum {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+details.group[open] > summary .group-sum {
+  display: none;
+}
+/* The fields few people change, at the end of a section. */
+.more {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.more-toggle {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+.more-toggle::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.more-toggle[aria-expanded="true"]::after {
+  transform: translateY(1px) rotate(-135deg);
+}
+.more-toggle:hover {
+  text-decoration: underline;
+}
+.more-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* The headings the sections are grouped under, written like the panel's "Plan" label, in the
+   accent colour. */
+.form-part {
+  margin: 30px 0 0;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 .fields {
   display: flex;

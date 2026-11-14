@@ -67,14 +67,16 @@ Where the texts are: [CONTRIBUTING.md](../CONTRIBUTING.md#notes-for-changes) (th
 
 ### The page
 
-| Term                                           | What it means                                                              |
-| ---------------------------------------------- | -------------------------------------------------------------------------- |
-| **Parameters**                                 | The panel with the form (on a phone, the sheet "Adjust parameters" opens). |
-| **the grid**                                   | "When can you stop, at which spending?": FIRE starts × spending levels.    |
-| **safe spending**                              | "Safe spending by FIRE start".                                             |
-| **"?"**, **the Guide**                         | An explanation of one thing; all of them, in order.                        |
-| **share link**, **locked**                     | A plan inside a link; locked with a password.                              |
-| **Export plans**, **Import plans**, **backup** | All plans to a file, and back; the file is the backup.                     |
+| Term                                                               | What it means                                                                                           |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| **Parameters**                                                     | The panel with the form (on a phone, the sheet "Adjust parameters" opens).                              |
+| **section**, **Your situation**, **Your choices**, **Assumptions** | A part of the form that opens and closes; the three headings the sections after Plan are grouped under. |
+| **Show 3 more**, **Close all**                                     | The fields few people change, folded away at the end of a section; closing every open section.          |
+| **the grid**                                                       | "When can you stop, at which spending?": FIRE starts × spending levels.                                 |
+| **safe spending**                                                  | "Safe spending by FIRE start".                                                                          |
+| **"?"**, **the Guide**                                             | An explanation of one thing; all of them, in order.                                                     |
+| **share link**, **locked**                                         | A plan inside a link; locked with a password.                                                           |
+| **Export plans**, **Import plans**, **backup**                     | All plans to a file, and back; the file is the backup.                                                  |
 
 ## Style
 
@@ -168,6 +170,8 @@ translations of the English.
 | the 4% rule                                  | die 4-Prozent-Regel                                      |
 | assumed return; stock share; bond tent       | angenommene Rendite; Aktienquote; Bond Tent              |
 | Parameters; Adjust parameters                | Parameter; Parameter anpassen                            |
+| Your situation, Your choices, Assumptions    | Deine Situation, Deine Entscheidungen, Annahmen          |
+| Show 3 more, Show fewer; Close all           | 3 weitere anzeigen, Weniger anzeigen; Alle schließen     |
 | the grid; safe spending                      | das Raster; sichere Ausgaben                             |
 | Guide                                        | Anleitung                                                |
 | share link; locked                           | Link zum Teilen; mit Passwort geschützt                  |
