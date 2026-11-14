@@ -32,9 +32,10 @@ function openDialog(title, body, wide = false) {
     b.scrollTop = 0;
   });
 }
-function entryNodes(h) {
+/** An entry's text: the "?" shows `html`; the guide's card adds `more`, the detail, if it has any. */
+function entryNodes(h, card = false) {
   const div = el("div", { class: "help-entry" });
-  div.innerHTML = h.html; // trusted: our own static help texts
+  div.innerHTML = card && h.more ? h.html + h.more : h.html; // trusted: our own static help texts
   // An example's label, shown before it by the styles (app.css).
   for (const ex of div.querySelectorAll(".ex")) ex.dataset.label = t("help.example");
   return div;
@@ -47,12 +48,14 @@ export function openHelp(key) {
     entryNodes(h),
     el(
       "button",
-      { type: "button", class: "btn guide-link", onclick: openGuide },
-      t("help.openGuide"),
+      { type: "button", class: "btn guide-link", onclick: () => openGuide(key) },
+      h.more ? t("help.readMore") : t("help.openGuide"),
     ),
   ]);
 }
-export function openGuide() {
+/** The guide, at the top or, given a "?"'s key, at that entry's card. */
+export function openGuide(at) {
+  const atKey = at ? (ALIASES[at] ?? at) : null;
   const toc = el("nav", { class: "guide-toc", "aria-label": t("guide.sections") });
   const content = el("div", { class: "guide-content" });
   const links = [];
@@ -80,11 +83,17 @@ export function openGuide() {
           "div",
           { class: "guide-cards" },
           ...keys
-            .map(helpEntry)
-            .filter(Boolean)
-            .map((h) =>
-              el("article", { class: "guide-item" }, el("h4", { text: h.title }), entryNodes(h)),
-            ),
+            .filter((k) => helpEntry(k))
+            .map((k) => {
+              const card = el(
+                "article",
+                { class: "guide-item", "data-key": k },
+                el("h4", { text: helpEntry(k).title }),
+                entryNodes(helpEntry(k), true),
+              );
+              card.classList.toggle("here", k === atKey);
+              return card;
+            }),
         ),
       ),
     );
@@ -108,6 +117,9 @@ export function openGuide() {
   };
   body.onscroll = mark;
   mark();
+  // After openDialog's own scroll to the top, in the same frame.
+  const card = atKey && content.querySelector(`[data-key="${CSS.escape(atKey)}"]`);
+  if (card) requestAnimationFrame(() => card.scrollIntoView({ block: "start" }));
 }
 export function confirmBox({ title, text, ok = t("dialog.ok"), cancel = t("dialog.cancel") }) {
   return new Promise((resolve) => {

@@ -1,7 +1,9 @@
 // The "?" explanations and the guide's cards, in English: { title, html } by key. Plain, trusted
-// HTML. Keep each entry short: what it is, how it's used, an example. Amounts are in no currency
-// in particular: they read as dollars, euros, francs or pounds alike. Which entries the guide
-// shows, in which order, and which "?" share an entry are in ../../help.js, for every language.
+// HTML. Keep each entry short: what it is, how it's used, an example. One that needs more gets
+// `more`, the detail: the guide's card shows it after `html`, the "?" shows `html` alone.
+// Amounts are in no currency in particular: they read as dollars, euros, francs or pounds alike.
+// Which entries the guide shows, in which order, and which "?" share an entry are in
+// ../../help.js, for every language.
 
 export default {
   // ---- concepts (guide only) ---------------------------------------------------------------------
@@ -197,10 +199,11 @@ export default {
   "rule.spenddown": {
     title: "Spend-down (die with zero)",
     html: `<p>Each year it works out what you could spend <b>every year until the end</b>, the same
-      each year, if the money earned the <b>assumed return</b>, and aims at that. Counted as money
-      today: what you can reach, the retirement accounts still locked (after their tax), and all
-      future income and costs. Until an account unlocks only the reachable money pays the bills,
-      so the amount is never more than that money alone can carry until then.</p>
+      each year, if the money earned the <b>assumed return</b> you set, and aims at that. That
+      return is only for this sum: the futures still earn random returns. Counted as money today:
+      what you can reach, the retirement accounts still locked (after their tax), and all future
+      income and costs. Until an account unlocks only the reachable money pays the bills, so the
+      amount is never more than that money alone can carry until then.</p>
       <p>Every year the amount is worked out again from the actual balances. Spending doesn't jump
       to it: it moves towards it by at most +raise / −cut a year, always between floor and ceiling.
       The spending per year above isn't used.</p>
@@ -247,9 +250,37 @@ export default {
   },
   "rule.assumed_return": {
     title: "Assumed return (spend-down)",
-    html: `<p>The real yearly return the spend-down works out its amount with. If the money earns
-      exactly this, spending stays the same every year; if more, it rises; if less, it falls.
-      Below the stocks' median it is a safety margin: about 2 points below is a sensible start.</p>`,
+    html: `<p>The yearly growth, after inflation, that the spend-down <b>counts on</b>. Each year it
+      works out what you could spend, the same every year until the end, if the money grew by this
+      much.</p>
+      <p>It's a guess you choose, not the markets: the simulated futures still get their random
+      returns. It only decides when you spend. Higher: more now, less later, and the money runs
+      out more often. Lower: less now, more later. The hint below the field shows your portfolio's
+      typical return: there, spending tends to stay level. About 2 points below it is a sensible
+      start.</p>`,
+    more: `<p><b>Why a guess.</b> To set this year's spending, the spend-down needs to know how much
+      the money it doesn't spend yet will grow. Nobody knows that, in life or in the simulator, so
+      it takes your number. 0% is a guess too, the most cautious one: what you have ÷ the years
+      left.</p>
+      <p class="ex">1,000,000 over 40 years: at 0% → 25,000 a year; at 2% → 35,800; at 4% →
+      48,600.</p>
+      <p><b>How the markets come in.</b> The guess stays the same; the markets reach your spending
+      through your balance. Each year the spend-down does its sum again with what you actually
+      have: after a good year it gives more, after a bad one less. Spending moves towards the new
+      amount by at most +raise / −cut a year.</p>
+      <p class="ex">At 2%, the first year is 35,800. The markets make +10% → the next sum gives
+      38,700; −20% → 28,100. With +5% / −10% a year, spending becomes 37,600 or 32,300.</p>
+      <p><b>Why not the markets' return.</b> You can: enter the typical return the hint shows, and
+      in a typical future spending stays about level. But typical is the middle of the futures:
+      about half do worse, and in those you've already spent the most in the first years, when a
+      crash hurts most. A lower guess spends less at first and more later, runs out less often, and
+      often leaves money at the end, as raises are limited.</p>
+      <p class="ex">1,000,000 over 40 years, all stocks (a typical return of 3.9%), no floor, +5% /
+      −10% a year. A guess of 3.9% → 48,100 the first year, about 52,000 in the last of a typical
+      future, and the money runs out in about 1 future in 5. A guess of 2% → 35,800, about 77,000,
+      and 1 in 10.</p>
+      <p>The hint follows the market settings, the guess doesn't: after changing the stock return
+      or the stock share, check the gap again. With bonds the typical return is lower.</p>`,
   },
   "rule.max_raise": {
     title: "Max raise per year (spend-down)",

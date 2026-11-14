@@ -62,7 +62,7 @@ Where the texts are: [CONTRIBUTING.md](../CONTRIBUTING.md#notes-for-changes) (th
 | **cut / raise by**         | How much guardrails change spending when they act.                                                                  | adjustment             |
 | **max raise**, **max cut** | The most Vanguard and the spend-down change spending in a year, written "+raise / −cut".                            | up, down               |
 | **withdrawal rate**        | Spending ÷ wealth. The **starting withdrawal rate**; the **safe withdrawal rate (SWR)** of the "4% rule".           |                        |
-| **assumed return**         | The real return the spend-down works its amount out with.                                                           |                        |
+| **assumed return**         | The real return the spend-down counts on to work out its spending. The markets stay random.                         |                        |
 | **bond tent**              | A lower stock share only around the FIRE start.                                                                     |                        |
 
 ### The page

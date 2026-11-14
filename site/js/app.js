@@ -138,7 +138,7 @@ function wire() {
     e.preventDefault();
     openHelp(b.dataset.help);
   });
-  $("#guide").addEventListener("click", openGuide);
+  $("#guide").addEventListener("click", () => openGuide());
   $("#help-close").addEventListener("click", () => $("#help-dialog").close());
   $("#help-dialog").addEventListener("click", (e) => {
     if (e.target.id === "help-dialog") e.target.close();

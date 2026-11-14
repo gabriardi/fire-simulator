@@ -77,6 +77,7 @@ export default {
   "help.what": "Was ist das?",
   "help.example": "Beispiel",
   "help.openGuide": "Ganze Anleitung öffnen",
+  "help.readMore": "Mehr dazu in der Anleitung",
   "guide.title": "Anleitung",
   "guide.sections": "Kapitel der Anleitung",
   "guide.basics": "Grundlagen",
@@ -157,9 +158,12 @@ export default {
   "form.maxCut.what": "Kapitalverzehr: max. Kürzung / Jahr",
   "form.assumedReturn": "Angenommene Rendite (real)",
   "form.assumedReturn.what": "Kapitalverzehr: angenommene Rendite",
-  "form.assumedReturn.below": "Unter dem realen Median der Aktien ({pct}): eine Sicherheitsmarge.",
+  "form.assumedReturn.below":
+    "Unter der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen niedriger und steigen eher.",
+  "form.assumedReturn.level":
+    "Nahe der typischen realen Rendite des Depots ({pct}): Die Ausgaben bleiben eher gleich.",
   "form.assumedReturn.above":
-    "Auf oder über dem realen Median der Aktien ({pct}): mehr am Anfang, mehr Kürzungen später.",
+    "Über der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen höher und sinken eher; das Geld geht öfter aus.",
   "form.currency": "Währung",
   "form.person.name.what": "Name von Person {n}",
   "form.person.born": "Geboren",

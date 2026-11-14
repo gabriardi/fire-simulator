@@ -216,11 +216,12 @@ export default {
   "rule.spenddown": {
     title: "Kapitalverzehr (Die with Zero)",
     html: `<p>Jedes Jahr berechnet er, was du <b>jedes Jahr bis zum Ende</b> ausgeben könntest,
-      immer gleich viel, wenn das Geld die <b>angenommene Rendite</b> erzielte, und zielt
-      darauf. Gezählt als Geld von heute: was verfügbar ist, die noch nicht verfügbaren
-      Vorsorgekonten (nach ihrer Steuer) und alle künftigen Einnahmen und Kosten. Bis ein Konto
-      verfügbar wird, bezahlt nur das verfügbare Geld die Rechnungen, also ist der Betrag nie
-      höher, als dieses Geld allein bis dahin tragen kann.</p>
+      immer gleich viel, wenn das Geld die <b>angenommene Rendite</b> erzielte, die du festlegst,
+      und zielt darauf. Diese Rendite gilt nur für diese Rechnung: Die Verläufe erzielen
+      weiterhin zufällige Renditen. Gezählt als Geld von heute: was verfügbar ist, die noch
+      nicht verfügbaren Vorsorgekonten (nach ihrer Steuer) und alle künftigen Einnahmen und
+      Kosten. Bis ein Konto verfügbar wird, bezahlt nur das verfügbare Geld die Rechnungen, also
+      ist der Betrag nie höher, als dieses Geld allein bis dahin tragen kann.</p>
       <p>Jedes Jahr wird der Betrag aus den tatsächlichen Kontoständen neu berechnet. Die Ausgaben
       springen nicht dorthin: Sie bewegen sich um höchstens +Erhöhung / −Kürzung pro Jahr darauf
       zu, immer zwischen Unter- und Obergrenze. Die Ausgaben pro Jahr oben werden nicht
@@ -271,10 +272,41 @@ export default {
   },
   "rule.assumed_return": {
     title: "Angenommene Rendite (Kapitalverzehr)",
-    html: `<p>Die reale jährliche Rendite, mit der der Kapitalverzehr seinen Betrag berechnet.
-      Erzielt das Geld genau diese, bleiben die Ausgaben jedes Jahr gleich; ist es mehr, steigen
-      sie; ist es weniger, fallen sie. Unter dem Median der Aktien ist sie eine Sicherheitsmarge:
-      etwa 2 Prozentpunkte darunter ist ein vernünftiger Anfang.</p>`,
+    html: `<p>Das jährliche Wachstum nach Inflation, mit dem der Kapitalverzehr <b>rechnet</b>. Jedes
+      Jahr bestimmt er, was du bis zum Ende jedes Jahr gleich viel ausgeben könntest, wenn das Geld
+      so stark wüchse.</p>
+      <p>Es ist eine Annahme, die du wählst, nicht die Märkte: Die simulierten Verläufe erzielen
+      weiterhin ihre zufälligen Renditen. Sie bestimmt nur, wann du ausgibst. Höher: mehr jetzt,
+      weniger später, und das Geld geht öfter aus. Niedriger: weniger jetzt, mehr später. Der
+      Hinweis unter dem Feld zeigt die typische Rendite deines Depots: Dort bleiben die Ausgaben
+      eher gleich. Etwa 2 Prozentpunkte darunter ist ein vernünftiger Anfang.</p>`,
+    more: `<p><b>Warum eine Annahme.</b> Um die Ausgaben dieses Jahres festzulegen, muss der
+      Kapitalverzehr wissen, wie stark das Geld wächst, das er noch nicht ausgibt. Das weiß
+      niemand, weder im Leben noch im Simulator, also nimmt er deine Zahl. Auch 0 % ist eine
+      Annahme, die vorsichtigste: was du hast ÷ die verbleibenden Jahre.</p>
+      <p class="ex">1 000 000 über 40 Jahre: bei 0 % → 25 000 pro Jahr; bei 2 % → 35 800; bei
+      4 % → 48 600.</p>
+      <p><b>Wie die Märkte hineinwirken.</b> Die Annahme bleibt gleich; die Märkte wirken über
+      deinen Kontostand auf die Ausgaben. Jedes Jahr rechnet der Kapitalverzehr neu mit dem, was
+      du tatsächlich hast: Nach einem guten Jahr ergibt sich mehr, nach einem schlechten weniger.
+      Die Ausgaben bewegen sich um höchstens +Erhöhung / −Kürzung pro Jahr auf den neuen Betrag
+      zu.</p>
+      <p class="ex">Bei 2 % sind es im ersten Jahr 35 800. Die Märkte machen +10 % → die nächste
+      Rechnung ergibt 38 700; −20 % → 28 100. Mit +5 % / −10 % pro Jahr werden daraus 37 600 oder
+      32 300.</p>
+      <p><b>Warum nicht die Rendite der Märkte.</b> Das geht: Gib die typische Rendite aus dem
+      Hinweis ein, dann bleiben die Ausgaben in einem typischen Verlauf etwa gleich. Aber typisch
+      ist die Mitte der Verläufe: Etwa die Hälfte läuft schlechter, und in diesen hast du in den
+      ersten Jahren schon am meisten ausgegeben, wenn ein Crash am meisten schadet. Mit einer
+      niedrigeren Annahme gibst du anfangs weniger aus und später mehr, das Geld geht seltener aus,
+      und oft bleibt am Ende etwas übrig, weil die Erhöhungen begrenzt sind.</p>
+      <p class="ex">1 000 000 über 40 Jahre, nur Aktien (typische Rendite 3,9 %), ohne
+      Untergrenze, +5 % / −10 % pro Jahr. Annahme 3,9 % → 48 100 im ersten Jahr, etwa 52 000 im
+      letzten eines typischen Verlaufs, und das Geld geht in etwa 1 von 5 Verläufen aus. Annahme
+      2 % → 35 800, etwa 77 000, und 1 von 10.</p>
+      <p>Der Hinweis folgt den Markteinstellungen, die Annahme nicht: Prüfe den Abstand nach jeder
+      Änderung der Aktienrendite oder der Aktienquote. Mit Anleihen ist die typische Rendite
+      niedriger.</p>`,
   },
   "rule.max_raise": {
     title: "Max. Erhöhung pro Jahr (Kapitalverzehr)",
