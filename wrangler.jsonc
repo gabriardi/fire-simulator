@@ -13,6 +13,10 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "none"
   },
+  // Every other branch (a pull request's) gets a Preview of its own: Cloudflare's builds run
+  // `npx wrangler preview` there, which refuses to run without this block. Empty: a Preview is
+  // the same site, with nothing of its own (it has no bindings, secrets or variables).
+  "previews": {},
   // Workers Logs, readable in this account's dashboard for 3 days (7 on a paid plan). The README
   // says so under "What the host sees"; a copy that doesn't want them removes this block.
   "observability": {

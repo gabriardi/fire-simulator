@@ -241,6 +241,8 @@ repository (the README, the tests, the scripts) is part of it.
    and a custom domain can be added under the Worker's _Settings → Domains & Routes_.
    `wrangler.jsonc` lists no routes, so deploys leave those domains to the dashboard: this
    project's copy has whencanistop.fyi that way. The `workers.dev` address stays on as well.
+   A push to any other branch builds a Preview of it, at an address of its own, for checking
+   a pull request before it's merged.
 4. `wrangler.jsonc` turns on Workers Logs (`observability`). Remove that block to have none, or
    tell your visitors, as _What the host sees_ does.
 
