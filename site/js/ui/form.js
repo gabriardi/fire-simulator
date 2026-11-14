@@ -105,8 +105,9 @@ function ruleGroup() {
       hint: (v) => {
         const m = mixStats(state, state.stock_share).compound;
         const pct = fmt.pct(m, 2);
-        if (v < m - 0.0025) return t("form.assumedReturn.below", { pct });
-        if (v > m + 0.0025) return t("form.assumedReturn.above", { pct });
+        // n: the gap as it's written, so "1 point" and "1.9 points" read right.
+        if (v < m - 0.0025) return t("form.assumedReturn.below", { n: fmt.points(m - v), pct });
+        if (v > m + 0.0025) return t("form.assumedReturn.above", { n: fmt.points(v - m), pct });
         return t("form.assumedReturn.level", { pct });
       },
     }),

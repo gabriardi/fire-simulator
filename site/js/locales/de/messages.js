@@ -158,12 +158,18 @@ export default {
   "form.maxCut.what": "Kapitalverzehr: max. Kürzung / Jahr",
   "form.assumedReturn": "Angenommene Rendite (real)",
   "form.assumedReturn.what": "Kapitalverzehr: angenommene Rendite",
-  "form.assumedReturn.below":
-    "Unter der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen niedriger und steigen eher.",
+  "form.assumedReturn.below": {
+    one: "{n} Prozentpunkt unter der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen niedriger und steigen eher.",
+    other:
+      "{n} Prozentpunkte unter der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen niedriger und steigen eher.",
+  },
   "form.assumedReturn.level":
     "Nahe der typischen realen Rendite des Depots ({pct}): Die Ausgaben bleiben eher gleich.",
-  "form.assumedReturn.above":
-    "Über der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen höher und sinken eher; das Geld geht öfter aus.",
+  "form.assumedReturn.above": {
+    one: "{n} Prozentpunkt über der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen höher und sinken eher; das Geld geht öfter aus.",
+    other:
+      "{n} Prozentpunkte über der typischen realen Rendite des Depots ({pct}): Die Ausgaben beginnen höher und sinken eher; das Geld geht öfter aus.",
+  },
   "form.currency": "Währung",
   "form.person.name.what": "Name von Person {n}",
   "form.person.born": "Geboren",

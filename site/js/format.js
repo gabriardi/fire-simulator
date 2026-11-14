@@ -78,6 +78,7 @@ export function makeFormat(locale, currency) {
     loc = "en-US";
   }
   const whole = new Intl.NumberFormat(loc, { maximumFractionDigits: 0 });
+  const tenths = new Intl.NumberFormat(loc, { maximumFractionDigits: 1 });
   const parts = new Intl.NumberFormat(loc).formatToParts(1234567.5);
   const group = parts.find((p) => p.type === "group")?.value ?? ",";
   const decimal = parts.find((p) => p.type === "decimal")?.value ?? ".";
@@ -165,6 +166,8 @@ export function makeFormat(locale, currency) {
           : compact.format(v),
     /** A fraction in %, with `d` decimals (0 to 2), written as the number format writes it. */
     pct: (v, d = 0) => (ok(v) ? percents[d].format(v) : dash),
+    /** The gap between two rates, in percentage points, to a tenth: 0.019 → "1.9". */
+    points: (v) => (ok(v) ? tenths.format(v * 100) : dash),
     parse,
     /** A typed list of numbers ("-15, -20, -25"), each read by `parse`: NaN where one isn't. */
     parseList: (s, kind = "num") =>
