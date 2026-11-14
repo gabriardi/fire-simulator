@@ -1006,10 +1006,12 @@ h3 .help {
   font-size: 0.92rem;
 }
 .help-entry p,
-.help-entry ul {
+.help-entry ul,
+.help-entry ol {
   margin: 0 0 8px;
 }
-.help-entry ul {
+.help-entry ul,
+.help-entry ol {
   padding-left: 1.2em;
 }
 .help-entry li {

@@ -254,8 +254,11 @@ export default {
       works out what you could spend, the same every year until the end, if the money grew by this
       much.</p>
       <p>It's a guess you choose, not the markets: the simulated futures still get their random
-      returns. It only decides when you spend. Higher: more now, less later, and the money runs
-      out more often. Lower: less now, more later. The hint below the field shows your portfolio's
+      returns. And the sum is done again <b>every year</b>, with the balances you actually have, so
+      a wrong guess is corrected year by year. In real life you do the same: each January, enter
+      your balances and read that year's spending.</p>
+      <p>The guess decides when you spend. Higher: more now, less later, and the money runs out
+      more often. Lower: less now, more later. The hint below the field shows your portfolio's
       typical return: there, spending tends to stay level. About 2 points below it is a sensible
       start.</p>`,
     more: `<p><b>Why a guess.</b> To set this year's spending, the spend-down needs to know how much
@@ -279,8 +282,19 @@ export default {
       −10% a year. A guess of 3.9% → 48,100 the first year, about 52,000 in the last of a typical
       future, and the money runs out in about 1 future in 5. A guess of 2% → 35,800, about 77,000,
       and 1 in 10.</p>
-      <p>The hint follows the market settings, the guess doesn't: after changing the stock return
-      or the stock share, check the gap again. With bonds the typical return is lower.</p>`,
+      <p><b>How to use it.</b> The spend-down is meant to be done again every year, with the same
+      guess:</p>
+      <ol><li><b>Before you stop</b>, pick the guess against the hint, and look at how often the
+      money lasts and at the chart “What you'd get to spend”. The hint follows the market
+      settings, the guess doesn't: after changing them, check the gap again.</li>
+      <li><b>Each January after you stop</b>, enter your balances, set “Balances as of” to that
+      month and the FIRE start to this year, and read “First-year spending”: that's this year's
+      amount.</li>
+      <li>Spend it as the simulation does: at most +raise / −cut away from last year's spending,
+      and between the floor and the ceiling. “First-year spending” comes before those
+      limits.</li>
+      <li>Next January, the same again: after a good year the amount is higher, after a bad one
+      lower.</li></ol>`,
   },
   "rule.max_raise": {
     title: "Max raise per year (spend-down)",
