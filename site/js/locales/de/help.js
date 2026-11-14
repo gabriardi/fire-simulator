@@ -312,7 +312,11 @@ export default {
       gerechnet zu werden, mit derselben Annahme:</p>
       <ol><li><b>Bevor du aufhörst</b>, wähle die Annahme mit Blick auf den Hinweis und schau dir
       an, wie oft das Geld reicht, und das Diagramm „Was du ausgeben könntest“. Der Hinweis folgt
-      den Markteinstellungen, die Annahme nicht: Prüfe den Abstand nach jeder Änderung neu.</li>
+      den Markteinstellungen, die Annahme absichtlich nicht. Für einen vorsichtigen Fall senkst du
+      die Aktienrendite und behältst die Annahme: So siehst du, was deine Wahl bewirkt, wenn die
+      Märkte enttäuschen. Im Beispiel oben, bei 2 %: Aktien mit 4,5 % statt 6 % → das Geld geht in
+      fast 1 von 5 Verläufen aus statt in 1 von 10. Wähle die Annahme nur neu, wenn sich deine
+      beste Schätzung der Märkte ändert.</li>
       <li><b>Jeden Januar nach dem Ausstieg</b> gibst du deine Kontostände ein, setzt „Kontostände
       vom“ auf diesen Monat und den FIRE-Start auf dieses Jahr und liest „Ausgaben im ersten
       Jahr“ ab: Das ist der Betrag für dieses Jahr.</li>

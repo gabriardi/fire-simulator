@@ -167,12 +167,18 @@ export default {
   "form.maxCut.what": "Spend-down max cut / yr",
   "form.assumedReturn": "Assumed return (real)",
   "form.assumedReturn.what": "Spend-down assumed return",
-  "form.assumedReturn.below":
-    "Below the portfolio's typical real return ({pct}): spending starts lower and tends to rise.",
+  "form.assumedReturn.below": {
+    one: "{n} point below the portfolio's typical real return ({pct}): spending starts lower and tends to rise.",
+    other:
+      "{n} points below the portfolio's typical real return ({pct}): spending starts lower and tends to rise.",
+  },
   "form.assumedReturn.level":
     "Close to the portfolio's typical real return ({pct}): spending tends to stay level.",
-  "form.assumedReturn.above":
-    "Above the portfolio's typical real return ({pct}): spending starts higher and tends to fall; the money runs out more often.",
+  "form.assumedReturn.above": {
+    one: "{n} point above the portfolio's typical real return ({pct}): spending starts higher and tends to fall; the money runs out more often.",
+    other:
+      "{n} points above the portfolio's typical real return ({pct}): spending starts higher and tends to fall; the money runs out more often.",
+  },
   "form.currency": "Currency",
   "form.person.name.what": "Person {n}'s name",
   "form.person.born": "Born",

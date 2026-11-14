@@ -286,7 +286,11 @@ export default {
       guess:</p>
       <ol><li><b>Before you stop</b>, pick the guess against the hint, and look at how often the
       money lasts and at the chart “What you'd get to spend”. The hint follows the market
-      settings, the guess doesn't: after changing them, check the gap again.</li>
+      settings; the guess doesn't, on purpose. To test a cautious case, lower the stock return
+      and keep the guess: you see what your choice does if the markets disappoint. In the example
+      above, at 2%, stocks at 4.5% instead of 6% → the money runs out in almost 1 future in 5
+      instead of 1 in 10. Choose the guess again only when your best estimate of the markets
+      changes.</li>
       <li><b>Each January after you stop</b>, enter your balances, set “Balances as of” to that
       month and the FIRE start to this year, and read “First-year spending”: that's this year's
       amount.</li>
