@@ -276,10 +276,14 @@ export default {
       Jahr bestimmt er, was du bis zum Ende jedes Jahr gleich viel ausgeben könntest, wenn das Geld
       so stark wüchse.</p>
       <p>Es ist eine Annahme, die du wählst, nicht die Märkte: Die simulierten Verläufe erzielen
-      weiterhin ihre zufälligen Renditen. Sie bestimmt nur, wann du ausgibst. Höher: mehr jetzt,
-      weniger später, und das Geld geht öfter aus. Niedriger: weniger jetzt, mehr später. Der
-      Hinweis unter dem Feld zeigt die typische Rendite deines Depots: Dort bleiben die Ausgaben
-      eher gleich. Etwa 2 Prozentpunkte darunter ist ein vernünftiger Anfang.</p>`,
+      weiterhin ihre zufälligen Renditen. Und die Rechnung wird <b>jedes Jahr</b> neu gemacht, mit
+      den Kontoständen, die du tatsächlich hast, also wird eine falsche Annahme Jahr für Jahr
+      korrigiert. Im echten Leben machst du es genauso: Gib jeden Januar deine Kontostände ein und
+      lies die Ausgaben für das Jahr ab.</p>
+      <p>Die Annahme bestimmt, wann du ausgibst. Höher: mehr jetzt, weniger später, und das Geld
+      geht öfter aus. Niedriger: weniger jetzt, mehr später. Der Hinweis unter dem Feld zeigt die
+      typische Rendite deines Depots: Dort bleiben die Ausgaben eher gleich. Etwa 2 Prozentpunkte
+      darunter ist ein vernünftiger Anfang.</p>`,
     more: `<p><b>Warum eine Annahme.</b> Um die Ausgaben dieses Jahres festzulegen, muss der
       Kapitalverzehr wissen, wie stark das Geld wächst, das er noch nicht ausgibt. Das weiß
       niemand, weder im Leben noch im Simulator, also nimmt er deine Zahl. Auch 0 % ist eine
@@ -304,9 +308,19 @@ export default {
       Untergrenze, +5 % / −10 % pro Jahr. Annahme 3,9 % → 48 100 im ersten Jahr, etwa 52 000 im
       letzten eines typischen Verlaufs, und das Geld geht in etwa 1 von 5 Verläufen aus. Annahme
       2 % → 35 800, etwa 77 000, und 1 von 10.</p>
-      <p>Der Hinweis folgt den Markteinstellungen, die Annahme nicht: Prüfe den Abstand nach jeder
-      Änderung der Aktienrendite oder der Aktienquote. Mit Anleihen ist die typische Rendite
-      niedriger.</p>`,
+      <p><b>So verwendest du sie.</b> Der Kapitalverzehr ist dafür gedacht, jedes Jahr neu
+      gerechnet zu werden, mit derselben Annahme:</p>
+      <ol><li><b>Bevor du aufhörst</b>, wähle die Annahme mit Blick auf den Hinweis und schau dir
+      an, wie oft das Geld reicht, und das Diagramm „Was du ausgeben könntest“. Der Hinweis folgt
+      den Markteinstellungen, die Annahme nicht: Prüfe den Abstand nach jeder Änderung neu.</li>
+      <li><b>Jeden Januar nach dem Ausstieg</b> gibst du deine Kontostände ein, setzt „Kontostände
+      vom“ auf diesen Monat und den FIRE-Start auf dieses Jahr und liest „Ausgaben im ersten
+      Jahr“ ab: Das ist der Betrag für dieses Jahr.</li>
+      <li>Gib ihn so aus wie die Simulation: höchstens +Erhöhung / −Kürzung gegenüber den Ausgaben
+      des Vorjahres und zwischen Unter- und Obergrenze. „Ausgaben im ersten Jahr“ steht vor diesen
+      Grenzen.</li>
+      <li>Im nächsten Januar dasselbe: Nach einem guten Jahr ist der Betrag höher, nach einem
+      schlechten niedriger.</li></ol>`,
   },
   "rule.max_raise": {
     title: "Max. Erhöhung pro Jahr (Kapitalverzehr)",
