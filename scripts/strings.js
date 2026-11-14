@@ -5,7 +5,7 @@
 //
 // English, the source:
 // - site/js/locales/en/messages.js: the code's texts.
-// - site/js/locales/en/help.js: the "?" explanations and the guide (help.<key>.title, .html).
+// - site/js/locales/en/help.js: the "?" explanations and the guide (help.<key>.title, .html, .more).
 // - The pages (index.html, privacy.html) keep their English in place, each piece marked with its
 //   key: `data-i18n="key"` for an element's content (HTML, as it is), `data-i18n-<attribute>`
 //   for an attribute's text (aria-label, title, a meta's content…). An element marked
@@ -228,7 +228,7 @@ export function catalog() {
   for (const [key, text] of Object.entries(messages))
     entries.push({ key, text, where: "locales/en/messages.js" });
   for (const [id, h] of Object.entries(help))
-    for (const part of ["title", "html"])
+    for (const part of h.more == null ? ["title", "html"] : ["title", "html", "more"])
       entries.push({ key: `help.${id}.${part}`, text: h[part], where: "locales/en/help.js" });
   for (const file of PAGES) {
     const page = pageStrings(file);
@@ -259,12 +259,13 @@ export async function textsOf(lang) {
   return { messages: await load("messages"), help: await load("help"), pages: await load("pages") };
 }
 
-/** A language's catalog, by the English keys: { key: text } (a help entry as two keys). */
+/** A language's catalog, by the English keys: { key: text } (a help entry as two or three keys). */
 export function flatten({ messages, help, pages }) {
   const out = { ...messages, ...pages };
   for (const [id, h] of Object.entries(help)) {
     out[`help.${id}.title`] = h?.title;
     out[`help.${id}.html`] = h?.html;
+    if (h?.more != null) out[`help.${id}.more`] = h.more;
   }
   return out;
 }

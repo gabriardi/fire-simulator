@@ -85,6 +85,7 @@ export default {
   "help.what": "What is this?",
   "help.example": "Example", // before each example in an explanation
   "help.openGuide": "Open the full guide",
+  "help.readMore": "Read more in the guide", // a "?" whose guide card says more
   "guide.title": "Guide",
   "guide.sections": "Guide sections",
   "guide.basics": "Basics",
@@ -166,9 +167,12 @@ export default {
   "form.maxCut.what": "Spend-down max cut / yr",
   "form.assumedReturn": "Assumed return (real)",
   "form.assumedReturn.what": "Spend-down assumed return",
-  "form.assumedReturn.below": "Below the stocks' {pct} real median: a safety margin.",
+  "form.assumedReturn.below":
+    "Below the portfolio's typical real return ({pct}): spending starts lower and tends to rise.",
+  "form.assumedReturn.level":
+    "Close to the portfolio's typical real return ({pct}): spending tends to stay level.",
   "form.assumedReturn.above":
-    "At or above the stocks' {pct} real median: more early, more cuts later.",
+    "Above the portfolio's typical real return ({pct}): spending starts higher and tends to fall; the money runs out more often.",
   "form.currency": "Currency",
   "form.person.name.what": "Person {n}'s name",
   "form.person.born": "Born",

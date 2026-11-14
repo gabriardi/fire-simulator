@@ -1117,11 +1117,16 @@ h3 .help {
   gap: 14px;
 }
 .guide-item {
+  scroll-margin-top: 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 14px 16px 6px;
   background: var(--surface);
   min-width: 0;
+}
+/* The card a "?" opened the guide at. */
+.guide-item.here {
+  border-color: var(--accent);
 }
 .guide-item h4 {
   margin: 0 0 6px;
@@ -1162,7 +1167,8 @@ h3 .help {
     padding: 14px 16px 32px;
     border-left: 0;
   }
-  .guide-section {
+  .guide-section,
+  .guide-item {
     scroll-margin-top: 66px;
   } /* land below the sticky section row */
   .guide-cards {

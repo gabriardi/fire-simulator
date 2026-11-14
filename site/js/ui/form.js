@@ -100,12 +100,14 @@ function ruleGroup() {
       what: t("form.assumedReturn.what"),
       min: -0.09,
       max: 0.19,
+      // Compared with the portfolio's compound real return at its usual stock share (a bond tent
+      // is only for a few years): spending tends to stay level when the two are close.
       hint: (v) => {
-        const m = realOf(state.stock_return);
+        const m = mixStats(state, state.stock_share).compound;
         const pct = fmt.pct(m, 2);
-        return v < m
-          ? t("form.assumedReturn.below", { pct })
-          : t("form.assumedReturn.above", { pct });
+        if (v < m - 0.0025) return t("form.assumedReturn.below", { pct });
+        if (v > m + 0.0025) return t("form.assumedReturn.above", { pct });
+        return t("form.assumedReturn.level", { pct });
       },
     }),
     row2(

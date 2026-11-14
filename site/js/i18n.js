@@ -27,7 +27,7 @@ const [{ default: messages }, { default: help }] = await Promise.all([
   import(`./locales/${LANG}/help.js`),
 ]);
 
-/** The "?" explanations and the guide's cards, in the page's language: { title, html } by key. */
+/** The "?" explanations and the guide's cards, in the page's language: { title, html, more? } by key. */
 export const HELP = help;
 
 const plural = new Intl.PluralRules(LANG);
