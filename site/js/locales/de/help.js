@@ -81,14 +81,14 @@ export default {
     html: `<p>Ein Plan ist deine Situation mit den Entscheidungen, die du ausprobierst, gespeichert
       unter einem Namen in diesem Browser. Lege mehrere zum Vergleichen an: „Mit 50 aufhören“,
       „Mit 55, Teilzeit“, „Weniger ausgeben“.</p>
-      <ul>
-        <li><b>Wähle</b> einen in der Liste, um ihn zu laden.</li>
-        <li><b>Ändere</b> einen beliebigen Wert: Der Plan wird als <b>geändert</b> angezeigt, und ein
-          Punkt markiert jedes geänderte Feld. <b>Speichern</b> (oder ⌘S / Strg+S) übernimmt die
-          Änderungen; <b>Zurücksetzen</b> holt die gespeicherten Werte zurück. Ungespeicherte
+      <p>Ändere einen beliebigen Wert, dann behältst du ihn mit <b>Speichern</b>, oder
+      <b>Zurücksetzen</b> holt die gespeicherten Werte zurück. Unter <b>⋯</b>: ein neuer Plan von
+      Grund auf, eine Kopie dieses Plans, umbenennen, löschen, teilen, exportieren und
+      importieren.</p>`,
+    more: `<ul>
+        <li>Mit ungespeicherten Änderungen wird der Plan als <b>geändert</b> angezeigt, und ein
+          Punkt markiert jedes geänderte Feld. ⌘S / Strg+S speichert ebenfalls. Ungespeicherte
           Änderungen überstehen ein Neuladen.</li>
-        <li>Unter <b>⋯</b>: ein neuer Plan von Grund auf, eine Kopie dieses Plans, umbenennen,
-          löschen, teilen, exportieren und importieren.</li>
         <li>Nach dem Löschen, Zurücksetzen oder dem Wechsel weg von ungespeicherten Änderungen gibt
           es ein paar Sekunden lang <b>Rückgängig</b>.</li>
       </ul>
@@ -97,23 +97,22 @@ export default {
   },
   backup: {
     title: "Sicherungen",
-    html: `<p>Gespeicherte Pläne liegen im Speicher dieses Browsers, nur auf diesem Gerät. Browser
-      können ihn leeren:</p>
-      <ul>
-        <li>beim Löschen der Browserdaten oder der Daten der Website;</li>
-        <li>in einem privaten Fenster, wenn es geschlossen wird;</li>
-        <li><b>Safari</b> (auf Mac, iPhone oder iPad) löscht die Daten einer Website, wenn du ihn
-          7 Tage lang benutzt hast, ohne die Website zu besuchen, außer du hast sie zum
-          Home-Bildschirm hinzugefügt;</li>
-        <li>manche Browser geben Speicher frei, wenn das Gerät knapp wird.</li>
-      </ul>
-      <p>Beim ersten Speichern bittet die Seite den Browser, ihren Speicher dauerhaft zu behalten
-      (Firefox fragt dich; Chrome und Edge entscheiden selbst). Das schützt vor dem letzten Fall,
-      nicht vor den anderen.</p>
+    html: `<p>Gespeicherte Pläne liegen im Speicher dieses Browsers, nur auf diesem Gerät, und
+      Browser können ihn leeren: wenn du die Browserdaten oder die Daten der Website löschst, wenn
+      ein privates Fenster geschlossen wird, und in Safari nach einer Woche Nutzung ohne Besuch
+      dieser Website.</p>
       <p><b>Pläne exportieren</b> schreibt alle Pläne in eine Datei: die einzige Sicherung, die einen
-      geleerten Browser oder ein verlorenes Gerät übersteht. Ein Hinweis unter dem Plan erinnert
-      dich, wenn gespeicherte Änderungen noch in keiner exportierten Datei sind. Zum
-      Wiederherstellen: <b>Pläne importieren</b>.</p>`,
+      geleerten Browser oder ein verlorenes Gerät übersteht. Zum Wiederherstellen: <b>Pläne
+      importieren</b>.</p>`,
+    more: `<p><b>Safari</b> (auf Mac, iPhone oder iPad) löscht die Daten einer Website, wenn du ihn
+      7 Tage lang benutzt hast, ohne die Website zu besuchen, außer du hast sie zum
+      Home-Bildschirm hinzugefügt. Manche Browser geben außerdem Speicher frei, wenn das Gerät
+      knapp wird.</p>
+      <p>Beim ersten Speichern bittet die Seite den Browser, ihren Speicher dauerhaft zu behalten
+      (Firefox fragt dich; Chrome und Edge entscheiden selbst). Das schützt davor, dass das Gerät
+      knapp wird, nicht vor den anderen Fällen.</p>
+      <p>Ein Hinweis unter dem Plan erinnert dich, wenn gespeicherte Änderungen noch in keiner
+      exportierten Datei sind.</p>`,
   },
   share: {
     title: "Link zum Teilen",
@@ -151,7 +150,7 @@ export default {
       Financial Independence, Retire Early, also finanzielle Unabhängigkeit und früher Ruhestand.
       Bis dahin verdienst und sparst du weiter; ab dann endet das Sparen, und die Entnahmen
       beginnen.</p>
-      <p class="ex">Jedes spätere Jahr bringt ein Jahr mehr Sparen und Wachstum und ist ein Jahr
+      <p>Jedes spätere Jahr bringt ein Jahr mehr Sparen und Wachstum und ist ein Jahr
       weniger zu finanzieren. Das Raster weiter unten zeigt die benachbarten Jahre
       nebeneinander.</p>`,
   },
@@ -159,25 +158,25 @@ export default {
     title: "Ausgaben pro Jahr",
     html: `<p>Was der Haushalt nach dem Ausstieg jedes Jahr ausgeben wird, in heutiger Kaufkraft,
       <b>inklusive</b> der Steuern dieser Jahre (Einkommensteuer auf Entnahmen, Krankenversicherung,
-      die du nun selbst zahlst, außer du gibst ihr unten einen eigenen Posten). Lass Kosten weg, die mit der Arbeit enden,
-      etwa den Arbeitsweg.</p>
-      <p class="ex">40 000 pro Jahr = 3333 pro Monat. Bei einer flexiblen Regel ist das der
+      die du nun selbst zahlst). Lass Kosten weg, die mit der Arbeit enden, etwa den Arbeitsweg,
+      und alle Kosten, die du als Posten unter „Einnahmen und Kosten nach dem Ausstieg“ eingibst:
+      Sie würden doppelt zählen.</p>
+      <p class="ex">40 000 pro Jahr = 3333 pro Monat. Bei einer flexiblen Regel ist das der
       <b>anfängliche</b> Betrag. Der Kapitalverzehr berechnet seinen eigenen und verwendet ihn
-      nicht.</p>
-      <p>Kosten, die kommen und gehen (eine Hypothek, bis sie abbezahlt ist, die Schule der
+      nicht.</p>`,
+    more: `<p>Kosten, die kommen und gehen (eine Hypothek, bis sie abbezahlt ist, die Schule der
       Kinder), passen besser als Posten unter „Einnahmen und Kosten nach dem Ausstieg“, ebenso
-      Kosten, die schneller steigen als die Inflation, etwa die Krankenversicherung. Was du als
-      Posten eingibst, lässt du bei den Ausgaben weg, sonst zählt es doppelt.</p>
+      Kosten, die schneller steigen als die Inflation, etwa die Krankenversicherung.</p>
       <p>Eine Steuer auf das Vermögen (eine Vermögensteuer, eine jährliche Stempelsteuer auf
       Wertpapiere) schrumpft mit dem Depot: Zieh ihren Satz stattdessen von der Aktien- und der
       Anleihenrendite ab.</p>
-      <p class="ex">0,3 % Vermögensteuer: Aktien 6 % → 5,7 %, Anleihen 3 % → 2,7 %.</p>`,
+      <p class="ex">0,3 % Vermögensteuer: Aktien 6 % → 5,7 %, Anleihen 3 % → 2,7 %.</p>`,
   },
   end_person: {
     title: "Wie lange das Geld reichen muss",
     html: `<p>Wie lange der Plan aufgehen muss: bis diese Person dieses Alter erreicht. Wähle die
       jüngste Person und ein Alter, das sie kaum überschreiten wird: Längere Zeiträume verlangen
-      eine niedrigere Entnahmerate.</p>
+      eine niedrigere Entnahmerate. Viele Pläne rechnen mit 95; 100 ist vorsichtig.</p>
       <p>Bei einem Paar ist die Chance, dass mindestens eine Person von euch über 90 wird, viel höher
       als für jede allein: Plane für die langlebigere von euch.</p>`,
   },
@@ -193,24 +192,24 @@ export default {
     title: "Guardrails (Guyton & Klinger)",
     html: `<p>Deine <b>Entnahmerate</b> (was das Depot bezahlt ÷ Vermögen) zu Beginn ist der
       Bezugspunkt. Jedes Jahr gilt:</p>
-      <ul><li>Rate um mehr als das <b>Toleranzband</b> über dem Anfangswert (das Vermögen ist
-      gefallen) → die Ausgaben werden um den Prozentsatz unter <b>Kürzung / Erhöhung um</b>
-      gekürzt;</li>
+      <ul><li>Rate um mehr als das <b>Toleranzband</b> über dem Anfangswert, einen Anteil der
+      Anfangsrate (das Vermögen ist gefallen) → die Ausgaben werden um den Prozentsatz unter
+      <b>Kürzung / Erhöhung um</b> gekürzt;</li>
       <li>Rate um mehr als das Toleranzband unter dem Anfangswert (das Vermögen ist gewachsen) → die
       Ausgaben werden um ihn erhöht;</li>
       <li>sonst unverändert. Immer zwischen Unter- und Obergrenze.</li></ul>
-      <p class="ex">1 200 000 und 42 000 → Rate 3,5 %. Mit 20 % Toleranzband und 10 % Kürzung /
-      Erhöhung: Unter etwa 1 000 000 (Rate 4,2 %) werden die Ausgaben auf 37 800 gekürzt, über
-      1 500 000 (Rate 2,8 %) steigen sie auf 46 200. In einer langen schlechten Phase können sich
-      Kürzungen wiederholen.</p>`,
+      <p class="ex">1 200 000 und 42 000 → Rate 3,5 %. Mit 20 % Toleranzband (20 % von 3,5 % sind
+      0,7 Prozentpunkte) und 10 % Kürzung / Erhöhung: Unter etwa 1 000 000 (Rate 4,2 %) werden die
+      Ausgaben auf 37 800 gekürzt, über 1 500 000 (Rate 2,8 %) steigen sie auf 46 200. In einer
+      langen schlechten Phase können sich Kürzungen wiederholen.</p>`,
   },
   "rule.vanguard": {
     title: "Vanguard dynamische Entnahme",
-    html: `<p>Jedes Jahr ist das <b>Ziel</b> deine anfängliche Entnahmerate × das aktuelle Vermögen
-      (plus Einnahmen). Die Ausgaben bewegen sich darauf zu, aber höchstens um die <b>max.
-      Erhöhung</b> oder die <b>max. Kürzung</b> pro Jahr. Immer zwischen Unter- und
-      Obergrenze.</p>
-      <p class="ex">Märkte −30 % → das Ziel sinkt um 30 %, aber die Ausgaben fallen nur um 2,5 % pro
+    html: `<p>Jedes Jahr ist das <b>Ziel</b> deine anfängliche Entnahmerate × das aktuelle Vermögen,
+      plus die Einnahmen dieses Jahres (eine Rente, Teilzeitarbeit). Die Ausgaben bewegen sich
+      darauf zu, aber höchstens um die <b>max. Erhöhung</b> oder die <b>max. Kürzung</b> pro Jahr.
+      Immer zwischen Unter- und Obergrenze.</p>
+      <p class="ex">Märkte −30 % → das Ziel sinkt um 30 %, aber die Ausgaben fallen nur um 4,5 % pro
       Jahr, solange es niedrig bleibt. Glatter als Guardrails, langsamer bei einem tiefen Crash.</p>`,
   },
   "rule.spenddown": {
@@ -218,16 +217,16 @@ export default {
     html: `<p>Jedes Jahr berechnet er, was du <b>jedes Jahr bis zum Ende</b> ausgeben könntest,
       immer gleich viel, wenn das Geld die <b>angenommene Rendite</b> erzielte, die du festlegst,
       und zielt darauf. Diese Rendite gilt nur für diese Rechnung: Die Verläufe erzielen
-      weiterhin zufällige Renditen. Gezählt als Geld von heute: was verfügbar ist, die noch
-      nicht verfügbaren Vorsorgekonten (nach ihrer Steuer) und alle künftigen Einnahmen und
-      Kosten. Bis ein Konto verfügbar wird, bezahlt nur das verfügbare Geld die Rechnungen, also
-      ist der Betrag nie höher, als dieses Geld allein bis dahin tragen kann.</p>
-      <p>Jedes Jahr wird der Betrag aus den tatsächlichen Kontoständen neu berechnet. Die Ausgaben
-      springen nicht dorthin: Sie bewegen sich um höchstens +Erhöhung / −Kürzung pro Jahr darauf
-      zu, immer zwischen Unter- und Obergrenze. Die Ausgaben pro Jahr oben werden nicht
-      verwendet.</p>
+      weiterhin zufällige Renditen, und die Rechnung wird jedes Jahr mit den Kontoständen
+      wiederholt, die du tatsächlich hast. Die Ausgaben pro Jahr oben werden nicht verwendet.</p>
       <p>Er plant nicht, Geld zu behalten, also gibt er mehr aus und hinterlässt weniger. Ein Crash
-      gleich nach dem Ausstieg trifft ihn stärker, weil er in den ersten Jahren mehr ausgibt.</p>
+      gleich nach dem Ausstieg trifft ihn stärker, weil er in den ersten Jahren mehr ausgibt.</p>`,
+    more: `<p>Gezählt als Geld von heute: was verfügbar ist, die noch nicht verfügbaren
+      Vorsorgekonten (nach ihrer Steuer) und alle künftigen Einnahmen und Kosten. Bis ein Konto
+      verfügbar wird, bezahlt nur das verfügbare Geld die Rechnungen, also ist der Betrag nie
+      höher, als dieses Geld allein bis dahin tragen kann.</p>
+      <p>Die Ausgaben springen nicht zum Betrag: Sie bewegen sich um höchstens +Erhöhung /
+      −Kürzung pro Jahr darauf zu, immer zwischen Unter- und Obergrenze.</p>
       <p><b>Wenn du schon aufgehört hast</b>, liefert er den Betrag für das Jahr: Gib die
       Kontostände vom Januar ein, setze den FIRE-Start auf dieses Jahr und lies „Ausgaben im ersten
       Jahr“ ab.</p>`,
@@ -237,7 +236,9 @@ export default {
     html: `<p>Die niedrigsten Ausgaben, die du akzeptieren würdest: die Kosten, die du nicht senken
       kannst (Wohnen, Gesundheit, Essen, Steuern). Eine flexible Regel geht nie darunter, und ein
       Verlauf <b>scheitert</b> erst, wenn nicht einmal die Untergrenze bezahlt werden kann.</p>
-      <p class="ex">32 000 bei einem Plan mit 40 000: das Nötigste, ohne Reisen und Extras.</p>`,
+      <p>Bei Guardrails und Vanguard liegt sie, solange du sie nicht selbst setzt, 20 % unter den
+      Ausgaben und bewegt sich mit ihnen.</p>
+      <p class="ex">32 000 bei einem Plan mit 40 000: das Nötigste, ohne Reisen und Extras.</p>`,
   },
   "rule.ceiling": {
     title: "Obergrenze",
@@ -251,24 +252,28 @@ export default {
   "rule.band": {
     title: "Toleranzband",
     html: `<p>Wie weit sich die Entnahmerate von ihrem Anfangswert entfernen darf, bevor sich die
-      Ausgaben ändern. Kleiner = häufigere Anpassungen.</p>
-      <p class="ex">20 % → bei 3,5 % zu Beginn passiert zwischen 2,8 % und 4,2 % nichts.</p>`,
+      Ausgaben ändern. Kleiner = häufigere Anpassungen. Guyton und Klinger verwendeten 20 %, so
+      ist es hier voreingestellt.</p>
+      <p class="ex">20 % → bei 3,5 % zu Beginn passiert zwischen 2,8 % und 4,2 % nichts.</p>`,
   },
   "rule.adjust": {
     title: "Kürzung / Erhöhung um",
-    html: `<p>Wie stark sich die Ausgaben ändern, wenn eine Guardrail überschritten wird.</p>
-      <p class="ex">10 % → aus 42 000 werden 37 800 nach einer Kürzung, 46 200 nach einer
+    html: `<p>Wie stark sich die Ausgaben ändern, wenn eine Guardrail überschritten wird. Guyton und
+      Klinger verwendeten 10 %, so ist es hier voreingestellt.</p>
+      <p class="ex">10 % → aus 42 000 werden 37 800 nach einer Kürzung, 46 200 nach einer
       Erhöhung.</p>`,
   },
   "rule.up": {
     title: "Max. Erhöhung pro Jahr",
     html: `<p>Um wie viel die Ausgaben in einem Jahr höchstens steigen dürfen, egal, wie gut die
-      Märkte waren. Vanguard verwendet 5 % nominal, etwa 3 % in heutiger Kaufkraft.</p>`,
+      Märkte waren. Voreingestellt sind 3 %, Vanguards eigene Grenze: Eine Erhöhung um 5 %
+      nominal entspricht bei 2 % Inflation etwa 3 % in heutiger Kaufkraft.</p>`,
   },
   "rule.down": {
     title: "Max. Kürzung pro Jahr",
     html: `<p>Um wie viel die Ausgaben in einem Jahr höchstens fallen dürfen, egal, wie schlecht die
-      Märkte waren. Vanguard verwendet 2,5 % nominal.</p>`,
+      Märkte waren. Voreingestellt sind 4,5 %, Vanguards eigene Grenze: Eine Kürzung um 2,5 %
+      nominal entspricht bei 2 % Inflation etwa 4,5 % in heutiger Kaufkraft.</p>`,
   },
   "rule.assumed_return": {
     title: "Angenommene Rendite (Kapitalverzehr)",
@@ -443,17 +448,15 @@ export default {
   income: {
     title: "Einnahmen und Kosten nach dem Ausstieg",
     html: `<p>Geld, das für eine Zeit des Ruhestands hereinkommt oder zusätzlich zu den Ausgaben
-      hinausgeht: eine staatliche Rente, eine monatlich ausbezahlte Betriebsrente, Teilzeitarbeit,
-      Miete aus einer Wohnung; oder eine Hypothek, bis sie abbezahlt ist, Kinder im Studium. In der
-      Schweiz zahlt, wer vor 65 aufhört zu arbeiten, weiter AHV-Beiträge, die sich nach dem
-      Vermögen richten: Kosten bis 65.</p>
-      <ul>
-        <li>Ein <b>positiver</b> Betrag ist eine Einnahme, ein <b>negativer</b> zusätzliche Kosten.
-          Pro Jahr, in heutiger Kaufkraft.</li>
-        <li>Er zählt frühestens ab dem FIRE-Start: Davor stecken deine Einkünfte schon in deiner
-          Sparrate.</li>
-        <li>Er senkt (oder erhöht), was das Depot jedes Jahr bezahlen muss.</li>
-      </ul>`,
+      hinausgeht: eine staatliche Rente, Teilzeitarbeit, Miete aus einer Wohnung; oder eine
+      Hypothek, bis sie abbezahlt ist, Kinder im Studium.</p>
+      <p>Pro Jahr, in heutiger Kaufkraft: Ein <b>positiver</b> Betrag ist eine Einnahme, ein
+      <b>negativer</b> zusätzliche Kosten. Er zählt frühestens ab dem FIRE-Start: Davor stecken
+      deine Einkünfte schon in deiner Sparrate.</p>`,
+    more: `<p>Auch eine monatlich ausbezahlte Betriebsrente gehört hierher. In der Schweiz zahlt,
+      wer vor 65 aufhört zu arbeiten, weiter AHV-Beiträge, die sich nach dem Vermögen richten:
+      Kosten bis 65.</p>
+      <p>Jeder Posten senkt (oder erhöht), was das Depot in seinen Jahren bezahlen muss.</p>`,
   },
   "income.when": {
     title: "Beginnt und endet",
@@ -471,19 +474,20 @@ export default {
       <ul>
         <li><b>Steigt mit der Inflation</b>: Er behält seinen Wert in heutiger Kaufkraft, wie die
           meisten staatlichen Renten.</li>
-        <li><b>Inflation plus oder minus</b>: Er steigt um das eingestellte Prozent
-          schneller oder langsamer als die Inflation, ab dem Jahr nach seinem ersten. Ein negativer
-          Wert bleibt hinter der Inflation zurück.</li>
+        <li><b>Inflation plus oder minus</b>: Er steigt jedes Jahr um das eingestellte Prozent
+          schneller oder langsamer als die Inflation. Ein negativer Wert bleibt hinter der
+          Inflation zurück.</li>
         <li><b>Fester Geldbetrag</b>: jedes Jahr derselbe Geldbetrag, sodass die Inflation seinen
           Wert schmälert, wie bei einer Rente, die nie erhöht wird, oder einer Hypothek mit festem
           Zins. Gib den Betrag so ein, wie er ausbezahlt wird.</li>
-      </ul>
-      <p class="ex">Eine Rente, die hinter der Inflation zurückbleibt, −1 % pro Jahr: 20 000 sind
-      nach 10 Jahren etwa 18 100 in heutiger Kaufkraft wert.</p>
+      </ul>`,
+    more: `<p>„Inflation plus oder minus“ wirkt ab dem Jahr nach dem ersten des Postens. Ein Posten,
+      der schon vor diesem Jahr begonnen hat, ändert sich ab diesem Jahr.</p>
+      <p class="ex">Eine Rente, die hinter der Inflation zurückbleibt, −1 % pro Jahr: 20 000 sind
+      nach 10 Jahren etwa 18 100 in heutiger Kaufkraft wert.</p>
       <p class="ex">Eine Krankenversicherung, die schneller teurer wird als die Inflation: Kosten
-      von −6000, +2 % pro Jahr → nach 10 Jahren etwa 7300 pro Jahr. Lass sie dann bei den
-      Ausgaben pro Jahr weg, sonst zählt sie doppelt.</p>
-      <p>Ein Posten, der schon vor diesem Jahr begonnen hat, ändert sich ab diesem Jahr.</p>`,
+      von −6000, +2 % pro Jahr → nach 10 Jahren etwa 7300 pro Jahr. Lass sie dann bei den
+      Ausgaben pro Jahr weg, sonst zählt sie doppelt.</p>`,
   },
 
   // ---- one-off events ------------------------------------------------------------------------------
@@ -502,16 +506,16 @@ export default {
     title: "Aktienrendite (nominaler Median)",
     html: `<p>Das typische jährliche Wachstum von Aktien, vor der Inflation. Es ist die
       <b>geometrische</b> Wachstumsrate: Die Hälfte der simulierten Jahre ist besser, die Hälfte
-      schlechter, und auf lange Sicht wächst das Vermögen mit dieser Rate (der einfache
-      Durchschnitt der Jahre ist höher). Der Simulator zieht die Inflation ab.</p>
-      <p class="ex">6 % bei 2 % Inflation ≈ 3,9 % real: etwa in der Mitte der langfristigen
-      Prognosen für Aktien weltweit (etwa 3,5–5 % real). Aktien weltweit haben seit 1900 rund 5 %
-      real pro Jahr erzielt.</p>
+      schlechter. Diese eine Eingabe bewegt das Ergebnis mehr als jede andere: Probiere auch einen
+      vorsichtigen Fall aus.</p>
+      <p class="ex">6 % bei 2 % Inflation ≈ 3,9 % real: etwa in der Mitte der langfristigen
+      Prognosen für Aktien weltweit (etwa 3,5–5 % real).</p>`,
+    more: `<p>Auf lange Sicht wächst das Vermögen mit dieser Rate (der einfache Durchschnitt der
+      Jahre ist höher), und der Simulator zieht die Inflation ab. Aktien weltweit haben seit 1900
+      rund 5 % real pro Jahr erzielt.</p>
       <p>Eine Rendite aus anderer Quelle ist vielleicht der <b>einfache Durchschnitt</b> der Jahre:
       Für dieselben Aktien liegt er um etwa die Hälfte der quadrierten Volatilität höher.</p>
-      <p class="ex">Ein Durchschnitt von 7,4 % bei 17 % Volatilität ≈ 6 % hier.</p>
-      <p>Diese eine Eingabe bewegt das Ergebnis mehr als jede andere: Probiere einen vorsichtigen
-      Fall aus.</p>`,
+      <p class="ex">Ein Durchschnitt von 7,4 % bei 17 % Volatilität ≈ 6 % hier.</p>`,
   },
   stock_vol: {
     title: "Aktienvolatilität",
@@ -524,21 +528,25 @@ export default {
   inflation: {
     title: "Inflation",
     html: `<p>Rechnet die nominalen Eingaben (Renditen, Zinsen) in heutige Kaufkraft um. Sie erhöht
-      deine Ausgaben nicht: Die sind schon in heutiger Kaufkraft.</p>`,
+      deine Ausgaben nicht: Die sind schon in heutiger Kaufkraft. Die meisten Zentralbanken streben
+      etwa 2 % an, die Schweizerische Nationalbank weniger als 2 %.</p>
+      <p><i>Real</i> heißt neben einem Prozentsatz auf dieser Seite: nach Inflation. 6 % bei 2 % Inflation
+      sind etwa 3,9 % real.</p>`,
   },
   _tails: {
     title: "Extremjahre",
-    html: `<p>Bei einer Normalverteilung kommt ein Jahr mit −40 % fast nie vor. „Fat Tails“ machen
+    html: `<p>Bei einer Normalverteilung kommt ein Jahr mit −40 % fast nie vor. „Fat Tails“ machen
       extreme Jahre um ein Mehrfaches häufiger (und gewöhnliche Jahre etwas ruhiger), begrenzt auf
-      −60 % und +60 % real in einem Jahr.</p>
-      <p>Über einen langen Plan ändern sie das Ergebnis kaum, meist um weniger als einen Punkt: Die
-      Jahre schwanken im Durchschnitt so stark wie vorher, und einige extreme Jahre gleichen sich
-      über Jahrzehnte aus. Was einen Plan scheitern lässt, ist ein Crash gleich nach dem Ausstieg,
-      und den zeigt der Stresstest.</p>
-      <p class="ex">30 000 pro Jahr aus 1 000 000, von 50 bis 95: Das Geld reicht in etwa 76 % der
-      Verläufe, mit Fat Tails (t, 6) ebenso; mit −40 % im ersten Jahr in etwa 36 %.</p>
-      <p>Die Zahl in „(t, 6)“ legt fest, wie ausgeprägt: Es ist eine Student-t-Verteilung mit so
-      vielen Freiheitsgraden. Je kleiner sie ist, desto häufiger die Extreme.</p>`,
+      −60 % und +60 % real in einem Jahr. Je kleiner die Zahl in „(t, 6)“, desto häufiger die
+      Extreme.</p>
+      <p>Über einen langen Plan ändern sie das Ergebnis kaum, meist um weniger als einen Punkt. Was
+      einen Plan scheitern lässt, ist ein Crash gleich nach dem Ausstieg, und den zeigt der
+      Stresstest.</p>`,
+    more: `<p>Warum so wenig: Die Jahre schwanken im Durchschnitt so stark wie vorher, und einige
+      extreme Jahre gleichen sich über Jahrzehnte aus.</p>
+      <p class="ex">30 000 pro Jahr aus 1 000 000, von 50 bis 95: Das Geld reicht in etwa 76 % der
+      Verläufe, mit Fat Tails (t, 6) ebenso; mit −40 % im ersten Jahr in etwa 36 %.</p>
+      <p>Die Zahl ist die Anzahl der Freiheitsgrade einer Student-t-Verteilung.</p>`,
   },
 
   // ---- portfolio mix -------------------------------------------------------------------------------
@@ -546,7 +554,8 @@ export default {
     title: "Aktienquote",
     html: `<p>Wie viel des Depots (und der gleich angelegten Vorsorgekonten) in Aktien steckt; der
       Rest steckt in Anleihen. Jedes Jahr wird auf diese Quote zurückgeführt (Rebalancing). Weniger
-      Aktien = kleinere Schwankungen, aber langsameres Wachstum, vor und nach dem Ausstieg.</p>`,
+      Aktien = kleinere Schwankungen, aber langsameres Wachstum, vor und nach dem Ausstieg.</p>
+      <p>Wenn du unsicher bist, beginne mit der Quote, die du heute hältst.</p>`,
   },
   tent_share: {
     title: "Bond Tent",
@@ -580,7 +589,8 @@ export default {
     title: "Korrelation Aktien/Anleihen",
     html: `<p>Ob sich Aktien und Anleihen eher gemeinsam bewegen: −1 entgegengesetzt, 0 unabhängig,
       +1 gemeinsam. Negativ hilft einem Mix (Anleihen steigen, wenn Aktien abstürzen). Sie war
-      2000–2020 meist negativ und in Inflationsjahren wie 2022 positiv.</p>`,
+      2000–2020 meist negativ und in Inflationsjahren wie 2022 positiv.</p>
+      <p>Wenn du unsicher bist, lass sie bei 0; +0,3 ist ein vorsichtiger Fall.</p>`,
   },
 
   // ---- stress --------------------------------------------------------------------------------------
@@ -602,9 +612,11 @@ export default {
   // ---- simulation ----------------------------------------------------------------------------------
   n_sims: {
     title: "Simulierte Verläufe",
-    html: `<p>Wie viele Verläufe simuliert werden. Mehr = genauer, aber langsamer.</p>
-      <p class="ex">10 000 → „Geld reicht“ ist auf etwa ±1 Prozentpunkt genau, 19-mal von 20;
-      50 000 → etwa ±0,4.</p>`,
+    html: `<p>Jeder Verlauf ist eine mögliche Folge von Marktjahren für deinen Plan, und „Geld reicht
+      in“ ist der Anteil davon, in dem das Geld gereicht hat. Mehr Verläufe = ein genauerer Anteil,
+      aber langsamer.</p>
+      <p class="ex">10 000 → „Geld reicht“ ist auf etwa ±1 Prozentpunkt genau, 19-mal von 20;
+      50 000 → etwa ±0,4.</p>`,
   },
   seed: {
     title: "Zufalls-Seed",
@@ -644,15 +656,18 @@ export default {
   },
   "result.rate": {
     title: "Anfängliche Entnahmerate",
-    html: `<p>Die Ausgaben im ersten Jahr ÷ das Medianvermögen beim Start. Vergleichbar mit einer
-      SWR, aber auch die Einnahmen und die später verfügbar werdenden Vorsorgekonten helfen.</p>`,
+    html: `<p>Die Ausgaben im ersten Jahr ÷ das Medianvermögen beim FIRE-Start, Vorsorgekonten
+      eingeschlossen. Einnahmen (eine Rente, Teilzeitarbeit) und einmalige Beträge, die du später
+      erhältst, bezahlen ebenfalls Ausgaben: Mit ihnen kann ein Plan auch mit einer Rate über der
+      üblichen sicheren Entnahmerate aufgehen.</p>`,
   },
   "result.fail": {
     title: "Geld geht aus",
     html: `<p>Der Anteil der Verläufe, in denen das Geld ausgeht, und <b>nur in diesen Verläufen</b>
-      das typische Jahr (Median), in dem es passiert. Der letzte Teil: wie viele davon, bevor das
-      letzte Vorsorgekonto verfügbar wird (die „Überbrückung“, die das verfügbare Geld allein
-      tragen muss).</p>`,
+      das typische Jahr (Median), in dem es passiert.</p>
+      <p>„12 % vor 2048“: In 12 % aller Verläufe geht das Geld vor 2048 aus, wenn das letzte
+      Vorsorgekonto verfügbar wird. Bis dahin trägt das verfügbare Geld die Ausgaben allein: die
+      „Überbrückung“.</p>`,
   },
   "result.end": {
     title: "Vermögen am Ende",
@@ -670,10 +685,13 @@ export default {
   },
   "result.flex": {
     title: "Durchschnittliche Ausgaben, knappstes Jahr, Untergrenze erreicht",
-    html: `<p>Nur für flexible Regeln, unter den Verläufen, in denen das Geld reicht: die typischen
-      Ausgaben über den ganzen Ruhestand, die niedrigsten Ausgaben eines Jahres (in den
-      schlechtesten 10 % der Verläufe) und wie viele Verläufe mindestens ein Jahr an der
-      Untergrenze verbringen.</p>`,
+    html: `<p>Nur für flexible Regeln, unter den Verläufen, in denen das Geld reicht:</p>
+      <ul><li><b>durchschnittliche Ausgaben</b>: die typischen Ausgaben über den ganzen
+      Ruhestand;</li>
+      <li><b>knappstes Jahr</b> (schlechteste 10 %): 9 von 10 dieser Verläufe geben in keinem Jahr
+      weniger aus;</li>
+      <li><b>erreicht die Untergrenze</b>: wie viele davon mindestens ein Jahr an der Untergrenze
+      verbringen.</li></ul>`,
   },
   "result.compare": {
     title: "Gleicher Plan, andere Regeln",
@@ -686,9 +704,10 @@ export default {
   "chart.paths": {
     title: "Vermögen im Lauf der Zeit",
     html: `<p>Jede dünne Linie ist ein Verlauf: violett = am ärmsten, gelb = am reichsten, <b>rot =
-      Geld geht aus</b>. Schwarze Linie: Median; gestrichelt: 10. Perzentil; schattiert: die
-      mittleren 50 % und 80 % der Verläufe. Gepunktete Linien markieren den FIRE-Start, verfügbar
-      werdende Konten, beginnende Einnahmen und einmalige Ereignisse.</p>
+      Geld geht aus</b>. Schwarze Linie: der mittlere Verlauf (Median); gestrichelt: 1 Verlauf von
+      10 liegt darunter; schattiert: die mittleren 50 % und 80 % der Verläufe. Gepunktete Linien
+      markieren den FIRE-Start, verfügbar werdende Konten, beginnende Einnahmen und einmalige
+      Ereignisse.</p>
       <p><b>Jahresausgaben</b> = Vermögen ÷ jährliche Ausgaben: 25 heißt 25 Jahre Ausgaben auf der
       Bank.</p>`,
   },
@@ -704,11 +723,11 @@ export default {
     html: `<p>Jede Zelle: wie oft das Geld reicht, wenn du in diesem Jahr (Zeile) aufhörst und so
       viel ausgibst (Spalte). Die umrandete Zelle ist dein Plan. <b>Wähle eine Zelle</b>, um
       diesen Plan auszuprobieren.</p>
-      <p>Bei Guardrails oder Vanguard halten Unter- und Obergrenze, die du selbst gesetzt hast, die
-      Spalten zwischen sich. So belassen, wie sie kamen, um die Ausgaben herum, bewegen sie sich
-      mit: Jede Spalte hat ihre eigenen, wie wenn du die Ausgaben änderst.</p>
       <p>Beim Kapitalverzehr, der seine Ausgaben selbst berechnet, sind die Spalten seine
       <b>Untergrenze</b>, bis zu seiner Obergrenze.</p>`,
+    more: `<p>Bei Guardrails oder Vanguard reichen die Spalten nur von der Unter- bis zur
+      Obergrenze, wenn du beide selbst gesetzt hast. Sonst bekommt jede Spalte ihre eigene Unter-
+      und Obergrenze um ihre Ausgaben herum, wie wenn du den Schieberegler der Ausgaben bewegst.</p>`,
   },
   "chart.safe": {
     title: "Sichere Ausgaben nach FIRE-Start",

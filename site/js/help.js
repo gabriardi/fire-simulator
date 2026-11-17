@@ -1,9 +1,6 @@
 // The guide: its sections, in order, each with the keys of its cards. The texts, in each
-// language, are in locales/<language>/help.js; a "?" whose key isn't there shows the entry its
-// alias names.
+// language, are in locales/<language>/help.js.
 import { t } from "./i18n.js";
-
-export const ALIASES = { end_age: "end_person", start_month: "start_year" };
 
 export const GUIDE = [
   [

@@ -358,7 +358,7 @@ function accountsGroup() {
       label: t("form.account.interest"),
       kind: "pct",
       what: t("form.account.interest.what", { name: state.accounts[i]?.name }),
-      help: "account.growth",
+      help: false,
       min: -0.5,
       max: 1,
       hint: (v) => t("form.real", { pct: fmt.pct(realOf(v), 1) }),
@@ -383,7 +383,7 @@ function accountsGroup() {
           path: `${P}.owner`,
           label: t("form.account.owner"),
           what: t("form.account.owner.what", { name: a.name }),
-          help: "accounts",
+          help: false,
           options: owners,
         }),
       ),
@@ -392,7 +392,7 @@ function accountsGroup() {
           path: `${P}.balance`,
           label: t("form.account.balance"),
           what: t("form.account.balance.what", { name: a.name }),
-          help: "accounts",
+          help: false,
           min: 0,
         }),
         numberField({
@@ -548,7 +548,7 @@ function incomeGroup() {
           path: `${P}.amount`,
           label: t("form.income.amount"),
           what: t("form.income.amount.what", { name: s.name }),
-          help: "income",
+          help: false,
           hint: (v) =>
             v >= 0
               ? t("form.income.amount.in", { amount: fmt.money(v / 12) })
@@ -623,7 +623,7 @@ function eventsGroup() {
           label: t("form.event.year"),
           kind: "year",
           what: t("form.event.year.what", { name: e.name }),
-          help: "events",
+          help: false,
           min: 1900,
           max: 2300,
           hint: (v) => ages(v),
@@ -632,7 +632,7 @@ function eventsGroup() {
           path: `events.${i}.amount`,
           label: t("form.event.amount"),
           what: t("form.event.amount.what", { name: e.name }),
-          help: "events",
+          help: false,
           hint: (v) => (v >= 0 ? t("form.event.amount.in") : t("form.event.amount.out")),
         }),
       ),
@@ -739,6 +739,7 @@ export function buildForm() {
         }),
         numberField({
           path: "end_age",
+          help: false,
           label: t("form.endAge"),
           kind: "int",
           unit: t("unit.years"),
@@ -868,7 +869,7 @@ export function buildForm() {
             label: t("form.tentAfter"),
             kind: "int",
             unit: t("unit.yrs"),
-            help: "tent_years",
+            help: false,
             min: 0,
             max: 40,
           }),
@@ -1010,6 +1011,7 @@ export function buildForm() {
           }),
           numberField({
             path: "start_month",
+            help: false,
             label: t("form.startMonth"),
             kind: "int",
             unit: "",

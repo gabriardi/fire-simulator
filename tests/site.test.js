@@ -7,7 +7,7 @@ import { test } from "node:test";
 import { allPages } from "../scripts/pages.js";
 import { PAGES } from "../scripts/strings.js";
 import { RULE_KINDS } from "../site/js/engine.js";
-import { ALIASES, GUIDE } from "../site/js/help.js";
+import { GUIDE } from "../site/js/help.js";
 import { LANGS } from "../site/js/i18n.js";
 import HELP from "../site/js/locales/en/help.js";
 import { PLANS_KEY, SESSION_KEY, SETTINGS_KEY } from "../site/js/store.js";
@@ -243,7 +243,7 @@ test("the chart library is the same version everywhere", () => {
   );
 });
 
-const entry = (key) => HELP[ALIASES[key] ?? key];
+const entry = (key) => HELP[key];
 
 /** The source of each call's argument, an object literal: `fn({ ... })`. */
 function callArgs(src, fn) {
@@ -268,7 +268,8 @@ test("every ? has an explanation, and the guide shows all of them", () => {
     ...[...app.matchAll(/\bhelp: "([^"]+)"/g)].map((m) => m[1]),
     ...RULE_KINDS.map((k) => `rule.${k}`), // the rule's "?" follows the rule picked
   ]);
-  // A number or select field without its own `help` is explained under its path.
+  // A number or select field without its own `help` is explained under its path; `help: false`
+  // says on purpose that a "?" beside it already explains it.
   const problems = [];
   let fields = 0;
   for (const fn of ["numberField", "selectField"]) {
@@ -276,7 +277,7 @@ test("every ? has an explanation, and the guide shows all of them", () => {
       const path = /\bpath: (["`])(.*?)\1/.exec(args);
       if (!path) continue; // the function's own definition
       fields++;
-      if (/\bhelp: "/.test(args)) continue;
+      if (/\bhelp: (?:"|false\b)/.test(args)) continue;
       if (path[1] === "`")
         problems.push(`${fn} ${path[2]}: a path made per item needs its own \`help\``);
       else keys.add(path[2]);
@@ -284,10 +285,6 @@ test("every ? has an explanation, and the guide shows all of them", () => {
   }
   assert.ok(fields > 40, `the form's fields were found (${fields})`);
   for (const key of keys) if (!entry(key)) problems.push(`"${key}" has no entry in HELP`);
-  for (const [key, to] of Object.entries(ALIASES)) {
-    if (!HELP[to]) problems.push(`"${key}" is an alias of a missing "${to}"`);
-    if (HELP[key]) problems.push(`"${key}" has an entry of its own and an alias`);
-  }
 
   const inGuide = GUIDE.flatMap(([, list]) => list);
   for (const key of inGuide)

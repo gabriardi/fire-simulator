@@ -1,10 +1,10 @@
 // What the page tells the viewer: the "?" explanations and the guide, toasts, notices, errors and
 // the confirm box.
-import { ALIASES, GUIDE } from "../help.js";
+import { GUIDE } from "../help.js";
 import { HELP, t } from "../i18n.js";
 import { $, el } from "./dom.js";
 
-export const helpEntry = (key) => HELP[ALIASES[key] ?? key];
+export const helpEntry = (key) => HELP[key];
 export function helpBtn(key) {
   const h = helpEntry(key);
   if (!h) return null;
@@ -55,7 +55,7 @@ export function openHelp(key) {
 }
 /** The guide, at the top or, given a "?"'s key, at that entry's card. */
 export function openGuide(at) {
-  const atKey = at ? (ALIASES[at] ?? at) : null;
+  const atKey = at ?? null;
   const toc = el("nav", { class: "guide-toc", "aria-label": t("guide.sections") });
   const content = el("div", { class: "guide-content" });
   const links = [];
