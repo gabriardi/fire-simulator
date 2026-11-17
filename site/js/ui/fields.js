@@ -20,6 +20,8 @@ export const groups = [];
 
 // kind: money (whole amounts in the plan's currency), pct (a fraction, shown in %), int, year, num.
 // `setting: true` edits the viewer's settings instead of the plan (no "edited" marks).
+// `help`: the key of its "?" (its path by default); false for none, where a "?" beside it
+// already explains it.
 export function numberField({
   path,
   label,
@@ -153,7 +155,7 @@ export function numberField({
     "div",
     { class: "field-head" },
     el("label", { for: id }, el("span", { text: label })),
-    helpBtn(help ?? path),
+    help === false ? null : helpBtn(help ?? path),
   );
   const node = el("div", { class: "field", ...marks(path, setting) }, head, range, box, hintEl);
   if (!setting) {
@@ -229,7 +231,7 @@ export function selectField({
     "div",
     { class: "field-head" },
     el("label", { for: id, text: label }),
-    helpBtn(help ?? path),
+    help === false ? null : helpBtn(help ?? path),
   );
   const node = el(
     "div",

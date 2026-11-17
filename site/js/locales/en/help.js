@@ -1,9 +1,9 @@
 // The "?" explanations and the guide's cards, in English: { title, html } by key. Plain, trusted
-// HTML. Keep each entry short: what it is, how it's used, an example. One that needs more gets
-// `more`, the detail: the guide's card shows it after `html`, the "?" shows `html` alone.
+// HTML. The "?" shows `html` alone: keep it short, and to what the label and the hint under the
+// field don't already say: why it's there, how to pick a value, an example. The detail goes in
+// `more`, which the guide's card shows after `html`.
 // Amounts are in no currency in particular: they read as dollars, euros, francs or pounds alike.
-// Which entries the guide shows, in which order, and which "?" share an entry are in
-// ../../help.js, for every language.
+// Which entries the guide shows, and in which order, is in ../../help.js, for every language.
 
 export default {
   // ---- concepts (guide only) ---------------------------------------------------------------------
@@ -79,13 +79,12 @@ export default {
     title: "Plans",
     html: `<p>A plan is your situation and the choices you're trying, saved under a name in this
       browser. Keep several to compare: “Stop at 50”, “Stop at 55, part-time”, “Spend less”.</p>
-      <ul>
-        <li><b>Pick</b> one in the list to load it.</li>
-        <li><b>Change</b> any value: the plan shows as <b>edited</b>, and a dot marks each changed
-          field. <b>Save</b> (or ⌘S / Ctrl+S) keeps the changes; <b>Revert</b> brings back the saved
-          values. Unsaved changes survive a reload.</li>
-        <li>Under <b>⋯</b>: a new plan from scratch, a copy of this one, rename, delete, share,
-          export and import.</li>
+      <p>Change any value, then <b>Save</b> to keep it or <b>Revert</b> to go back to the saved
+      values. Under <b>⋯</b>: a new plan from scratch, a copy of this one, rename, delete, share,
+      export and import.</p>`,
+    more: `<ul>
+        <li>With unsaved changes the plan shows as <b>edited</b>, and a dot marks each changed
+          field. ⌘S / Ctrl+S saves too. Unsaved changes survive a reload.</li>
         <li>Deleting, reverting, or switching away from unsaved changes shows an <b>Undo</b> for a
           few seconds.</li>
       </ul>
@@ -94,20 +93,18 @@ export default {
   },
   backup: {
     title: "Backups",
-    html: `<p>Saved plans live in this browser's storage, on this device only. Browsers can clear it:</p>
-      <ul>
-        <li>clearing the browsing data or the site's data;</li>
-        <li>a private window, when it closes;</li>
-        <li><b>Safari</b> (on a Mac, iPhone or iPad) deletes a site's data once you've used it for
-          7 days without visiting the site, unless you added the site to the Home Screen;</li>
-        <li>some browsers free space when the device runs low.</li>
-      </ul>
-      <p>When you first save, the page asks the browser to keep its storage for good (Firefox asks
-      you; Chrome and Edge decide on their own). That protects against the last case, not the
-      others.</p>
+    html: `<p>Saved plans live in this browser's storage, on this device only, and browsers can
+      clear it: when you clear the browsing data or the site's data, when a private window closes,
+      and in Safari after a week of use without a visit to this site.</p>
       <p><b>Export plans</b> writes every plan to a file: the only backup that survives a cleared
-      browser or a lost device. A note under the plan reminds you when saved changes aren't in an
-      exported file yet. To restore, use <b>Import plans</b>.</p>`,
+      browser or a lost device. To restore, use <b>Import plans</b>.</p>`,
+    more: `<p><b>Safari</b> (on a Mac, iPhone or iPad) deletes a site's data once you've used it for
+      7 days without visiting the site, unless you added the site to the Home Screen. Some browsers
+      also free space when the device runs low.</p>
+      <p>When you first save, the page asks the browser to keep its storage for good (Firefox asks
+      you; Chrome and Edge decide on their own). That protects against a device running low, not
+      against the other cases.</p>
+      <p>A note under the plan reminds you when saved changes aren't in an exported file yet.</p>`,
   },
   share: {
     title: "Share link",
@@ -141,21 +138,20 @@ export default {
     html: `<p>The first year you live from your savings: <b>FIRE</b> stands for financial
       independence, retire early. Until then you keep earning and saving; from then on, savings
       stop and spending starts.</p>
-      <p class="ex">Each year later adds a year of savings and growth, and is one year less to fund.
+      <p>Each year later adds a year of savings and growth, and is one year less to fund.
       The grid below shows the neighbouring years side by side.</p>`,
   },
   spending: {
     title: "Spending per year",
     html: `<p>What the household will spend each year after stopping, in today's money,
       <b>including</b> the taxes of those years (income tax on withdrawals, health insurance you'll
-      now pay yourself, unless you give it a line of its own below). Leave out costs that stop
-      with work, such as commuting.</p>
+      now pay yourself). Leave out costs that stop with work, such as commuting, and any cost you
+      enter as a line under “Income and costs after stopping”: it would count twice.</p>
       <p class="ex">40,000 a year = 3,333 a month. With a flexible rule this is the
-      <b>starting</b> amount. The spend-down works out its own and doesn't use it.</p>
-      <p>Costs that come and go (a mortgage until it's paid off, children's school) are better as
-      lines under “Income and costs after stopping”, and so are costs that rise faster than
-      inflation, such as health insurance. A cost entered as a line is left out of the spending,
-      or it counts twice.</p>
+      <b>starting</b> amount. The spend-down works out its own and doesn't use it.</p>`,
+    more: `<p>Costs that come and go (a mortgage until it's paid off, children's school) are better
+      as lines under “Income and costs after stopping”, and so are costs that rise faster than
+      inflation, such as health insurance.</p>
       <p>A tax on wealth (a wealth tax, a yearly stamp duty on investments) shrinks as the portfolio
       does: take its rate off the stock and bond returns instead.</p>
       <p class="ex">A 0.3% wealth tax: stocks 6% → 5.7%, bonds 3% → 2.7%.</p>`,
@@ -164,7 +160,7 @@ export default {
     title: "Money must last until",
     html: `<p>How long the plan has to work: until this person reaches this age. Pick the youngest
       person, and an age you'd be unlucky to outlive: longer horizons need a lower withdrawal
-      rate.</p>
+      rate. Many plans use 95; 100 is cautious.</p>
       <p>For a couple, the chance that at least one of you lives into their 90s is much higher than
       either one's alone: plan for the longest-lived of you.</p>`,
   },
@@ -180,35 +176,36 @@ export default {
     title: "Guardrails (Guyton & Klinger)",
     html: `<p>Your <b>withdrawal rate</b> (what the portfolio pays ÷ wealth) at the start is the
       reference. Each year:</p>
-      <ul><li>rate more than the <b>band</b> above the start (wealth fell) → spending is cut by the
-      percentage in <b>Cut / raise by</b>;</li>
-      <li>rate more than the band below the start (wealth grew) → spending is raised by it;</li>
+      <ul><li>rate above the start by more than the <b>band</b>, a share of the starting rate
+      (wealth fell) → spending is cut by the percentage in <b>Cut / raise by</b>;</li>
+      <li>rate below the start by more than the band (wealth grew) → spending is raised by it;</li>
       <li>otherwise unchanged. Always between floor and ceiling.</li></ul>
-      <p class="ex">1,200,000 and 42,000 → rate 3.5%. With a 20% band and a 10% cut / raise: below
-      about 1,000,000 (rate 4.2%) spending is cut to 37,800; above 1,500,000 (rate 2.8%) it rises
-      to 46,200. Cuts can repeat in a long bad stretch.</p>`,
+      <p class="ex">1,200,000 and 42,000 → rate 3.5%. With a 20% band (20% of 3.5% is 0.7 points)
+      and a 10% cut / raise: below about 1,000,000 (rate 4.2%) spending is cut to 37,800; above
+      1,500,000 (rate 2.8%) it rises to 46,200. Cuts can repeat in a long bad stretch.</p>`,
   },
   "rule.vanguard": {
     title: "Vanguard dynamic spending",
-    html: `<p>Each year the <b>target</b> is your starting withdrawal rate × current wealth (plus
-      income). Spending moves towards it, but by at most the <b>max raise</b> or the <b>max cut</b>
-      a year. Always between floor and ceiling.</p>
-      <p class="ex">Markets −30% → the target drops 30%, but spending only falls 2.5% a year while
+    html: `<p>Each year the <b>target</b> is your starting withdrawal rate × current wealth, plus
+      that year's income (a pension, part-time work). Spending moves towards it, but by at most
+      the <b>max raise</b> or the <b>max cut</b> a year. Always between floor and ceiling.</p>
+      <p class="ex">Markets −30% → the target drops 30%, but spending only falls 4.5% a year while
       it stays down. Smoother than guardrails, slower to react to a deep crash.</p>`,
   },
   "rule.spenddown": {
     title: "Spend-down (die with zero)",
     html: `<p>Each year it works out what you could spend <b>every year until the end</b>, the same
       each year, if the money earned the <b>assumed return</b> you set, and aims at that. That
-      return is only for this sum: the futures still earn random returns. Counted as money today:
-      what you can reach, the retirement accounts still locked (after their tax), and all future
-      income and costs. Until an account unlocks only the reachable money pays the bills, so the
-      amount is never more than that money alone can carry until then.</p>
-      <p>Every year the amount is worked out again from the actual balances. Spending doesn't jump
-      to it: it moves towards it by at most +raise / −cut a year, always between floor and ceiling.
-      The spending per year above isn't used.</p>
+      return is only for this sum: the futures still earn random returns, and the sum is done again
+      every year with the balances you actually have. The spending per year above isn't used.</p>
       <p>It doesn't plan to keep money, so it spends more and leaves less. A crash right after you
-      stop hurts it more, because it spends more in the first years.</p>
+      stop hurts it more, because it spends more in the first years.</p>`,
+    more: `<p>Counted as money today: what you can reach, the retirement accounts still locked
+      (after their tax), and all future income and costs. Until an account unlocks only the
+      reachable money pays the bills, so the amount is never more than that money alone can carry
+      until then.</p>
+      <p>Spending doesn't jump to the amount: it moves towards it by at most +raise / −cut a year,
+      always between floor and ceiling.</p>
       <p><b>Once you've stopped</b>, it gives the year's amount: enter that January's balances, set
       the FIRE start to that year, and read “First-year spending”.</p>`,
   },
@@ -217,6 +214,8 @@ export default {
     html: `<p>The lowest spending you'd accept: the costs you can't cut (housing, health, food,
       taxes). A flexible rule never goes below it, and a future <b>fails</b> only when even the
       floor can't be paid.</p>
+      <p>With guardrails and Vanguard, until you set it yourself, it sits 20% below the spending
+      and moves with it.</p>
       <p class="ex">32,000 under a 40,000 plan: the essentials, with travel and extras cut.</p>`,
   },
   "rule.ceiling": {
@@ -230,23 +229,26 @@ export default {
   "rule.band": {
     title: "Guardrail band",
     html: `<p>How far the withdrawal rate may drift from where it started before spending changes.
-      Smaller = more frequent adjustments.</p>
+      Smaller = more frequent adjustments. Guyton and Klinger used 20%, the default here.</p>
       <p class="ex">20% → with a 3.5% start, nothing happens between 2.8% and 4.2%.</p>`,
   },
   "rule.adjust": {
     title: "Cut / raise by",
-    html: `<p>How much spending changes when a guardrail is crossed.</p>
+    html: `<p>How much spending changes when a guardrail is crossed. Guyton and Klinger used 10%,
+      the default here.</p>
       <p class="ex">10% → 42,000 becomes 37,800 after a cut, 46,200 after a raise.</p>`,
   },
   "rule.up": {
     title: "Max raise per year",
-    html: `<p>The most spending may rise in one year, however good the markets were. Vanguard uses
-      5% in nominal terms, about 3% in today's money.</p>`,
+    html: `<p>The most spending may rise in one year, however good the markets were. The default,
+      3%, is Vanguard's own limit: a 5% raise before inflation is about 3% in today's money, with
+      2% inflation.</p>`,
   },
   "rule.down": {
     title: "Max cut per year",
-    html: `<p>The most spending may fall in one year, however bad the markets were. Vanguard uses
-      2.5% in nominal terms.</p>`,
+    html: `<p>The most spending may fall in one year, however bad the markets were. The default,
+      4.5%, is Vanguard's own limit: a 2.5% cut before inflation is about 4.5% in today's money,
+      with 2% inflation.</p>`,
   },
   "rule.assumed_return": {
     title: "Assumed return (spend-down)",
@@ -407,16 +409,14 @@ export default {
   income: {
     title: "Income and costs after stopping",
     html: `<p>Money that comes in, or goes out on top of the spending, for a stretch of the
-      retirement: a state pension, a company pension paid monthly, part-time work, rent from a flat;
-      or a mortgage until it's paid off, children at university. In Switzerland, someone who stops
+      retirement: a state pension, part-time work, rent from a flat; or a mortgage until it's paid
+      off, children at university.</p>
+      <p>Per year, in today's money: a <b>positive</b> amount is income, a <b>negative</b> one an
+      extra cost. It counts from the FIRE start at the earliest: before that, your savings already
+      reflect what you earn.</p>`,
+    more: `<p>A company pension paid monthly goes here too. In Switzerland, someone who stops
       working before 65 still pays AHV contributions, set by their wealth: a cost until 65.</p>
-      <ul>
-        <li>A <b>positive</b> amount is income, a <b>negative</b> one an extra cost. Per year, in
-          today's money.</li>
-        <li>It counts from the FIRE start at the earliest: before that, your savings already reflect
-          what you earn.</li>
-        <li>It reduces (or adds to) what the portfolio has to pay each year.</li>
-      </ul>`,
+      <p>Each line reduces (or adds to) what the portfolio has to pay in its years.</p>`,
   },
   "income.when": {
     title: "Starts and stops",
@@ -433,18 +433,19 @@ export default {
       <ul>
         <li><b>Rises with inflation</b>: it keeps its value in today's money, like most state
           pensions.</li>
-        <li><b>Faster or slower than inflation</b>: it rises by the % you set compared with
-          inflation, from the year after its first. A negative % falls behind inflation.</li>
+        <li><b>Faster or slower than inflation</b>: it rises by the % you set each year compared
+          with inflation. A negative % falls behind inflation.</li>
         <li><b>Fixed in money</b>: the same amount of money every year, so inflation shrinks its
           value, like a pension that is never raised or a fixed-rate mortgage. Enter the amount
           as it will be paid.</li>
-      </ul>
+      </ul>`,
+    more: `<p>Faster or slower starts from the year after the line's first. A line that started
+      before this year changes from this year on.</p>
       <p class="ex">A pension that falls behind inflation, −1% a year: 20,000 is worth about
       18,100 in today's money after 10 years.</p>
       <p class="ex">Health insurance that gets dearer faster than inflation: a cost line of
       −6,000, +2% a year → about 7,300 a year after 10 years. Then leave it out of the spending
-      per year, or it counts twice.</p>
-      <p>A line that started before this year changes from this year on.</p>`,
+      per year, or it counts twice.</p>`,
   },
 
   // ---- one-off events ------------------------------------------------------------------------------
@@ -460,15 +461,17 @@ export default {
   // ---- markets -------------------------------------------------------------------------------------
   stock_return: {
     title: "Stock return (nominal median)",
-    html: `<p>The typical yearly growth of stocks, before inflation. It is the <b>compound</b> growth
-      rate: half the simulated years are better, half worse, and over the long run wealth grows at
-      this rate (the simple average of the years is higher). The simulator subtracts inflation.</p>
+    html: `<p>The typical yearly growth of stocks, before inflation. It is the <b>compound</b>
+      growth rate: half the simulated years are better, half worse. This one input moves the
+      result more than any other: try a cautious case too.</p>
       <p class="ex">6% with 2% inflation ≈ 3.9% real: around the middle of long-run forecasts for
-      world stocks (about 3.5–5% real). World stocks have earned about 5% real a year since 1900.</p>
+      world stocks (about 3.5–5% real).</p>`,
+    more: `<p>Over the long run wealth grows at this rate (the simple average of the years is
+      higher), and the simulator subtracts inflation. World stocks have earned about 5% real a
+      year since 1900.</p>
       <p>A return from elsewhere may be the <b>simple average</b> of the years instead: for the
       same stocks it's higher by about half the volatility squared.</p>
-      <p class="ex">An average of 7.4% with 17% volatility ≈ 6% here.</p>
-      <p>This one input moves the result more than any other: try a cautious case.</p>`,
+      <p class="ex">An average of 7.4% with 17% volatility ≈ 6% here.</p>`,
   },
   stock_vol: {
     title: "Stock volatility",
@@ -481,20 +484,23 @@ export default {
   inflation: {
     title: "Inflation",
     html: `<p>Turns the nominal inputs (returns, interest) into today's money. It doesn't raise your
-      spending: that's already in today's money.</p>`,
+      spending: that's already in today's money. Most central banks aim at about 2%; the Swiss
+      National Bank at less than 2%.</p>
+      <p><i>Real</i>, next to a rate on this page, means after inflation: 6% with 2% inflation is
+      about 3.9% real.</p>`,
   },
   _tails: {
     title: "Extreme years",
     html: `<p>With a normal distribution, a −40% year almost never happens. “Fat tails” make extreme
       years several times more frequent (and ordinary years a bit calmer), capped at −60% and +60%
-      real in a year.</p>
-      <p>Over a long plan they change the result very little, usually by less than a point: the
-      years swing as much as before on average, and a few extreme years even out over decades.
-      What breaks a plan is a crash right after you stop, and the stress test shows that.</p>
+      real in a year. The lower the number in “(t, 6)”, the fatter the tails.</p>
+      <p>Over a long plan they change the result very little, usually by less than a point. What
+      breaks a plan is a crash right after you stop, and the stress test shows that.</p>`,
+    more: `<p>Why so little: the years swing as much as before on average, and a few extreme years
+      even out over decades.</p>
       <p class="ex">30,000 a year from 1,000,000, from age 50 to 95: the money lasts in about 76%
       of futures, with fat tails (t, 6) too; with a −40% first year, in about 36%.</p>
-      <p>The number in “(t, 6)” sets how fat: it's a Student-t distribution with that many degrees
-      of freedom. The lower it is, the fatter the tails.</p>`,
+      <p>The number is the degrees of freedom of a Student-t distribution.</p>`,
   },
 
   // ---- portfolio mix -------------------------------------------------------------------------------
@@ -502,7 +508,8 @@ export default {
     title: "Stock share",
     html: `<p>How much of the portfolio (and of the retirement accounts invested like it) is in
       stocks; the rest is in bonds. Every year it is brought back to this share (rebalanced). Less
-      in stocks = smaller swings, but slower growth, before and after you stop.</p>`,
+      in stocks = smaller swings, but slower growth, before and after you stop.</p>
+      <p>If unsure, start with the share you hold today.</p>`,
   },
   tent_share: {
     title: "Bond tent",
@@ -534,7 +541,8 @@ export default {
     title: "Stock/bond correlation",
     html: `<p>Whether stocks and bonds tend to move together: −1 opposite, 0 independent, +1
       together. Negative helps a mix (bonds rise when stocks crash). It was negative most of
-      2000–2020 and positive in inflation years such as 2022.</p>`,
+      2000–2020 and positive in inflation years such as 2022.</p>
+      <p>If unsure, leave it at 0; +0.3 is a cautious case.</p>`,
   },
 
   // ---- stress --------------------------------------------------------------------------------------
@@ -554,7 +562,9 @@ export default {
   // ---- simulation ----------------------------------------------------------------------------------
   n_sims: {
     title: "Simulated futures",
-    html: `<p>How many futures to simulate. More = more precise, but slower.</p>
+    html: `<p>Each future is one possible run of market years for your plan, and “money lasts in”
+      is the share of them in which the money lasted. More futures = a more precise share, but
+      slower.</p>
       <p class="ex">10,000 → “money lasts” is within about ±1 point, 19 times in 20; 50,000 → about
       ±0.4.</p>`,
   },
@@ -591,14 +601,18 @@ export default {
   },
   "result.rate": {
     title: "Starting withdrawal rate",
-    html: `<p>First year's spending ÷ the median wealth at the start. Comparable with an SWR, but the
-      income lines and the retirement accounts unlocking later also help.</p>`,
+    html: `<p>First year's spending ÷ the median wealth at the FIRE start, retirement accounts
+      included. Income lines (a pension, part-time work) and one-off amounts you receive later
+      also pay for spending, so a plan with them can last at a rate above the usual safe
+      withdrawal rate.</p>`,
   },
   "result.fail": {
     title: "Runs out",
     html: `<p>The share of futures in which the money runs out, and <b>in those futures only</b> the
-      typical (median) year it happens. The last part: how many run out before the last retirement
-      account unlocks (the “bridge” the reachable money has to carry alone).</p>`,
+      typical (median) year it happens.</p>
+      <p>“12% before 2048”: in 12% of all futures the money runs out before 2048, when the last
+      retirement account unlocks. Until then the reachable money carries the spending alone: the
+      “bridge”.</p>`,
   },
   "result.end": {
     title: "Wealth at the end",
@@ -615,9 +629,11 @@ export default {
   },
   "result.flex": {
     title: "Average spending, leanest year, reaching the floor",
-    html: `<p>Only for flexible rules, among the futures that last: the typical spending over the
-      whole retirement, the lowest yearly spending (in the worst 10% of futures), and how many
-      futures spend at least one year at the floor.</p>`,
+    html: `<p>Only for flexible rules, among the futures that last:</p>
+      <ul><li><b>average spending</b>: the typical spending over the whole retirement;</li>
+      <li><b>leanest year</b> (worst 10%): 9 in 10 of these futures never spend less than this in
+      a year;</li>
+      <li><b>reaches the floor</b>: how many of them spend at least one year at the floor.</li></ul>`,
   },
   "result.compare": {
     title: "Same plan, other rules",
@@ -629,8 +645,9 @@ export default {
   "chart.paths": {
     title: "Wealth over time",
     html: `<p>Each thin line is one future: purple = poorest, yellow = richest, <b>red = runs out</b>.
-      Black line: median; dashed: 10th percentile; shaded: middle 50% and 80% of futures. Dotted
-      lines mark the FIRE start, accounts unlocking, income starting and one-off events.</p>
+      Black line: the middle future (median); dashed: 1 future in 10 is below it; shaded: middle
+      50% and 80% of futures. Dotted lines mark the FIRE start, accounts unlocking, income
+      starting and one-off events.</p>
       <p><b>Years of spending</b> = wealth ÷ yearly spending: 25 means 25 years of spending in the
       bank.</p>`,
   },
@@ -644,11 +661,11 @@ export default {
     title: "When can you stop, at which spending?",
     html: `<p>Each cell: how often the money lasts if you stop in that year (row) and spend that much
       (column). The outlined cell is your plan. <b>Tap a cell</b> to try that plan.</p>
-      <p>With guardrails or Vanguard, a floor and ceiling you set yourself keep the columns between
-      them. Left as they came, around the spending, they move with it: each column has its own,
-      as when you change the spending.</p>
       <p>With the spend-down, which works out its own spending, the columns are its <b>floor</b>,
       up to its ceiling.</p>`,
+    more: `<p>With guardrails or Vanguard, if you've set the floor and ceiling yourself, the columns
+      only go from the floor to the ceiling. If you haven't, each column gets its own floor and
+      ceiling around its spending, as when you move the spending slider.</p>`,
   },
   "chart.safe": {
     title: "Safe spending by FIRE start",
